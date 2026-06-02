@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 6º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 6º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472AM": "GIOVANNA", 
+                "819AS": "IGOR",
+                "365AS": "JOÃO LUCAS", 
+                "294BS": "JOÃO LUCCA",
+                "581BS": "LAURA", 
+                "736DF": "LEONARDO",
+	        "301ES": "LORENA",
+                "158DG": "LUIS ANTONIO", 
+                "627ES": "MIRELLA", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+                // --- MULTIPLE CHOICE (15 Questões) ---
+                { type: 'mcq', question: "Qual material escolar usamos para destacar ou marcar textos importantes?", topic: "School Supplies", hint: "DICA 1: Tem 'light' (luz/claro) na palavra.", hint_2: "DICA 2: Termina com ER.", options: [ { text: "Ruler", isCorrect: false, rationale: "Incorreto." }, { text: "Highlighter", isCorrect: true, rationale: "Correto! Marca-texto é Highlighter." }, { text: "Crayon", isCorrect: false, rationale: "Incorreto." }, { text: "Sharpener", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Onde pegamos livros emprestados para ler na escola?", topic: "Places at School", hint: "DICA 1: Parece com 'livraria', mas não é.", hint_2: "DICA 2: Começa com a letra L.", options: [ { text: "Library", isCorrect: true, rationale: "Correto! Biblioteca em inglês é Library." }, { text: "Canteen", isCorrect: false, rationale: "Incorreto." }, { text: "Auditorium", isCorrect: false, rationale: "Incorreto." }, { text: "Restroom", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Para dizermos 'Há duas borrachas' (plural) em inglês, usamos:", topic: "There is / There are", hint: "DICA 1: É usado para mais de um item.", hint_2: "DICA 2: A frase é afirmativa.", options: [ { text: "There is", isCorrect: false, rationale: "Incorreto." }, { text: "Is there", isCorrect: false, rationale: "Incorreto." }, { text: "There aren't", isCorrect: false, rationale: "Incorreto." }, { text: "There are", isCorrect: true, rationale: "Correto! Para plural afirmativo usamos 'There are'." } ] },
+                { type: 'mcq', question: "Como dizemos 'Não há uma caneta' (singular negativo)?", topic: "There is / There are", hint: "DICA 1: Usamos a forma negativa do verbo 'is'.", hint_2: "DICA 2: A forma abreviada termina com n't.", options: [ { text: "There aren't", isCorrect: false, rationale: "Incorreto." }, { text: "There are", isCorrect: false, rationale: "Incorreto." }, { text: "There isn't", isCorrect: true, rationale: "Correto! Singular negativo é 'There isn't'." }, { text: "Are there", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Qual preposição de lugar usamos para dizer que algo está 'entre' dois objetos?", topic: "Prepositions of Place", hint: "DICA 1: Começa com a letra B.", hint_2: "DICA 2: Termina com EN.", options: [ { text: "Under", isCorrect: false, rationale: "Incorreto." }, { text: "Behind", isCorrect: false, rationale: "Incorreto." }, { text: "In front of", isCorrect: false, rationale: "Incorreto." }, { text: "Between", isCorrect: true, rationale: "Correto! Entre dois objetos é 'Between'." } ] },
+                { type: 'mcq', question: "Se o caderno está 'debaixo' da carteira, qual preposição usamos?", topic: "Prepositions of Place", hint: "DICA 1: Começa com a vogal U.", hint_2: "DICA 2: É o oposto de ON (sobre).", options: [ { text: "In", isCorrect: false, rationale: "Incorreto." }, { text: "Under", isCorrect: true, rationale: "Correto! Debaixo é 'Under'." }, { text: "Next to", isCorrect: false, rationale: "Incorreto." }, { text: "On", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Em qual cômodo da casa normalmente jantamos em família (Sala de Jantar)?", topic: "Parts of a House", hint: "DICA 1: A primeira palavra começa com D.", hint_2: "DICA 2: Tem 'room' no final.", options: [ { text: "Kitchen", isCorrect: false, rationale: "Incorreto." }, { text: "Living room", isCorrect: false, rationale: "Incorreto." }, { text: "Dining room", isCorrect: true, rationale: "Correto! Sala de jantar é 'Dining room'." }, { text: "Laundry", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Qual é o cômodo onde lavamos as roupas (Lavanderia)?", topic: "Parts of a House", hint: "DICA 1: Começa com a letra L.", hint_2: "DICA 2: A pronúncia lembra um pouco a palavra em português.", options: [ { text: "Bedroom", isCorrect: false, rationale: "Incorreto." }, { text: "Bathroom", isCorrect: false, rationale: "Incorreto." }, { text: "Garage", isCorrect: false, rationale: "Incorreto." }, { text: "Laundry", isCorrect: true, rationale: "Correto! Lavanderia é 'Laundry'." } ] },
+                { type: 'mcq', question: "Qual eletrodoméstico usamos para guardar e gelar nossa comida (Geladeira)?", topic: "Furniture & Appliances", hint: "DICA 1: Fica na cozinha.", hint_2: "DICA 2: Começa com F e rima com bridge.", options: [ { text: "Fridge", isCorrect: true, rationale: "Correto! Geladeira é 'Fridge' (ou Refrigerator)." }, { text: "Stove", isCorrect: false, rationale: "Incorreto." }, { text: "Sink", isCorrect: false, rationale: "Incorreto." }, { text: "Microwave", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Onde costumamos sentar confortavelmente na sala de estar?", topic: "Furniture & Appliances", hint: "DICA 1: Cabem várias pessoas.", hint_2: "DICA 2: Pode ser chamado de 'Sofa' ou...", options: [ { text: "Bed", isCorrect: false, rationale: "Incorreto." }, { text: "Shower", isCorrect: false, rationale: "Incorreto." }, { text: "Couch", isCorrect: true, rationale: "Correto! Sofá pode ser 'Couch' ou 'Sofa'." }, { text: "Dresser", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Qual pronome demonstrativo usamos para dizer 'Este é' (singular, perto)?", topic: "Demonstrative Pronouns", hint: "DICA 1: Termina com 'is'.", hint_2: "DICA 2: A primeira palavra tem 4 letras e começa com TH.", options: [ { text: "That is", isCorrect: false, rationale: "Incorreto." }, { text: "These are", isCorrect: false, rationale: "Incorreto." }, { text: "Those are", isCorrect: false, rationale: "Incorreto." }, { text: "This is", isCorrect: true, rationale: "Correto! 'Este é' traduz-se como 'This is'." } ] },
+                { type: 'mcq', question: "Como dizemos 'Aqueles são' (plural, objetos longe) em inglês?", topic: "Demonstrative Pronouns", hint: "DICA 1: Acompanha o verbo 'are'.", hint_2: "DICA 2: A primeira palavra começa com THO.", options: [ { text: "These are", isCorrect: false, rationale: "Incorreto." }, { text: "Those are", isCorrect: true, rationale: "Correto! 'Aqueles são' é 'Those are'." }, { text: "This is", isCorrect: false, rationale: "Incorreto." }, { text: "That is", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Qual palavra usamos para perguntar 'De quem é' um objeto?", topic: "Whose", hint: "DICA 1: Inicia com WH.", hint_2: "DICA 2: Termina com E.", options: [ { text: "Where", isCorrect: false, rationale: "Incorreto." }, { text: "Who", isCorrect: false, rationale: "Incorreto." }, { text: "Whose", isCorrect: true, rationale: "Correto! 'De quem' é 'Whose'." }, { text: "What", isCorrect: false, rationale: "Incorreto." } ] },
+                { type: 'mcq', question: "Como dizemos 'O carro do John' usando o Possessive Case?", topic: "Possessive Case", hint: "DICA 1: O dono vem primeiro.", hint_2: "DICA 2: Usamos o apóstrofo + S ('s).", options: [ { text: "The car John's", isCorrect: false, rationale: "Incorreto." }, { text: "John car", isCorrect: false, rationale: "Incorreto." }, { text: "Car's John", isCorrect: false, rationale: "Incorreto." }, { text: "John's car", isCorrect: true, rationale: "Correto! 'O carro do John' é 'John's car'." } ] },
+                { type: 'mcq', question: "Na família, o que a palavra 'Parents' significa em português?", topic: "Family", hint: "DICA 1: É um falso cognato (não significa parentes).", hint_2: "DICA 2: São o Father e a Mother juntos.", options: [ { text: "Pais (Pai e Mãe)", isCorrect: true, rationale: "Correto! 'Parents' significa Pais." }, { text: "Parentes em geral", isCorrect: false, rationale: "Incorreto." }, { text: "Avós", isCorrect: false, rationale: "Incorreto." }, { text: "Primos", isCorrect: false, rationale: "Incorreto." } ] },
+
+                // --- TRUE / FALSE (10 Questões) ---
+                { type: 'tf', question: "A palavra 'Ruler' é o material escolar que usamos para medir e traçar linhas (Régua).", topic: "School Supplies", hint: "DICA 1: Começa com R.", hint_2: "DICA 2: A afirmação está correta.", options: [ { text: "Falso", isCorrect: false, rationale: "Incorreto." }, { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Régua é 'Ruler'." } ], answer: true },
+                { type: 'tf', question: "Para fazermos a pergunta 'Há um globo?' usamos a estrutura 'Are there a globe?'.", topic: "There is / There are", hint: "DICA 1: 'Globe' é singular (apenas um).", hint_2: "DICA 2: Usamos o verbo 'Is' para singular.", options: [ { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, { text: "Falso", isCorrect: true, rationale: "Falso! O correto para singular é 'Is there a globe?'." } ], answer: false },
+                { type: 'tf', question: "A preposição 'Next to' significa que algo está muito longe.", topic: "Prepositions of Place", hint: "DICA 1: 'Next to' é sinônimo de 'Beside'.", hint_2: "DICA 2: Significa ao lado.", options: [ { text: "Falso", isCorrect: true, rationale: "Falso! 'Next to' significa perto/ao lado de." }, { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." } ], answer: false },
+                { type: 'tf', question: "Na cozinha, a palavra 'Stove' se refere à Geladeira.", topic: "Furniture & Appliances", hint: "DICA 1: O Stove fica quente.", hint_2: "DICA 2: É onde preparamos o fogo para as panelas.", options: [ { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, { text: "Falso", isCorrect: true, rationale: "Falso! 'Stove' significa Fogão." } ], answer: false },
+                { type: 'tf', question: "O pronome 'These are' é o plural de 'This is' e significa 'Estes são' ou 'Estas são'.", topic: "Demonstrative Pronouns", hint: "DICA 1: Usamos para vários objetos que estão perto.", hint_2: "DICA 2: A afirmação está certinha.", options: [ { text: "Falso", isCorrect: false, rationale: "Incorreto." }, { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'These are' significa Estes/Estas são." } ], answer: true },
+                { type: 'tf', question: "No Possessive Case, usamos o apóstrofo seguido de s ('s) para indicar posse.", topic: "Possessive Case", hint: "DICA 1: Vai logo após o nome do dono.", hint_2: "DICA 2: Como em 'Courtney's birthday'.", options: [ { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Usamos o 's para indicar que algo pertence a alguém." }, { text: "Falso", isCorrect: false, rationale: "Incorreto." } ], answer: true },
+                { type: 'tf', question: "O cômodo chamado 'Attic' é o sótão da casa.", topic: "Parts of a House", hint: "DICA 1: Fica na parte mais alta da casa.", hint_2: "DICA 2: É muito comum em casas americanas.", options: [ { text: "Falso", isCorrect: false, rationale: "Incorreto." }, { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Attic' significa Sótão." } ], answer: true },
+                { type: 'tf', question: "A 'Canteen' da escola é a quadra de esportes.", topic: "Places at School", hint: "DICA 1: A quadra de esportes é 'Sports gym'.", hint_2: "DICA 2: Na canteen compramos o lanche.", options: [ { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, { text: "Falso", isCorrect: true, rationale: "Falso! 'Canteen' é o refeitório/cantina." } ], answer: false },
+                { type: 'tf', question: "Para dizer 'Nós somos amigos' a conjugação certa é 'We is friends'.", topic: "Verb To Be", hint: "DICA 1: O pronome 'We' é plural.", hint_2: "DICA 2: Para o plural usamos 'Are'.", options: [ { text: "Falso", isCorrect: true, rationale: "Falso! A conjugação correta é 'We are'." }, { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." } ], answer: false },
+                { type: 'tf', question: "A preposição 'In front of' significa 'Na frente de'.", topic: "Prepositions of Place", hint: "DICA 1: As palavras são muito parecidas com o português.", hint_2: "DICA 2: A afirmação não contém erros.", options: [ { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'In front of' é Na frente de." }, { text: "Falso", isCorrect: false, rationale: "Incorreto." } ], answer: true },
+
+                // --- DRAG AND DROP (8 Questões) ---
+                { type: 'drag-drop', question: "O material escolar 'Borracha' em inglês é ______.", topic: "School Supplies", hint: "DICA 1: Usamos para apagar.", hint_2: "DICA 2: Começa com a letra E.", options: ["Pencil", "Eraser", "Sharpener"], answer: "Eraser", rationale: "Correto! Borracha é Eraser." },
+                { type: 'drag-drop', question: "A preposição que significa 'Atrás' é ______.", topic: "Prepositions of Place", hint: "DICA 1: Começa com B.", hint_2: "DICA 2: É o oposto de in front of.", options: ["Between", "On", "Behind"], answer: "Behind", rationale: "Correto! Atrás é Behind." },
+                { type: 'drag-drop', question: "Para dizer 'Há um gato' (singular afirmativo), usamos '______ a cat'.", topic: "There is / There are", hint: "DICA 1: É apenas um objeto ou animal.", hint_2: "DICA 2: Termina com 'is'.", options: ["There are", "There is", "Are there"], answer: "There is", rationale: "Correto! Para singular usamos There is." },
+                { type: 'drag-drop', question: "A 'cama de casal' no quarto em inglês é ______.", topic: "Furniture", hint: "DICA 1: Tem a palavra 'double' (dobro).", hint_2: "DICA 2: Termina com 'bed'.", options: ["Double bed", "Bunk beds", "Dresser"], answer: "Double bed", rationale: "Correto! Cama de casal é Double bed." },
+                { type: 'drag-drop', question: "O 'Banheiro' em inglês é ______.", topic: "Parts of a House", hint: "DICA 1: Tem 'room' no final.", hint_2: "DICA 2: A primeira parte lembra banho (bath).", options: ["Kitchen", "Bathroom", "Office"], answer: "Bathroom", rationale: "Correto! Banheiro é Bathroom." },
+                { type: 'drag-drop', question: "O pronome 'Aquele / Aquela' (singular, longe) é ______.", topic: "Demonstrative Pronouns", hint: "DICA 1: Acompanha o is.", hint_2: "DICA 2: Começa com THA.", options: ["This", "That", "Those"], answer: "That", rationale: "Correto! Aquele/Aquela é That." },
+                { type: 'drag-drop', question: "Para dizer 'A bicicleta do Pedro', escrevemos '______ bike'.", topic: "Possessive Case", hint: "DICA 1: O nome do dono vai primeiro.", hint_2: "DICA 2: Adicionamos o 's.", options: ["Pedro", "Pedro's", "Pedros'"], answer: "Pedro's", rationale: "Correto! Usamos o apóstrofo e o s (Pedro's)." },
+                { type: 'drag-drop', question: "O 'Laboratório de ciências' da escola é o ______.", topic: "Places at School", hint: "DICA 1: A primeira palavra é a matéria (Science).", hint_2: "DICA 2: A segunda palavra é abreviação de laboratório.", options: ["Computer room", "Playground", "Science lab"], answer: "Science lab", rationale: "Correto! É o Science lab." },
+
+                // --- FILL IN (7 Questões) ---
+                { type: 'fill-in', question: "Escreva em inglês o material escolar: Tesoura.", topic: "School Supplies", hint: "DICA 1: A palavra tem muitos 's'.", hint_2: "DICA 2: Começa com SC.", answer: ["scissors"], rationale: "Correto! Tesoura é scissors." },
+                { type: 'fill-in', question: "Escreva em inglês a preposição que significa 'Sobre/Em cima de'.", topic: "Prepositions of Place", hint: "DICA 1: Tem apenas 2 letras.", hint_2: "DICA 2: Começa com O.", answer: ["on"], rationale: "Correto! Sobre/Em cima é On." },
+                { type: 'fill-in', question: "Escreva a forma interrogativa (pergunta) para o plural: '______ ______ many students?' (Há muitos alunos?)", topic: "There is / There are", hint: "DICA 1: Invertemos o verbo e a palavra 'there'.", hint_2: "DICA 2: A primeira palavra é 'Are'.", answer: ["are there"], rationale: "Correto! A forma de pergunta no plural é Are there." },
+                { type: 'fill-in', question: "Escreva em inglês o cômodo da casa: Quarto.", topic: "Parts of a House", hint: "DICA 1: É o cômodo que tem a cama (bed).", hint_2: "DICA 2: Termina com 'room'.", answer: ["bedroom"], rationale: "Correto! Quarto é Bedroom." },
+                { type: 'fill-in', question: "Escreva em inglês o pronome demonstrativo para 'Estes / Estas' (plural, perto).", topic: "Demonstrative Pronouns", hint: "DICA 1: Acompanha o 'are'.", hint_2: "DICA 2: Começa com TH e termina com E.", answer: ["these"], rationale: "Correto! O pronome plural para perto é These." },
+                { type: 'fill-in', question: "Escreva a palavra interrogativa usada para perguntar 'De quem é': ______ is this bag?", topic: "Whose", hint: "DICA 1: Tem 5 letras.", hint_2: "DICA 2: Inicia com WH e termina com E.", answer: ["whose"], rationale: "Correto! A palavra é Whose." },
+                { type: 'fill-in', question: "Escreva em inglês o móvel: Pia (do banheiro ou cozinha).", topic: "Furniture", hint: "DICA 1: Tem apenas 4 letras.", hint_2: "DICA 2: Inicia com S e termina com K.", answer: ["sink"], rationale: "Correto! Pia é Sink." }
+            ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>
