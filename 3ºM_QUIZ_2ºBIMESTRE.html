@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO MÉDIO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO MÉDIO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+     		"472AM": "BEATRIZ", 
+                "819AS": "BRUNO",
+                "365AS": "ENDRIL", 
+                "294BS": "GABRIELLE",
+                "581BS": "GIOVANNA", 
+                "736DF": "ISABEL",
+                "158DG": "LAURA", 
+                "942EN": "MARIA CLARA",
+                "627ES": "MARIA EDUARDA", 
+                "301ES": "MELISSA",
+                "514HB": "MILLENA LEITE",
+	        "275HC": "MYLLENA FREIRE", 
+                "892HS": "NICOLLE",
+                "463HB": "PAULO", 
+	        "829BS": "REBECCA",
+                "371PY": "YASMIN", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- MULTIPLE CHOICE (25 Questões) ---
+        {
+            type: 'mcq',
+            question: "Na tira cômica, a expressão 'impossible to put down' referindo-se a um livro significa:",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: O livro é muito interessante.",
+            hint_2: "DICA 2: A pessoa não consegue parar a ação.",
+            options: [
+                { text: "Que o livro é pesado demais para segurar.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Que o livro é tão interessante que não se quer parar de ler (largar).", isCorrect: true, rationale: "Correto! 'Put down' é largar/soltar. Se é impossível largar, a leitura é cativante." },
+                { text: "Que o livro está colado na mesa.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Que o autor é impossível de entender.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O phrasal verb 'drift apart' é usado para descrever o que acontece com um casal quando:",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Pense em um barco sendo levado pela correnteza.",
+            hint_2: "DICA 2: Envolve o fim de um vínculo.",
+            options: [
+                { text: "Eles viajam juntos pelo mar.", isCorrect: false, rationale: "Incorreto." },
+                { text: "O relacionamento acaba ou se distanciam aos poucos.", isCorrect: true, rationale: "Correto! 'Drift apart' significa acabar o relacionamento ou se distanciar." },
+                { text: "Eles dormem profundamente.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Eles começam a brigar violentamente.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Na frase 'I'm afraid that I will have to turn down your invitation', o phrasal verb significa:",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: A pessoa não vai poder ir.",
+            hint_2: "DICA 2: É o oposto de aceitar.",
+            options: [
+                { text: "Abaixar o volume.", isCorrect: false, rationale: "Incorreto. É um dos significados, mas não neste contexto de convite." },
+                { text: "Aceitar com alegria.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Recusar um convite.", isCorrect: true, rationale: "Correto! 'Turn down an invitation' significa recusar." },
+                { text: "Adiar o evento.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O que o phrasal verb 'brush off' significa na frase: 'He just brushed it off'?",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Imagine tirar a poeira do ombro.",
+            hint_2: "DICA 2: Não dar importância a algo.",
+            options: [
+                { text: "Ignorar, dispensar ou não dar importância.", isCorrect: true, rationale: "Correto! Significa ignorar/dispensar algo." },
+                { text: "Escovar vigorosamente.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Gritar por ajuda.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Ficar ofendido.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual phrasal verb significa 'desistir ou entregar-se', frequentemente usado quando não sabemos a resposta de uma pergunta?",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Aparece na lousa quando falamos de 'surrender'.",
+            hint_2: "DICA 2: Tem duas palavras.",
+            options: [
+                { text: "Pull out", isCorrect: false, rationale: "Incorreto." },
+                { text: "Give up", isCorrect: true, rationale: "Correto! 'Give up' significa desistir/entregar-se." },
+                { text: "Break off", isCorrect: false, rationale: "Incorreto." },
+                { text: "Make up", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Na charge das mulheres se maquiando, 'make up' é usado como substantivo (maquiagem) e como verbo que significa:",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Ocorre depois de uma briga.",
+            hint_2: "DICA 2: Fazer as pazes.",
+            options: [
+                { text: "Reconciliar-se, pedir desculpas.", isCorrect: true, rationale: "Correto! Significa fazer as pazes após uma discussão." },
+                { text: "Inventar uma mentira.", isCorrect: false, rationale: "Incorreto. É um significado possível, mas não no contexto da charge." },
+                { text: "Desistir de algo.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Organizar a bolsa.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual das opções apresenta conectores (linkers) de ADIÇÃO?",
+            topic: "Linkers",
+            hint: "DICA 1: Eles acrescentam informação.",
+            hint_2: "DICA 2: Significam 'além disso', 'bem como'.",
+            options: [
+                { text: "Therefore, Hence, Thus", isCorrect: false, rationale: "Incorreto. Estes são de consequência." },
+                { text: "While, Whereas, Although", isCorrect: false, rationale: "Incorreto. Estes são de contraste/concessão." },
+                { text: "Because of, Due to, As a result of", isCorrect: false, rationale: "Incorreto. Estes indicam causa." },
+                { text: "Besides, Furthermore, Moreover", isCorrect: true, rationale: "Correto! São todos conectivos de adição." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O conector 'WHILE' pode ser usado para expressar simultaneidade e também:",
+            topic: "Linkers",
+            hint: "DICA 1: Veja a frase 'While respected, he is not liked.'",
+            hint_2: "DICA 2: Sinônimo de 'embora'.",
+            options: [
+                { text: "Consequência (Consequence)", isCorrect: false, rationale: "Incorreto." },
+                { text: "Concessão (Concession)", isCorrect: true, rationale: "Correto! 'While' pode indicar concessão/contraste." },
+                { text: "Exemplificação (Exemplification)", isCorrect: false, rationale: "Incorreto." },
+                { text: "Finalidade (Purpose)", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Na frase 'The company lost a great deal of money. HENCE, many employees were fired', o linker indica:",
+            topic: "Linkers",
+            hint: "DICA 1: Significa 'portanto' ou 'por isso'.",
+            hint_2: "DICA 2: É o resultado de perder dinheiro.",
+            options: [
+                { text: "Cause", isCorrect: false, rationale: "Incorreto." },
+                { text: "Addition", isCorrect: false, rationale: "Incorreto." },
+                { text: "Consequence", isCorrect: true, rationale: "Correto! 'Hence' indica consequência (resultado lógico)." },
+                { text: "Purpose", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Quais conectores são usados para indicar PROPÓSITO (Finalidade)?",
+            topic: "Linkers",
+            hint: "DICA 1: Significam 'a fim de' ou 'para que'.",
+            hint_2: "DICA 2: Respondem 'Para qual finalidade?'.",
+            options: [
+                { text: "So that, in order to, so as to", isCorrect: true, rationale: "Correto! Todos expressam o propósito de uma ação." },
+                { text: "Because of, due to", isCorrect: false, rationale: "Incorreto. Estes indicam causa." },
+                { text: "Such as, for example", isCorrect: false, rationale: "Incorreto. Estes são para exemplificação." },
+                { text: "Whereas, although", isCorrect: false, rationale: "Incorreto. Estes são de contraste." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual forma verbal devemos usar após preposições (in, on, at, for, about, without)?",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Ex: 'My friend left without... goodbye.'",
+            hint_2: "DICA 2: A terminação é '-ing'.",
+            options: [
+                { text: "Infinitive with 'to'", isCorrect: false, rationale: "Incorreto." },
+                { text: "Bare Infinitive", isCorrect: false, rationale: "Incorreto." },
+                { text: "Gerund (-ing)", isCorrect: true, rationale: "Correto! Após preposições usa-se sempre o gerúndio." },
+                { text: "Past Participle", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Complete a frase corretamente: 'She finished _______ the book two minutes ago.'",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: O verbo 'finish' exige uma forma específica.",
+            hint_2: "DICA 2: É a mesma regra para o verbo 'enjoy'.",
+            options: [
+                { text: "to read", isCorrect: false, rationale: "Incorreto." },
+                { text: "reading", isCorrect: true, rationale: "Correto! Verbos como stop, finish, enjoy são seguidos por gerúndio." },
+                { text: "read", isCorrect: false, rationale: "Incorreto." },
+                { text: "reads", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Nas expressões idiomáticas 'can't stand' (não suporto) e 'look forward to' (aguardo ansiosamente), o verbo seguinte deve estar no:",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Ex: 'I can't stand wait____ for you.'",
+            hint_2: "DICA 2: A forma termina com '-ing'.",
+            options: [
+                { text: "Gerúndio (-ing)", isCorrect: true, rationale: "Correto! Expressões como 'can't stand' e 'it's worth' exigem gerúndio." },
+                { text: "Infinitivo", isCorrect: false, rationale: "Incorreto." },
+                { text: "Passado Simples", isCorrect: false, rationale: "Incorreto." },
+                { text: "Particípio Passado", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Após as palavras 'TOO' e 'ENOUGH' (Ex: She is too young / She isn't old enough), usamos o:",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Refere-se à capacidade/possibilidade para agir.",
+            hint_2: "DICA 2: Leva a partícula 'to'.",
+            options: [
+                { text: "Gerúndio", isCorrect: false, rationale: "Incorreto." },
+                { text: "Infinitivo (com 'to')", isCorrect: true, rationale: "Correto! Após too/enough usamos infinitivo com to (ex: too young to drive)." },
+                { text: "Bare Infinitive", isCorrect: false, rationale: "Incorreto." },
+                { text: "Verbo base no plural", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual é a diferença de significado entre 'Daniel stopped smoking' e 'Daniel stopped to smoke'?",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Um significa que ele abandonou o vício.",
+            hint_2: "DICA 2: O outro significa que ele pausou o que estava fazendo para acender um cigarro.",
+            options: [
+                { text: "Nenhuma, ambas significam abandonar o vício.", isCorrect: false, rationale: "Incorreto." },
+                { text: "A primeira significa 'abandonou o vício' e a segunda 'parou (algo) para fumar'.", isCorrect: true, rationale: "Correto! Stop + gerúndio = interromper a ação; Stop + infinitivo = pausar para iniciar a ação." },
+                { text: "A primeira significa fumar escondido e a segunda fumar em público.", isCorrect: false, rationale: "Incorreto." },
+                { text: "A primeira é passado e a segunda é futuro.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Para expressar capacidade ou habilidade (capacity or ability), como 'She can speak German well', qual verbo modal usamos?",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Sinônimo de 'be able to'.",
+            hint_2: "DICA 2: É o modal mais comum no inglês básico.",
+            options: [
+                { text: "Should", isCorrect: false, rationale: "Incorreto." },
+                { text: "May", isCorrect: false, rationale: "Incorreto." },
+                { text: "Can (ou Could no passado)", isCorrect: true, rationale: "Correto! 'Can' e 'Could' expressam habilidade física ou intelectual." },
+                { text: "Must", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual verbo modal é usado para indicar PROIBIÇÃO (Prohibition)? Ex: 'You _____ smoke in the classroom.'",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Indica que algo é estritamente proibido pelas regras.",
+            hint_2: "DICA 2: É a negativa de forte obrigação.",
+            options: [
+                { text: "mustn't / can't", isCorrect: true, rationale: "Correto! 'Mustn't' e 'Can't' expressam proibição clara." },
+                { text: "don't have to", isCorrect: false, rationale: "Incorreto. Isso indica 'falta de necessidade' (não é obrigado)." },
+                { text: "might not", isCorrect: false, rationale: "Incorreto." },
+                { text: "wouldn't", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Se quisermos expressar CONSELHO (Advice), como 'People _____ drive more carefully', usamos:",
+            topic: "Modal Verbs",
+            hint: "DICA 1: 'Você deveria...'",
+            hint_2: "DICA 2: Pode ser substituído por 'ought to'.",
+            options: [
+                { text: "might", isCorrect: false, rationale: "Incorreto." },
+                { text: "must", isCorrect: false, rationale: "Incorreto." },
+                { text: "should / ought to", isCorrect: true, rationale: "Correto! Ambos são clássicos para dar conselhos ou recomendações." },
+                { text: "would rather", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "A estrutura MODAL + HAVE + PARTICIPLE na frase 'We shouldn't have invited him to the party' expressa:",
+            topic: "Modal Verbs",
+            hint: "DICA 1: A ação já aconteceu no passado.",
+            hint_2: "DICA 2: A pessoa se arrependeu.",
+            options: [
+                { text: "Deduction (Dedução lógica)", isCorrect: false, rationale: "Incorreto." },
+                { text: "Regret (Arrependimento)", isCorrect: true, rationale: "Correto! 'Should have' indica que algo deveria ter sido diferente no passado." },
+                { text: "Possibility (Possibilidade)", isCorrect: false, rationale: "Incorreto." },
+                { text: "Expectation (Expectativa)", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "De acordo com o texto 'No equality for working women', o termo 'gender gap' significa:",
+            topic: "Text Comprehension",
+            hint: "DICA 1: Refere-se à diferença de oportunidades/salários.",
+            hint_2: "DICA 2: É o foco principal da pesquisa do Banco Mundial.",
+            options: [
+                { text: "Violência doméstica", isCorrect: false, rationale: "Incorreto." },
+                { text: "Disparidade / desigualdade de gênero", isCorrect: true, rationale: "Correto! 'Gender gap' refere-se à diferença sistemática entre homens e mulheres." },
+                { text: "Cuidado infantil (Childcare)", isCorrect: false, rationale: "Incorreto." },
+                { text: "Lei de proteção", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O texto 'Why Do We Age?' menciona 'wear and tear'. O que isso significa?",
+            topic: "Text Comprehension",
+            hint: "DICA 1: Acontece com nossas células e com motores de carro.",
+            hint_2: "DICA 2: Causado pelo uso contínuo ao longo do tempo.",
+            options: [
+                { text: "Desgaste natural provocado pelo uso/tempo", isCorrect: true, rationale: "Correto! Refere-se aos danos normais sofridos por células ao longo dos anos." },
+                { text: "Roupa rasgada", isCorrect: false, rationale: "Incorreto." },
+                { text: "Doença genética incurável", isCorrect: false, rationale: "Incorreto." },
+                { text: "Mutação de DNA instantânea", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O verbo 'afford' na frase 'No country in the world affords women the same opportunities' significa:",
+            topic: "Vocabulary",
+            hint: "DICA 1: É frequentemente usado com dinheiro.",
+            hint_2: "DICA 2: Neste contexto, significa 'proporcionar' ou 'dar o luxo de'.",
+            options: [
+                { text: "Negar categoricamente.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Ter condições de oferecer / Proporcionar.", isCorrect: true, rationale: "Correto! 'Afford' significa poder fornecer ou ter condições de sustentar algo." },
+                { text: "Atacar fisicamente.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Investir na bolsa de valores.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "O que significa 'neuroplasticity' no texto 'Am I too old to learn a new language?'?",
+            topic: "Text Comprehension",
+            hint: "DICA 1: É o motivo pelo qual adultos têm dificuldade de aprender coisas novas.",
+            hint_2: "DICA 2: Ela diminui com a idade.",
+            options: [
+                { text: "A capacidade do cérebro de se alterar em resposta a experiências.", isCorrect: true, rationale: "Correto! É a capacidade adaptativa do cérebro ('highly dynamic structure')." },
+                { text: "A parte fixa e irreparável do cérebro adulto.", isCorrect: false, rationale: "Incorreto." },
+                { text: "A técnica de pronúncia de uma nova língua.", isCorrect: false, rationale: "Incorreto." },
+                { text: "O sotaque natural (accent) de uma criança.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Na frase 'The bride is supposed to wear white', a expressão 'supposed to' indica:",
+            topic: "Modal Verbs",
+            hint: "DICA 1: É algo que a sociedade aguarda que aconteça.",
+            hint_2: "DICA 2: Espera-se que...",
+            options: [
+                { text: "Habilidade do passado.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Expectativa (Expectation).", isCorrect: true, rationale: "Correto! Indica que algo é o comportamento esperado ou a regra padrão." },
+                { text: "Proibição estrita.", isCorrect: false, rationale: "Incorreto." },
+                { text: "Arrependimento.", isCorrect: false, rationale: "Incorreto." }
+            ]
+        },
+        {
+            type: 'mcq',
+            question: "Qual linker usamos para dar EXEMPLIFICAÇÃO? Ex: 'Costs _____ travel and accommodation.'",
+            topic: "Linkers",
+            hint: "DICA 1: Como, tais como.",
+            hint_2: "DICA 2: Formado por duas palavras começando com 's'.",
+            options: [
+                { text: "therefore", isCorrect: false, rationale: "Incorreto." },
+                { text: "while", isCorrect: false, rationale: "Incorreto." },
+                { text: "due to", isCorrect: false, rationale: "Incorreto." },
+                { text: "such as", isCorrect: true, rationale: "Correto! 'Such as', 'like', e 'for example' introduzem exemplos." }
+            ]
+        },
+
+        // --- TRUE / FALSE (15 Questões) ---
+        {
+            type: 'tf',
+            question: "O phrasal verb 'back up' (ex: back up plan) significa 'plano B' ou um recurso de segurança.",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Pense em fazer o 'backup' dos seus arquivos.",
+            hint_2: "DICA 2: Tem a ver com segurança extra.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Correto! Um 'back up plan' é um plano alternativo." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "O phrasal verb 'break off' significa começar a namorar ou casar-se.",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: 'Break' significa quebrar.",
+            hint_2: "DICA 2: Ela 'broke it off' com o namorado de perna de pau da piada.",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Break off' significa separar-se ou terminar um relacionamento." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "Os conectores 'BESIDES' e 'MOREOVER' são usados para indicar adição / inclusão em uma frase.",
+            topic: "Linkers",
+            hint: "DICA 1: Servem para somar informações.",
+            hint_2: "DICA 2: A afirmação é correta estruturalmente.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Pertencem à mesma categoria de 'furthermore' (adição)." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "O conector 'THEREFORE' (portanto) estabelece uma relação de finalidade / propósito (Purpose).",
+            topic: "Linkers",
+            hint: "DICA 1: Indica o resultado lógico de um evento anterior.",
+            hint_2: "DICA 2: Pertence à mesma família que 'hence' e 'so'.",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Therefore' indica CONSEQUÊNCIA (Consequence), não propósito." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "Para formar a proibição curta em placas como 'Não Fume' e 'Proibido Ultrapassar', o inglês usa a palavra 'NO' seguida de Gerúndio (ex: NO SMOKING).",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Pense nas placas internacionais.",
+            hint_2: "DICA 2: É uma regra clássica descrita no material.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Usamos No + Gerúndio para short prohibitions (No smoking, No trespassing)." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "Após as palavras 'make' e 'let' (ex: 'The teacher let us leave early'), devemos usar o Infinitivo com 'to'.",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Verifique a frase de exemplo: não há 'to'.",
+            hint_2: "DICA 2: 'Let it be', não 'Let it to be'.",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! Após let/make usa-se o 'Bare Infinitive' (infinitivo sem to)." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "A frase 'Someone must have dropped a cigarette' usa a estrutura Modal + Have + Participle para expressar uma dedução sobre o passado.",
+            topic: "Modal Verbs",
+            hint: "DICA 1: 'Alguém deve ter deixado cair...'",
+            hint_2: "DICA 2: É uma conclusão lógica baseada em evidências do incêndio.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Must have + participle' é usado para deduções muito prováveis no passado." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "A expressão 'don't have to' e o modal 'mustn't' têm exatamente o mesmo significado de proibição absoluta.",
+            topic: "Modal Verbs",
+            hint: "DICA 1: 'You mustn't do that' = É proibido.",
+            hint_2: "DICA 2: 'You don't have to do that' = Você não precisa fazer (mas pode se quiser).",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Mustn't' é proibição; 'don't have to' é ausência de obrigação (não é necessário)." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "Na estrutura 'I am used to smoking', o 'used to' indica um hábito presente que a pessoa adquiriu.",
+            topic: "Modal Verbs",
+            hint: "DICA 1: O verbo 'to be' (am) vem antes de 'used to'.",
+            hint_2: "DICA 2: O verbo principal termina em '-ing'.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Be used to + gerund' indica um hábito presente (estar acostumado a)." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "O modal 'MAY' (ex: May the force be with you) pode ser usado para expressar desejos ou esperanças (wish or hope).",
+            topic: "Modal Verbs",
+            hint: "DICA 1: É uma expressão clássica de votos positivos.",
+            hint_2: "DICA 2: A afirmação reflete o uso formal do 'may'.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'May' frequentemente inicia frases expressando desejos ou preces." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "O linker 'AS WELL AS' tem a função gramatical de expressar oposição/contraste.",
+            topic: "Linkers",
+            hint: "DICA 1: Traduz-se como 'assim como' ou 'bem como'.",
+            hint_2: "DICA 2: É da mesma família que 'and'.",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'As well as' é um conectivo de adição (Addition), não contraste." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "Segundo o texto 'Why Do We Age?', 'breakthrough' é uma expressão comum usada para indicar uma grande descoberta ou avanço científico.",
+            topic: "Text Comprehension",
+            hint: "DICA 1: Pense em 'quebrar uma barreira'.",
+            hint_2: "DICA 2: O Nobel usou essa palavra para descrever avanços nas curas.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Breakthrough' significa uma descoberta ou avanço importante." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+        {
+            type: 'tf',
+            question: "No termo 'would rather' (ex: She would rather stay home), a intenção é dar uma ordem imperativa forte.",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Traduz-se como 'preferiria'.",
+            hint_2: "DICA 2: É sobre o gosto da pessoa, não uma regra.",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Would rather' expressa uma PREFERÊNCIA, não obrigação ou ordem." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "Após a preposição de finalidade 'SO AS TO' devemos usar o verbo no gerúndio.",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: A expressão tem o 'to' no final.",
+            hint_2: "DICA 2: Ex: 'We started early so as to avoid the traffic.'",
+            options: [
+                { text: "Falso", isCorrect: true, rationale: "Falso! Após 'so as to' e 'in order to' usa-se a forma base do verbo (infinitive)." },
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: false
+        },
+        {
+            type: 'tf',
+            question: "O pronome 'used to' no passado refere-se a algo que a pessoa tinha o costume de fazer, mas que não faz mais.",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Ex: 'Sam used to smoke, but now he has stopped.'",
+            hint_2: "DICA 2: Trata-se de um 'past habit'.",
+            options: [
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Used to' sem o verbo 'to be' expressa um hábito do passado que não existe mais." },
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }
+            ],
+            answer: true
+        },
+
+        // --- DRAG AND DROP (10 Questões) ---
+        {
+            type: 'drag-drop',
+            question: "I am saving money _______ I can buy a new car. (Para que)",
+            topic: "Linkers",
+            hint: "DICA 1: É formado por duas palavras.",
+            hint_2: "DICA 2: Inicia uma oração inteira (sujeito + verbo).",
+            options: ["due to", "so that", "because of"],
+            answer: "so that",
+            rationale: "Correto! 'So that' expressa propósito seguido de uma oração."
+        },
+        {
+            type: 'drag-drop',
+            question: "Evening classes were canceled ________ heavy snow. (Devido a)",
+            topic: "Linkers",
+            hint: "DICA 1: Indica a causa.",
+            hint_2: "DICA 2: Não use 'therefore'.",
+            options: ["due to", "therefore", "although"],
+            answer: "due to",
+            rationale: "Correto! 'Due to' introduz a causa direta."
+        },
+        {
+            type: 'drag-drop',
+            question: "She is too young _______ a car. (Dirigir)",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Após 'too', a regra pede infinitivo completo.",
+            hint_2: "DICA 2: Deve ter o 'to'.",
+            options: ["driving", "to drive", "drive"],
+            answer: "to drive",
+            rationale: "Correto! Após 'too' ou 'enough' usa-se infinitivo com to."
+        },
+        {
+            type: 'drag-drop',
+            question: "Do you mind ________ the door, please? (Fechar)",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: O verbo 'mind' obriga a próxima palavra a levar '-ing'.",
+            hint_2: "DICA 2: Tem terminação '-ing'.",
+            options: ["to close", "close", "closing"],
+            answer: "closing",
+            rationale: "Correto! Verbos como mind, enjoy e avoid são seguidos de gerúndio."
+        },
+        {
+            type: 'drag-drop',
+            question: "They ________ to study hard. (Forte necessidade/Obrigação)",
+            topic: "Modal Verbs",
+            hint: "DICA 1: A palavra 'to' já está na frase, logo, o modal deve aceitar 'to'.",
+            hint_2: "DICA 2: 'Must' não aceita 'to'.",
+            options: ["must", "can", "have"],
+            answer: "have",
+            rationale: "Correto! 'Have to' expressa necessidade e acompanha a preposição 'to'."
+        },
+        {
+            type: 'drag-drop',
+            question: "You ________ better leave a note so they'll know. (Conselho)",
+            topic: "Modal Verbs",
+            hint: "DICA 1: A estrutura inteira significa 'é melhor'.",
+            hint_2: "DICA 2: Acompanha a palavra 'better'.",
+            options: ["would", "had", "should"],
+            answer: "had",
+            rationale: "Correto! A expressão de conselho forte é 'had better'."
+        },
+        {
+            type: 'drag-drop',
+            question: "He ________ be tired, he has been driving all day. (Dedução)",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Há 99% de certeza de que ele está cansado.",
+            hint_2: "DICA 2: Indica forte dedução afirmativa.",
+            options: ["must", "can", "might"],
+            answer: "must",
+            rationale: "Correto! 'Must' é usado para deduções muito prováveis."
+        },
+        {
+            type: 'drag-drop',
+            question: "If you _________ him to the party, the house wouldn't be destroyed. (Arrependimento)",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Não deveríamos tê-lo convidado.",
+            hint_2: "DICA 2: É negativo e se refere ao passado.",
+            options: ["shouldn't have invited", "must have invited", "can't invite"],
+            answer: "shouldn't have invited",
+            rationale: "Correto! 'Shouldn't have + past participle' expressa arrependimento."
+        },
+        {
+            type: 'drag-drop',
+            question: "Scientists are hoping for a _________ in the search for a cure for cancer. (Avanço/Descoberta)",
+            topic: "Text Comprehension",
+            hint: "DICA 1: Pense em romper um limite.",
+            hint_2: "DICA 2: Palavra composta usada em pesquisa médica.",
+            options: ["breakthrough", "framework", "gap"],
+            answer: "breakthrough",
+            rationale: "Correto! Breakthrough é a quebra de barreira científica/avanço."
+        },
+        {
+            type: 'drag-drop',
+            question: "O termo 'gender ______' refere-se à desigualdade no ambiente de trabalho.",
+            topic: "Vocabulary",
+            hint: "DICA 1: Significa fosso ou lacuna.",
+            hint_2: "DICA 2: Tem três letras.",
+            options: ["gap", "rate", "pace"],
+            answer: "gap",
+            rationale: "Correto! 'Gender gap' é a disparidade entre gêneros."
+        },
+
+        // --- FILL IN (10 Questões) ---
+        {
+            type: 'fill-in',
+            question: "A palavra '_______' é usada como o phrasal verb para dizer que alguém faleceu/morreu. (Dica: Pass ____).",
+            topic: "Phrasal Verbs",
+            hint: "DICA 1: Significa 'ir embora' definitivamente.",
+            hint_2: "DICA 2: Começa com 'a'.",
+            answer: ["away", "Away"],
+            rationale: "Correto! 'Pass away' é o eufemismo para morrer (falecer)."
+        },
+        {
+            type: 'fill-in',
+            question: "Complete o linker de adição (Além disso): '_______ addition to being a student, she is a teacher.'",
+            topic: "Linkers",
+            hint: "DICA 1: Tem apenas duas letras.",
+            hint_2: "DICA 2: A preposição 'in'.",
+            answer: ["In", "in"],
+            rationale: "Correto! A expressão completa é 'In addition to'."
+        },
+        {
+            type: 'fill-in',
+            question: "Complete: 'Profits have declined as a _______ of the recent drop in sales.' (Como resultado de)",
+            topic: "Linkers",
+            hint: "DICA 1: Significa 'consequência'.",
+            hint_2: "DICA 2: Começa com 'r'.",
+            answer: ["result", "Result"],
+            rationale: "Correto! A expressão de causa é 'as a result of'."
+        },
+        {
+            type: 'fill-in',
+            question: "I _______ smoking last year (Eu parei permanentemente de fumar no ano passado). (Dica: verbo com 4 letras, começa com Q)",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Tem o mesmo sentido de parar.",
+            hint_2: "DICA 2: Exige gerúndio em seguida.",
+            answer: ["quit", "Quit"],
+            rationale: "Correto! 'Quit' exige o verbo seguinte no gerúndio."
+        },
+        {
+            type: 'fill-in',
+            question: "It's _______ studying hard to pass the final exams. (Vale a pena).",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Começa com W.",
+            hint_2: "DICA 2: Tem 5 letras.",
+            answer: ["worth", "Worth"],
+            rationale: "Correto! 'It's worth' (vale a pena) deve ser seguido por gerúndio."
+        },
+        {
+            type: 'fill-in',
+            question: "He was the first _______ win the game. (Regra após 'ordinal numbers')",
+            topic: "Gerund and Infinitive",
+            hint: "DICA 1: Partícula do infinitivo.",
+            hint_2: "DICA 2: Tem duas letras.",
+            answer: ["to", "To"],
+            rationale: "Correto! Após números ordinais (first, second), usamos o infinitivo com 'to'."
+        },
+        {
+            type: 'fill-in',
+            question: "I ________ rather stay home than go out tonight. (Preferiria).",
+            topic: "Modal Verbs",
+            hint: "DICA 1: Funciona em par com 'rather'.",
+            hint_2: "DICA 2: Indica preferência pessoal.",
+            answer: ["would", "Would"],
+            rationale: "Correto! 'Would rather' expressa preferência."
+        },
+        {
+            type: 'fill-in',
+            question: "A palavra para 'Dano provocado por uso contínuo' (wear and _____)",
+            topic: "Vocabulary",
+            hint: "DICA 1: Tem 4 letras.",
+            hint_2: "DICA 2: Também significa chorar ou rasgar.",
+            answer: ["tear", "Tear"],
+            rationale: "Correto! A expressão completa de desgaste é 'wear and tear'."
+        },
+        {
+            type: 'fill-in',
+            question: "O texto fala que o cérebro não é uma estrutura irreparável. 'Fixed _______' (estrutura fixa)",
+            topic: "Vocabulary",
+            hint: "DICA 1: Começa com S.",
+            hint_2: "DICA 2: Significa esqueleto base, construção.",
+            answer: ["structure", "Structure"],
+            rationale: "Correto! O texto discute a plasticidade da 'estrutura' do cérebro ('fixed structure')."
+        },
+        {
+            type: 'fill-in',
+            question: "O personagem do cartum diz que não fala a gíria. 'I ONLY _______ ENGLISH!' (Falo).",
+            topic: "Cartoons",
+            hint: "DICA 1: É o verbo de comunicação oral de idioma.",
+            hint_2: "DICA 2: Começa com 's'.",
+            answer: ["speak", "Speak"],
+            rationale: "Correto! O cartum brinca com as gírias londrinas dizendo 'I only speak English!'."
+        }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>
