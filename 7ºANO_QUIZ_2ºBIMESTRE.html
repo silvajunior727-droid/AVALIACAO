@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 7º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 7º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472AM": "ANA JULIA", 
+                "819AS": "DAVI GONÇALVES",
+                "365AS": "DAVI RIBEIRO", 
+                "294BS": "DAVI SAMUEL",
+                "581BS": "FELIPE", 
+                "736DF": "HENRIQUE",
+                "158DG": "LORENZO", 
+                "942EN": "MARCOS",
+                "627ES": "MARIANNA", 
+                "301ES": "MATHEUS",
+                "514HB": "MELISSA", 
+                "892HS": "VITORIA",
+                "463HB": "WANIELLY", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- MULTIPLE CHOICE (20 Questões) ---
+        { 
+            type: 'mcq', 
+            question: "Como conjugamos o verbo 'study' para o sujeito 'He' no Simple Present?", 
+            topic: "Simple Present", 
+            hint: "DICA 1: Termina em consoante + Y.", 
+            hint_2: "DICA 2: Trocamos o Y por IES.", 
+            options: [ 
+                { text: "He study", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "He studies", isCorrect: true, rationale: "Correto! Na terceira pessoa do singular, 'study' vira 'studies'." }, 
+                { text: "He studyes", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "He studying", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual verbo auxiliar negativo usamos para 'I, you, we, they' no Simple Present?", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: É a contração de 'do' + 'not'.", 
+            hint_2: "DICA 2: A palavra tem 5 letras.", 
+            options: [ 
+                { text: "doesn't", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "isn't", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "don't", isCorrect: true, rationale: "Correto! Usamos 'don't' para estes pronomes." }, 
+                { text: "aren't", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Como dizemos 'Ela não nada bem' em inglês?", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: Para 'She' usamos o auxiliar com 'es'.", 
+            hint_2: "DICA 2: O auxiliar é 'doesn't'.", 
+            options: [ 
+                { text: "She don't swim well.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "She doesn't swim well.", isCorrect: true, rationale: "Correto! Para 'She', usamos 'doesn't'." }, 
+                { text: "She isn't swim well.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "She doesn't swims well.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual verbo auxiliar usamos para fazer perguntas com 'He' no Simple Present?", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: O auxiliar começa com D e termina com S.", 
+            hint_2: "DICA 2: É usado para he, she, it.", 
+            options: [ 
+                { text: "Do", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Are", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Does", isCorrect: true, rationale: "Correto! 'Does' é o auxiliar interrogativo para 'he'." }, 
+                { text: "Is", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Complete: '_____ you work out?'", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: O sujeito é 'you'.", 
+            hint_2: "DICA 2: O auxiliar tem apenas 2 letras.", 
+            options: [ 
+                { text: "Does", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Are", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Do", isCorrect: true, rationale: "Correto! Usamos 'Do' para o pronome 'you'." }, 
+                { text: "Have", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual é a Short Answer afirmativa correta para 'Do you have free time?'", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: Você deve responder com 'Yes' e o mesmo auxiliar da pergunta.", 
+            hint_2: "DICA 2: A resposta termina com 'do'.", 
+            options: [ 
+                { text: "Yes, I does.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Yes, I am.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Yes, I do.", isCorrect: true, rationale: "Correto! A resposta é 'Yes, I do'." }, 
+                { text: "Yes, you have.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual é a profissão da pessoa que 'fixes cars' (conserta carros)?", 
+            topic: "Professions", 
+            hint: "DICA 1: A palavra é parecida com o português.", 
+            hint_2: "DICA 2: Começa com M.", 
+            options: [ 
+                { text: "Doctor", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Plumber", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Mechanic", isCorrect: true, rationale: "Correto! O Mechanic conserta os carros." }, 
+                { text: "Barber", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "A pessoa que atende mesas em um restaurante é a(o):", 
+            topic: "Professions", 
+            hint: "DICA 1: A opção correta é a versão feminina de garçom.", 
+            hint_2: "DICA 2: Começa com W.", 
+            options: [ 
+                { text: "Secretary", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Waitress", isCorrect: true, rationale: "Correto! Waitress é garçonete." }, 
+                { text: "Salesperson", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Police officer", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual o nome da profissão que cuida do encanamento (repairs pipes)?", 
+            topic: "Professions", 
+            hint: "DICA 1: A letra B é muda na pronúncia.", 
+            hint_2: "DICA 2: Começa com P.", 
+            options: [ 
+                { text: "Plumber", isCorrect: true, rationale: "Correto! Plumber é encanador." }, 
+                { text: "Barber", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Chef", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Firefighter", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O profissional que ajuda pessoas em perigo é o:", 
+            topic: "Professions", 
+            hint: "DICA 1: Mantém a ordem e a lei.", 
+            hint_2: "DICA 2: São duas palavras.", 
+            options: [ 
+                { text: "Hair stylist", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Doctor", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Police officer", isCorrect: true, rationale: "Correto! Police officer ajuda quem está em perigo." }, 
+                { text: "Secretary", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual pronome interrogativo usamos para perguntar 'Onde'? (Ex: ___ do you work?)", 
+            topic: "Question Words", 
+            hint: "DICA 1: Tem 5 letras.", 
+            hint_2: "DICA 2: Começa com 'Wh'.", 
+            options: [ 
+                { text: "When", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Who", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Where", isCorrect: true, rationale: "Correto! 'Where' significa Onde." }, 
+                { text: "What", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Como perguntamos 'Com que frequência' em inglês?", 
+            topic: "Question Words", 
+            hint: "DICA 1: São duas palavras.", 
+            hint_2: "DICA 2: A primeira palavra é 'How'.", 
+            options: [ 
+                { text: "How long", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "How often", isCorrect: true, rationale: "Correto! 'How often' indica frequência." }, 
+                { text: "What time", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Why", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Para perguntar 'Quem', usamos:", 
+            topic: "Question Words", 
+            hint: "DICA 1: É uma palavra curta, com 3 letras.", 
+            hint_2: "DICA 2: Termina com a letra O.", 
+            options: [ 
+                { text: "Who", isCorrect: true, rationale: "Correto! 'Who' significa Quem." }, 
+                { text: "How", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Why", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "What", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Se respondemos com 'Because', a pergunta começou com:", 
+            topic: "Question Words", 
+            hint: "DICA 1: Significa 'Por que?'.", 
+            hint_2: "DICA 2: Tem 3 letras e começa com 'Wh'.", 
+            options: [ 
+                { text: "When", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Where", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Why", isCorrect: true, rationale: "Correto! Perguntamos com 'Why' e respondemos com 'Because'." }, 
+                { text: "Who", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "A frase 'Mantenha a calma' no Imperativo fica:", 
+            topic: "Imperative", 
+            hint: "DICA 1: O verbo é a primeira palavra da frase.", 
+            hint_2: "DICA 2: Não leva o 'to' nem o 's'.", 
+            options: [ 
+                { text: "Keeps calm!", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "To keep calm!", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Keep calm!", isCorrect: true, rationale: "Correto! Começamos a frase com o verbo na forma base." }, 
+                { text: "Keeping calm!", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "No Imperativo Negativo, como dizemos 'Não mastigue chiclete'?", 
+            topic: "Imperative", 
+            hint: "DICA 1: Começa com o auxiliar de negação.", 
+            hint_2: "DICA 2: A primeira palavra é 'Don't'.", 
+            options: [ 
+                { text: "Doesn't chew gum!", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Not chew gum!", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Don't chew gum!", isCorrect: true, rationale: "Correto! O Imperativo Negativo começa com 'Don't'." }, 
+                { text: "No chew gum!", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O que significa 'Environment' em português?", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Refere-se à natureza e ao nosso redor.", 
+            hint_2: "DICA 2: A Terra faz parte dele.", 
+            options: [ 
+                { text: "Poluição", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Meio ambiente", isCorrect: true, rationale: "Correto! 'Environment' é Meio ambiente." }, 
+                { text: "Reciclagem", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Árvores", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual das palavras significa 'Lixo' em inglês?", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Tem 5 letras.", 
+            hint_2: "DICA 2: Termina com 'sh'.", 
+            options: [ 
+                { text: "Trash", isCorrect: true, rationale: "Correto! Lixo é 'Trash'." }, 
+                { text: "Tree", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Earth", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Ocean", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual palavra significa 'Terra' (planeta) no caça-palavras de Earth Day?", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Começa com E.", 
+            hint_2: "DICA 2: É o nome do nosso planeta.", 
+            options: [ 
+                { text: "Energy", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Earth", isCorrect: true, rationale: "Correto! Terra é 'Earth'." }, 
+                { text: "Global", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Nature", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Como se diz 'Médico' em inglês?", 
+            topic: "Professions", 
+            hint: "DICA 1: É uma palavra muito similar ao português.", 
+            hint_2: "DICA 2: Começa com a letra D.", 
+            options: [ 
+                { text: "Doctor", isCorrect: true, rationale: "Correto! Médico é Doctor." }, 
+                { text: "Plumber", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Barber", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Secretary", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+
+        // --- TRUE / FALSE (15 Questões) ---
+        { 
+            type: 'tf', 
+            question: "A frase 'The baby cries' está certa porque 'cry' muda para 'cries' na terceira pessoa (he/she/it).", 
+            topic: "Simple Present", 
+            hint: "DICA 1: A regra diz que verbos terminados em consoante + Y trocam o Y por IES.", 
+            hint_2: "DICA 2: The baby = He ou She.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! O Y vira IES." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "Para o sujeito 'She', o negativo do Simple Present é 'She don't'.", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: Lembre-se que 'She' usa o auxiliar que tem 'es'.", 
+            hint_2: "DICA 2: A forma correta é 'doesn't'.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! O correto é 'She doesn't'." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "Na forma interrogativa, usamos 'Do' para I, you, we, they.", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: Pense em 'Do you like...?'.", 
+            hint_2: "DICA 2: A regra está correta.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Usamos 'Do' para esses pronomes." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "A profissão 'Plumber' significa policial.", 
+            topic: "Professions", 
+            hint: "DICA 1: Plumber trabalha com encanamentos.", 
+            hint_2: "DICA 2: Policial é Police Officer.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! Plumber é encanador." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "Um 'Mechanic' trabalha consertando carros.", 
+            topic: "Professions", 
+            hint: "DICA 1: A tradução de 'Mechanic' é mecânico.", 
+            hint_2: "DICA 2: A afirmação está correta.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Mechanic fixes cars'." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "A Question Word 'Who' é usada para perguntar sobre lugares (Onde).", 
+            topic: "Question Words", 
+            hint: "DICA 1: 'Who' pergunta 'Quem'.", 
+            hint_2: "DICA 2: Para lugares, usamos 'Where'.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Who' significa Quem. Onde é 'Where'." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "'Why' é a palavra interrogativa usada para descobrir o motivo de algo (Por que).", 
+            topic: "Question Words", 
+            hint: "DICA 1: 'Why' é o nosso 'Por que' de pergunta.", 
+            hint_2: "DICA 2: 'Because' é o 'Porque' de resposta.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Usamos 'Why' para pedir motivos." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "'How long' é usado para perguntar 'Quando'.", 
+            topic: "Question Words", 
+            hint: "DICA 1: 'How long' pergunta o tempo de duração (Quanto tempo).", 
+            hint_2: "DICA 2: 'Quando' é 'When'.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'How long' pergunta 'Quanto tempo'." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "No Imperativo, as frases sempre começam com um pronome pessoal, como 'You stop!'.", 
+            topic: "Imperative", 
+            hint: "DICA 1: O imperativo é mais direto.", 
+            hint_2: "DICA 2: Omitimos o sujeito na frase.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! Frases imperativas começam diretamente com o verbo." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A frase 'Don't shout!' é um Imperativo Negativo.", 
+            topic: "Imperative", 
+            hint: "DICA 1: Pede para alguém não fazer algo.", 
+            hint_2: "DICA 2: A estrutura Don't + Verbo está correta.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Começa com 'Don't', formando o negativo." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "'Ocean' é uma palavra do vocabulário do Meio Ambiente e significa 'Árvore'.", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: 'Ocean' parece com a palavra em português.", 
+            hint_2: "DICA 2: Árvore é 'Tree'.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! 'Ocean' significa Oceano." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "'Recycle' significa Reciclar.", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: É parte dos Rs da sustentabilidade.", 
+            hint_2: "DICA 2: É muito parecido com o português.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Recycle' é reciclar." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "Na frase afirmativa 'He play', falta a letra 's' no final do verbo.", 
+            topic: "Simple Present", 
+            hint: "DICA 1: Na terceira pessoa do singular, os verbos ganham s, es ou ies.", 
+            hint_2: "DICA 2: O correto seria 'plays'.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! O verbo precisa do 's' para acompanhar o 'He'." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "Para a pergunta 'Does he study?', a resposta curta afirmativa correta é 'Yes, he do'.", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: A resposta precisa repetir o auxiliar da pergunta.", 
+            hint_2: "DICA 2: O auxiliar usado foi 'Does'.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! O correto é 'Yes, he does'." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A palavra 'Volunteer' descreve alguém que trabalha para uma organização sem ser pago.", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Significa voluntário.", 
+            hint_2: "DICA 2: O texto afirma 'working for some organization without payment'.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Voluntários fazem serviço de forma solidária, sem pagamento." } 
+            ], 
+            answer: true 
+        },
+
+        // --- DRAG AND DROP (8 Questões) ---
+        { 
+            type: 'drag-drop', 
+            question: "Complete a frase negativa: 'I ______ wake up at 6 am.'", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: O sujeito é 'I'.", 
+            hint_2: "DICA 2: Usamos o auxiliar negativo sem 'es'.", 
+            options: ["doesn't", "don't", "aren't"], 
+            answer: "don't", 
+            rationale: "Correto! Para o sujeito 'I', usamos 'don't'." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Complete a frase negativa: 'He ______ ride a bike.'", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: O sujeito é 'He'.", 
+            hint_2: "DICA 2: O auxiliar precisa ter a marca da 3ª pessoa.", 
+            options: ["don't", "doesn't", "isn't"], 
+            answer: "doesn't", 
+            rationale: "Correto! Para o sujeito 'He', usamos 'doesn't'." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Para começar a pergunta: '______ she surf on the net?'", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: O pronome é 'she'.", 
+            hint_2: "DICA 2: Começa com D e termina com S.", 
+            options: ["Do", "Are", "Does"], 
+            answer: "Does", 
+            rationale: "Correto! O auxiliar de pergunta para 'she' é 'Does'." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "A ______ sells things and attends the cash register (vende produtos).", 
+            topic: "Professions", 
+            hint: "DICA 1: A palavra contém 'sales' (vendas).", 
+            hint_2: "DICA 2: Termina em 'person'.", 
+            options: ["waitress", "doctor", "salesperson"], 
+            answer: "salesperson", 
+            rationale: "Correto! O vendedor é o salesperson." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Complete com a Question Word: '______ does she go to work? By bus.' (De que maneira...)", 
+            topic: "Question Words", 
+            hint: "DICA 1: Pergunta a maneira/o meio de transporte.", 
+            hint_2: "DICA 2: Significa 'Como'.", 
+            options: ["Who", "Where", "How"], 
+            answer: "How", 
+            rationale: "Correto! 'How' significa Como e é usado para meios de transporte." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "No Imperativo afirmativo, como dizemos 'Levante a mão': '______ your hand to speak!'", 
+            topic: "Imperative", 
+            hint: "DICA 1: Significa erguer / levantar.", 
+            hint_2: "DICA 2: Começa com R.", 
+            options: ["Raise", "Don't", "Does"], 
+            answer: "Raise", 
+            rationale: "Correto! A instrução correta é Raise (Levante)." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Complete a instrução no Imperativo: '______ your homework every day!' (Faça...)", 
+            topic: "Imperative", 
+            hint: "DICA 1: É o verbo 'fazer'.", 
+            hint_2: "DICA 2: Tem duas letras.", 
+            options: ["Do", "Does", "Doesn't"], 
+            answer: "Do", 
+            rationale: "Correto! O verbo afirmativo para essa ordem é 'Do'." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "No vocabulário ecológico, o recurso natural vital (Água) é chamado de ______.", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Começa com a letra W.", 
+            hint_2: "DICA 2: Tem 5 letras.", 
+            options: ["Ocean", "Water", "Energy"], 
+            answer: "Water", 
+            rationale: "Correto! Água em inglês é 'Water'." 
+        },
+
+        // --- FILL IN (7 Questões) ---
+        { 
+            type: 'fill-in', 
+            question: "Complete o verbo no Simple Present (afirmativo): The baby ______ (cry).", 
+            topic: "Simple Present", 
+            hint: "DICA 1: O verbo termina em consoante + Y.", 
+            hint_2: "DICA 2: Remova o Y e adicione IES.", 
+            answer: ["cries"], 
+            rationale: "Correto! A palavra muda para 'cries' na terceira pessoa." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva o negativo no Simple Present: We ______ (not / play) the drums.", 
+            topic: "Simple Present - Negative", 
+            hint: "DICA 1: Você precisa do auxiliar negativo adequado para 'We'.", 
+            hint_2: "DICA 2: O auxiliar é 'don't' seguido do verbo 'play'.", 
+            answer: ["don't play"], 
+            rationale: "Correto! Formamos a negativa com 'don't play'." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Qual verbo auxiliar inicia a pergunta: ______ he study?", 
+            topic: "Simple Present - Interrogative", 
+            hint: "DICA 1: O sujeito é 'he'.", 
+            hint_2: "DICA 2: O verbo auxiliar termina com 's'.", 
+            answer: ["Does", "does"], 
+            rationale: "Correto! 'Does' é o auxiliar interrogativo para He/She/It." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva em inglês a profissão da pessoa que corta cabelo (Barbeiro/Cabeleireiro):", 
+            topic: "Professions", 
+            hint: "DICA 1: A palavra parece bastante com o português.", 
+            hint_2: "DICA 2: Começa com B e termina com R.", 
+            answer: ["Barber", "barber"], 
+            rationale: "Correto! O profissional é o Barber." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Qual Question Word (Qual / O que) usamos nesta frase: ______ is your name?", 
+            topic: "Question Words", 
+            hint: "DICA 1: É uma das palavras interrogativas mais comuns.", 
+            hint_2: "DICA 2: Tem 4 letras, começando com W e terminando com T.", 
+            answer: ["What", "what"], 
+            rationale: "Correto! 'What' pergunta qual ou o que." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva a forma Imperativa Negativa da ordem 'Não grite' (not / shout): ______ in the classroom!", 
+            topic: "Imperative", 
+            hint: "DICA 1: Inicie com 'Don't'.", 
+            hint_2: "DICA 2: Junte 'Don't' + 'shout'.", 
+            answer: ["Don't shout", "don't shout"], 
+            rationale: "Correto! O imperativo negativo é 'Don't shout'." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva a palavra em inglês para 'Lixo' que aparece no caça-palavras de Earth Day:", 
+            topic: "Vocabulary", 
+            hint: "DICA 1: Começa com T e termina com H.", 
+            hint_2: "DICA 2: Tem 5 letras.", 
+            answer: ["Trash", "trash"], 
+            rationale: "Correto! A palavra que significa Lixo é Trash." 
+        }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>
