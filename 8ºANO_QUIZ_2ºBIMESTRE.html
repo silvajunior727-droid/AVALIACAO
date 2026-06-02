@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 8º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 8º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472AM": "ALICE", 
+                "819AS": "ANA LIVIA",
+                "365AS": "DANIEL", 
+                "294BS": "ELIZA",
+                "581BS": "GUSTAVO", 
+                "736DF": "JOÃO VITOR",
+                "158DG": "JUAN", 
+                "942EN": "MANUELLA",
+                "627ES": "MARIANE", 
+                "301ES": "MIRELA",
+                "514HB": "SOFIA", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- MULTIPLE CHOICE (20 Questões) ---
+        { 
+            type: 'mcq', 
+            question: "Qual 'Question Word' usamos para perguntar 'Quando' uma banda começou? (Ex: _____ did the band start?)", 
+            topic: "Question Words with Simple Past", 
+            hint: "DICA 1: Inicia com 'Wh'.", 
+            hint_2: "DICA 2: Refere-se a tempo.", 
+            options: [ 
+                { text: "Where", isCorrect: false, rationale: "Incorreto. 'Where' significa Onde." }, 
+                { text: "What", isCorrect: false, rationale: "Incorreto. 'What' significa O que/Qual." }, 
+                { text: "When", isCorrect: true, rationale: "Correto! 'When' significa Quando." }, 
+                { text: "Who", isCorrect: false, rationale: "Incorreto. 'Who' significa Quem." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Como perguntamos 'Onde eles tocaram?' no Simple Past?", 
+            topic: "Question Words with Simple Past", 
+            hint: "DICA 1: O auxiliar do passado é 'did'.", 
+            hint_2: "DICA 2: O verbo principal volta para a forma base na pergunta.", 
+            options: [ 
+                { text: "Where did they played?", isCorrect: false, rationale: "Incorreto. O verbo não leva 'ed' na pergunta." }, 
+                { text: "Where did they play?", isCorrect: true, rationale: "Correto! Usamos 'Where' + 'did' + sujeito + verbo na base." }, 
+                { text: "When did they play?", isCorrect: false, rationale: "Incorreto. 'When' significa Quando." }, 
+                { text: "Where they played?", isCorrect: false, rationale: "Incorreto. Faltou o auxiliar 'did'." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual pronome interrogativo usamos para perguntar 'Quem'? (Ex: _____ was the lead singer?)", 
+            topic: "Question Words", 
+            hint: "DICA 1: Tem apenas 3 letras.", 
+            hint_2: "DICA 2: Termina com a letra O.", 
+            options: [ 
+                { text: "Who", isCorrect: true, rationale: "Correto! 'Who' é usado para perguntar sobre pessoas (Quem)." }, 
+                { text: "How", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Why", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Where", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O que a expressão 'used to' indica em inglês?", 
+            topic: "Used to", 
+            hint: "DICA 1: Refere-se a algo que acontecia com frequência.", 
+            hint_2: "DICA 2: Não acontece mais hoje em dia.", 
+            options: [ 
+                { text: "Um plano para o futuro.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Um hábito no passado que não ocorre mais no presente.", isCorrect: true, rationale: "Correto! 'Used to' significa 'costumava' e indica um hábito do passado." }, 
+                { text: "Uma ação que está acontecendo agora.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Um dever ou obrigação.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual é a forma negativa correta da frase 'He used to play the guitar'?", 
+            topic: "Used to - Negative", 
+            hint: "DICA 1: Usamos o auxiliar do passado na negativa.", 
+            hint_2: "DICA 2: O 'd' de 'used' desaparece porque o auxiliar já indica passado.", 
+            options: [ 
+                { text: "He didn't used to play the guitar.", isCorrect: false, rationale: "Incorreto. O verbo 'used' deve perder o 'd'." }, 
+                { text: "He not used to play the guitar.", isCorrect: false, rationale: "Incorreto. Faltou o auxiliar 'didn't'." }, 
+                { text: "He didn't use to play the guitar.", isCorrect: true, rationale: "Correto! Com 'didn't', o verbo volta para a forma base 'use to'." }, 
+                { text: "He wasn't use to play the guitar.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "No vocabulário musical, o que é uma 'catchy song'?", 
+            topic: "Vocabulary - Music", 
+            hint: "DICA 1: O texto diz 'so catchy that I can't get the tune out of my head'.", 
+            hint_2: "DICA 2: É algo que gruda na memória.", 
+            options: [ 
+                { text: "Uma música triste e lenta.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Uma música cativante, fácil de lembrar e que não sai da cabeça.", isCorrect: true, rationale: "Correto! 'Catchy' significa cativante ou 'chiclete'." }, 
+                { text: "Uma música instrumental de orquestra.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Uma música muito antiga e esquecida.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Qual destes é um instrumento de percussão muito usado no rock?", 
+            topic: "Vocabulary - Instruments", 
+            hint: "DICA 1: Ringo Starr costumava tocar.", 
+            hint_2: "DICA 2: Em inglês é chamado de 'Drum kit'.", 
+            options: [ 
+                { text: "Violin", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Harmonica", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Drum kit", isCorrect: true, rationale: "Correto! 'Drum kit' é a bateria." }, 
+                { text: "Saxophone", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Como se diz 'gaita' (instrumento musical) em inglês?", 
+            topic: "Vocabulary - Instruments", 
+            hint: "DICA 1: Começa com a letra H.", 
+            hint_2: "DICA 2: Rod Stewart costumava tocar esse instrumento.", 
+            options: [ 
+                { text: "Flute", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Harmonica", isCorrect: true, rationale: "Correto! Gaita em inglês é 'Harmonica'." }, 
+                { text: "Violin", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Guitar", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O Past Continuous descreve ações que estavam acontecendo no passado. Qual frase está correta?", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: A estrutura é verbo to be no passado (was/were) + verbo com -ing.", 
+            hint_2: "DICA 2: O sujeito é 'I'.", 
+            options: [ 
+                { text: "I was sleeping.", isCorrect: true, rationale: "Correto! 'I' pede o verbo 'was' + 'sleeping' (verbo com -ing)." }, 
+                { text: "I were sleeping.", isCorrect: false, rationale: "Incorreto. 'were' não acompanha o sujeito 'I'." }, 
+                { text: "I was sleep.", isCorrect: false, rationale: "Incorreto. Faltou o sufixo '-ing'." }, 
+                { text: "I am sleeping.", isCorrect: false, rationale: "Incorreto. Isso é Present Continuous." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Complete a frase indicando duas ações simultâneas no passado: 'He was painting the wall _____ they were appreciating his work.'", 
+            topic: "Past Continuous - While", 
+            hint: "DICA 1: A palavra significa 'enquanto'.", 
+            hint_2: "DICA 2: Começa com 'Wh'.", 
+            options: [ 
+                { text: "when", isCorrect: false, rationale: "Incorreto. Usamos 'when' para interrupções." }, 
+                { text: "while", isCorrect: true, rationale: "Correto! 'While' conecta duas ações contínuas que ocorrem ao mesmo tempo." }, 
+                { text: "what", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "where", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Complete a frase indicando uma ação que interrompeu a outra: 'I was watching TV _____ the phone rang.'", 
+            topic: "Past Continuous x Simple Past (When)", 
+            hint: "DICA 1: A palavra significa 'quando'.", 
+            hint_2: "DICA 2: É usada antes do Simple Past.", 
+            options: [ 
+                { text: "while", isCorrect: false, rationale: "Incorreto. 'while' indica ações simultâneas." }, 
+                { text: "who", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "when", isCorrect: true, rationale: "Correto! 'When' (quando) é usado para uma ação pontual que interrompe uma contínua." }, 
+                { text: "where", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Onde The Beatles iniciaram sua carreira fazendo shows no famoso 'Cavern Club'?", 
+            topic: "Culture - The Beatles", 
+            hint: "DICA 1: É uma cidade na Inglaterra.", 
+            hint_2: "DICA 2: Começa com a letra L.", 
+            options: [ 
+                { text: "London", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Manchester", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Liverpool", isCorrect: true, rationale: "Correto! A banda é natural de Liverpool." }, 
+                { text: "New York", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Quem é amplamente conhecido como 'The King of Rock and Roll'?", 
+            topic: "Culture - Elvis Presley", 
+            hint: "DICA 1: Ele morava em uma mansão chamada Graceland.", 
+            hint_2: "DICA 2: Uma de suas músicas famosas é 'It's Now or Never'.", 
+            options: [ 
+                { text: "Michael Jackson", isCorrect: false, rationale: "Incorreto. Ele é o Rei do Pop." }, 
+                { text: "Elton John", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Elvis Presley", isCorrect: true, rationale: "Correto! Elvis Presley é o Rei do Rock and Roll." }, 
+                { text: "John Lennon", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "A Street Dance (dança de rua) surgiu em qual ambiente?", 
+            topic: "Culture - Street Dance", 
+            hint: "DICA 1: Envolve cidades e ruas.", 
+            hint_2: "DICA 2: É caracterizada pela improvisação.", 
+            options: [ 
+                { text: "Ambientes rurais e fazendas.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Ambientes urbanos, típicamente nas ruas, clubes ou espaços públicos.", isCorrect: true, rationale: "Correto! Origina-se em espaços urbanos." }, 
+                { text: "Apenas em escolas clássicas de ballet.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Dentro de conservatórios de música erudita.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O que é a 'CowParade'?", 
+            topic: "Culture - Art", 
+            hint: "DICA 1: Envolve animais espalhados pelas cidades.", 
+            hint_2: "DICA 2: As esculturas são feitas de fibra de vidro.", 
+            options: [ 
+                { text: "Um desfile de moda com estampas animais.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Um evento de arte pública com esculturas de vacas pintadas por artistas.", isCorrect: true, rationale: "Correto! É um evento famoso de esculturas de vacas." }, 
+                { text: "Uma competição de fazendeiros.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Um estilo novo de música country.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Quem são 'Os Gêmeos' no contexto do material estudado?", 
+            topic: "Culture - Graffiti", 
+            hint: "DICA 1: Eles usam muito as cores do Brasil.", 
+            hint_2: "DICA 2: São artistas mundialmente famosos.", 
+            options: [ 
+                { text: "Cantores pop americanos.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Dois irmãos artistas de grafite brasileiros.", isCorrect: true, rationale: "Correto! 'Os Gêmeos' são famosos grafiteiros do Brasil." }, 
+                { text: "Dançarinos clássicos.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Criadores da CowParade.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Na Street Dance, o que significa o movimento chamado 'Head Spin'?", 
+            topic: "Vocabulary - Street Dance", 
+            hint: "DICA 1: 'Head' é uma parte do corpo.", 
+            hint_2: "DICA 2: 'Spin' é girar.", 
+            options: [ 
+                { text: "Pulo alto.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Parada de mão.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Girar apoiado na cabeça.", isCorrect: true, rationale: "Correto! Head spin é o giro na cabeça." }, 
+                { text: "Ondulação com os braços.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O que é um 'cover' no meio musical?", 
+            topic: "Vocabulary - Music", 
+            hint: "DICA 1: Envolve a música de outra pessoa.", 
+            hint_2: "DICA 2: É uma nova versão.", 
+            options: [ 
+                { text: "A capa de um CD.", isCorrect: false, rationale: "Incorreto. Em música, no contexto dado, refere-se à regravação." }, 
+                { text: "Uma música inédita.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Uma nova performance/versão de uma música feita por outro artista.", isCorrect: true, rationale: "Correto! Cover é tocar a música de outro artista." }, 
+                { text: "O produtor da banda.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "O projeto 'Playing For Change' foi criado com qual principal objetivo?", 
+            topic: "Culture - Playing for Change", 
+            hint: "DICA 1: O slogan deles é 'Peace through music'.", 
+            hint_2: "DICA 2: Ajuda crianças no mundo todo.", 
+            options: [ 
+                { text: "Vender instrumentos musicais caros.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Espalhar os benefícios da música e arte para alcançar a paz e melhores condições de vida.", isCorrect: true, rationale: "Correto! O foco é paz e educação musical." }, 
+                { text: "Ensinar ballet clássico na Europa.", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Proibir a música pop nas escolas.", isCorrect: false, rationale: "Incorreto." } 
+            ] 
+        },
+        { 
+            type: 'mcq', 
+            question: "Na estrutura interrogativa do Past Continuous, como fica a pergunta para 'He was dancing'?", 
+            topic: "Past Continuous - Interrogative", 
+            hint: "DICA 1: Invertemos a ordem do sujeito com o verbo to be.", 
+            hint_2: "DICA 2: O 'was' vem para o começo da frase.", 
+            options: [ 
+                { text: "Did he dancing?", isCorrect: false, rationale: "Incorreto. Não usamos 'did' no Past Continuous." }, 
+                { text: "He was dancing?", isCorrect: false, rationale: "Incorreto. Faltou inverter a ordem." }, 
+                { text: "Was he dancing?", isCorrect: true, rationale: "Correto! A estrutura de pergunta exige 'Was' + sujeito + verbo-ing." }, 
+                { text: "Were he dancing?", isCorrect: false, rationale: "Incorreto. 'he' pede 'was', não 'were'." } 
+            ] 
+        },
+
+        // --- TRUE / FALSE (15 Questões) ---
+        { 
+            type: 'tf', 
+            question: "A frase 'Where did he went?' está gramaticalmente correta no Simple Past.", 
+            topic: "Simple Past", 
+            hint: "DICA 1: Já existe o verbo auxiliar 'did'.", 
+            hint_2: "DICA 2: O verbo principal deve ficar no infinitivo (base form).", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! O correto é 'Where did he go?' pois o auxiliar 'did' já indica o passado." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A frase afirmativa 'I used to play soccer' indica que eu jogava futebol no passado, mas não jogo mais.", 
+            topic: "Used to", 
+            hint: "DICA 1: A expressão 'used to' expressa hábitos passados.", 
+            hint_2: "DICA 2: A tradução equivale a 'Eu costumava'.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Used to' demonstra hábitos que ficaram no passado." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "No Past Continuous, usamos o verbo auxiliar 'was' para os sujeitos We, You e They.", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: 'Was' é usado para I, He, She, It.", 
+            hint_2: "DICA 2: Sujeitos no plural levam outro auxiliar.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! Para We, You, They, usamos 'were'." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A palavra 'While' significa 'Enquanto' e geralmente liga duas ações que ocorriam ao mesmo tempo no passado.", 
+            topic: "Past Continuous - While", 
+            hint: "DICA 1: Pense no exemplo: 'I was reading while he was sleeping'.", 
+            hint_2: "DICA 2: As duas ações são contínuas.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'While' conecta duas ações simultâneas." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "A frase 'She was paint the wall' está correta no Past Continuous.", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: Todo verbo contínuo precisa de uma terminação específica.", 
+            hint_2: "DICA 2: Falta o sufixo -ing.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! O correto é 'She was painting', adicionando o -ing ao verbo." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A banda The Beatles era formada por John, Paul, George e Ringo.", 
+            topic: "Culture - The Beatles", 
+            hint: "DICA 1: É a formação clássica e definitiva da banda.", 
+            hint_2: "DICA 2: A afirmação lista os quatro famosos membros de Liverpool.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! Esses eram os quatro integrantes oficiais." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "Elvis Presley aprendeu a tocar guitarra através de anos de aulas teóricas e conservatórios musicais formais.", 
+            topic: "Culture - Elvis Presley", 
+            hint: "DICA 1: O texto diz 'He never got formal singing or guitar lessons'.", 
+            hint_2: "DICA 2: Ele aprendeu sozinho observando (by ear).", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! Elvis nunca teve aulas formais, ele aprendeu de ouvido (by ear)." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "CowParade é um evento onde esculturas de cavalos são pintadas e espalhadas pela cidade.", 
+            topic: "Culture - Art", 
+            hint: "DICA 1: Pense na palavra 'Cow'.", 
+            hint_2: "DICA 2: 'Cow' significa vaca, não cavalo.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! O evento usa esculturas de vacas (cows), não cavalos." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "O artista brasileiro Cranio é famoso mundialmente por seus desenhos de índios azuis, retratando o consumismo e problemas políticos.", 
+            topic: "Culture - Graffiti", 
+            hint: "DICA 1: Ele usa o grafite para denúncias sociais.", 
+            hint_2: "DICA 2: Os personagens azuis são a sua marca registrada.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! O índio azul é a marca registrada do Cranio." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "No contexto da música e dança, 'Street Dance' também foi usada como expressão de resistência e identidade cultural.", 
+            topic: "Culture - Street Dance", 
+            hint: "DICA 1: Surgiu nos bairros de Nova York (Bronx).", 
+            hint_2: "DICA 2: Tem uma forte raiz social e comunitária.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! A Street Dance carrega forte valor social e de resistência cultural." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "'Box office' é uma expressão em inglês que significa 'Bilheteria' de cinemas ou shows.", 
+            topic: "Vocabulary - General", 
+            hint: "DICA 1: Envolve a arrecadação de ingressos.", 
+            hint_2: "DICA 2: Filmes de sucesso têm um alto 'box office'.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Box office' é bilheteria." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "A frase 'He was sleeping when the phone rang' contém uma ação contínua interrompida por uma ação repentina.", 
+            topic: "Past Continuous x Simple Past", 
+            hint: "DICA 1: Dormir é contínuo (was sleeping).", 
+            hint_2: "DICA 2: Tocar o telefone (rang) é a interrupção repentina.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! O 'when' introduz a ação rápida que interrompeu o sono." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "Na canção 'We Are the Champions', a banda Village People atingiu um enorme sucesso nos anos 80.", 
+            topic: "Culture - Music", 
+            hint: "DICA 1: Quem canta 'We Are the Champions' não é o Village People.", 
+            hint_2: "DICA 2: É a música clássica da banda Queen.", 
+            options: [ 
+                { text: "Verdadeiro", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Falso", isCorrect: true, rationale: "Falso! A canção 'We Are the Champions' é da banda Queen, não do Village People." } 
+            ], 
+            answer: false 
+        },
+        { 
+            type: 'tf', 
+            question: "A sigla 'R&B' que influenciou muito a música pop e o rock significa 'Rhythm and Blues'.", 
+            topic: "Vocabulary - Music", 
+            hint: "DICA 1: Tem origens afro-americanas fortes.", 
+            hint_2: "DICA 2: A afirmação está correta.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! R&B significa Rhythm and Blues." } 
+            ], 
+            answer: true 
+        },
+        { 
+            type: 'tf', 
+            question: "A palavra 'trademark', referida no texto dos grafiteiros, significa 'marca registrada' ou característica forte do artista.", 
+            topic: "Vocabulary - General", 
+            hint: "DICA 1: O índio azul é a 'trademark' do Cranio.", 
+            hint_2: "DICA 2: Trade = comércio, mark = marca.", 
+            options: [ 
+                { text: "Falso", isCorrect: false, rationale: "Incorreto." }, 
+                { text: "Verdadeiro", isCorrect: true, rationale: "Verdadeiro! 'Trademark' é a marca registrada de alguém ou de um produto." } 
+            ], 
+            answer: true 
+        },
+
+        // --- DRAG AND DROP (8 Questões) ---
+        { 
+            type: 'drag-drop', 
+            question: "Complete a pergunta sobre o passado: '______ did the Beatles play in 1961? At the Cavern Club.'", 
+            topic: "Question Words", 
+            hint: "DICA 1: A resposta é um lugar (Cavern Club).", 
+            hint_2: "DICA 2: A palavra interrogativa significa 'Onde'.", 
+            options: ["Who", "Where", "What"], 
+            answer: "Where", 
+            rationale: "Correto! 'Where' pergunta por lugares (onde)." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Preencha a frase sobre hábitos passados: 'She ______ listen to pop music, but now she prefers rock.'", 
+            topic: "Used to", 
+            hint: "DICA 1: Ela 'costumava' fazer isso.", 
+            hint_2: "DICA 2: A frase é afirmativa e está no passado.", 
+            options: ["use to", "used to", "was using"], 
+            answer: "used to", 
+            rationale: "Correto! 'used to' expressa hábitos afirmativos no passado." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Escolha o conector correto: 'He was painting ______ they were watching.'", 
+            topic: "Past Continuous - While", 
+            hint: "DICA 1: Ações acontecendo ao mesmo tempo.", 
+            hint_2: "DICA 2: Significa 'enquanto'.", 
+            options: ["while", "when", "what"], 
+            answer: "while", 
+            rationale: "Correto! Usamos 'while' quando duas ações estão em progresso simultaneamente." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Escolha o conector correto: 'We were visiting the museum ______ we saw a dinosaur skeleton.'", 
+            topic: "Past Continuous - When", 
+            hint: "DICA 1: Uma ação de repente interrompe o contínuo.", 
+            hint_2: "DICA 2: Significa 'quando'.", 
+            options: ["while", "when", "where"], 
+            answer: "when", 
+            rationale: "Correto! Usamos 'when' antes de um evento pontual no Simple Past." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Vocabulário de instrumentos: 'Elton John began playing the ______ when he was only three years old.'", 
+            topic: "Vocabulary - Instruments", 
+            hint: "DICA 1: Tem teclas brancas e pretas.", 
+            hint_2: "DICA 2: É o instrumento assinatura dele.", 
+            options: ["guitar", "piano", "drum"], 
+            answer: "piano", 
+            rationale: "Correto! O piano é o principal instrumento que Elton John toca." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "No Street Dance, o movimento em que o dançarino gira sobre a cabeça é o ______.", 
+            topic: "Vocabulary - Street Dance", 
+            hint: "DICA 1: É literalmente a união da palavra cabeça + girar em inglês.", 
+            hint_2: "DICA 2: Head = Cabeça.", 
+            options: ["suicide", "the turtle", "head spin"], 
+            answer: "head spin", 
+            rationale: "Correto! O giro de cabeça chama-se 'head spin'." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Os artistas brasileiros 'Os Gêmeos' são mundialmente famosos no ramo do ______.", 
+            topic: "Culture - Graffiti", 
+            hint: "DICA 1: Arte de rua feita em muros e paredes.", 
+            hint_2: "DICA 2: A palavra também é muito parecida no português.", 
+            options: ["ballet", "graffiti", "sculpture"], 
+            answer: "graffiti", 
+            rationale: "Correto! Eles são referências internacionais do graffiti." 
+        },
+        { 
+            type: 'drag-drop', 
+            question: "Complete o Past Continuous: 'They were ______ a photo when it started to rain.'", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: O verbo 'take' precisa do final -ing.", 
+            hint_2: "DICA 2: Retira-se a letra 'e' para acrescentar -ing.", 
+            options: ["taken", "take", "taking"], 
+            answer: "taking", 
+            rationale: "Correto! O verbo com gerúndio correto é 'taking'." 
+        },
+
+        // --- FILL IN (7 Questões) ---
+        { 
+            type: 'fill-in', 
+            question: "Escreva a 'Question Word' usada para 'Quem' nesta pergunta: ______ is your favorite singer?", 
+            topic: "Question Words", 
+            hint: "DICA 1: Tem 3 letras.", 
+            hint_2: "DICA 2: Começa com W e termina com O.", 
+            answer: ["Who", "who"], 
+            rationale: "Correto! 'Who' é o pronome interrogativo para pessoas." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva o verbo na forma correta para a pergunta com Used To: 'Did you ______ to play the guitar when you were young?'", 
+            topic: "Used to - Interrogative", 
+            hint: "DICA 1: A pergunta já possui o auxiliar 'Did'.", 
+            hint_2: "DICA 2: O verbo perde o 'd' no final.", 
+            answer: ["use", "Use"], 
+            rationale: "Correto! O verbo volta ao infinitivo 'use', pois 'Did' já marca o passado." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Complete a frase no Past Continuous com o verbo auxiliar para o sujeito 'I': 'I ______ reading a book when he called me.'", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: É o verbo 'to be' no passado.", 
+            hint_2: "DICA 2: Para a primeira pessoa do singular (I), usamos a forma com 3 letras.", 
+            answer: ["was", "Was"], 
+            rationale: "Correto! O auxiliar para 'I' no passado é 'was'." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Complete a frase no Past Continuous com o verbo auxiliar plural (para They): 'They ______ dancing at the party.'", 
+            topic: "Past Continuous", 
+            hint: "DICA 1: É o verbo 'to be' no passado para sujeitos no plural.", 
+            hint_2: "DICA 2: Tem 4 letras, começando com W.", 
+            answer: ["were", "Were"], 
+            rationale: "Correto! O auxiliar para 'They' no passado é 'were'." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva em inglês o nome do instrumento de sopro famoso no Jazz, cujo nome começa com a letra S: ______", 
+            topic: "Vocabulary - Instruments", 
+            hint: "DICA 1: Em português é Saxofone.", 
+            hint_2: "DICA 2: Termina com a letra E.", 
+            answer: ["Saxophone", "saxophone"], 
+            rationale: "Correto! O instrumento em inglês escreve-se Saxophone." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Escreva o nome da cidade natal dos The Beatles na Inglaterra: ______", 
+            topic: "Culture - The Beatles", 
+            hint: "DICA 1: É onde ficava o Cavern Club.", 
+            hint_2: "DICA 2: Começa com L e tem nome de um time de futebol famoso.", 
+            answer: ["Liverpool", "liverpool"], 
+            rationale: "Correto! The Beatles surgiram na cidade de Liverpool." 
+        },
+        { 
+            type: 'fill-in', 
+            question: "Elvis Presley ficou mundialmente conhecido como the King of ______ and Roll. (Rei do...)", 
+            topic: "Culture - Elvis Presley", 
+            hint: "DICA 1: É um gênero musical revolucionário nos anos 50.", 
+            hint_2: "DICA 2: Tem 4 letras, começando com R.", 
+            answer: ["Rock", "rock"], 
+            rationale: "Correto! Elvis é o eterno Rei do Rock and Roll." 
+        }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>
