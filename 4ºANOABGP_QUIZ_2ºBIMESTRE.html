@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 4º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 4º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472XM": "ANTONY", 
+                "819TS": "DEIVID",
+                "365KS": "KAUÊ", 
+                "294BS": "LIZZY",
+                "581YS": "LORENA", 
+                "736PF": "LORENZO",
+	        "301EL": "LUAN",
+                "158DJ": "PEDRO", 
+                "627WE": "SAMUEL", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- 1-15: MULTIPLE CHOICE ---
+        { type: 'mcq', question: "Como dizemos que o tempo está 'nublado' em inglês?", topic: "Weather", hint: "DICA 1: O sol está escondido.", hint_2: "DICA 2: A palavra vem de 'cloud'.", options: [{ text: "Sunny", isCorrect: false, rationale: "Sunny é ensolarado." }, { text: "Cloudy", isCorrect: true, rationale: "Correto! Nublado é Cloudy." }, { text: "Rainy", isCorrect: false, rationale: "Rainy é chuvoso." }, { text: "Stormy", isCorrect: false, rationale: "Stormy é tempestuoso." }], rationale: "Nublado é Cloudy." },
+        { type: 'mcq', question: "Qual preposição usamos antes dos meses do ano?", topic: "Prepositions", hint: "DICA 1: É usada para períodos longos.", hint_2: "DICA 2: É curta e tem duas letras.", options: [{ text: "On", isCorrect: false, rationale: "On é para dias." }, { text: "In", isCorrect: true, rationale: "Correto! Meses usam In." }, { text: "At", isCorrect: false, rationale: "At é para horas." }, { text: "To", isCorrect: false, rationale: "Incorreto." }], rationale: "Meses do ano sempre usam a preposição In." },
+        { type: 'mcq', question: "Qual peça de roupa é ideal para o 'Winter' (Inverno)?", topic: "Clothes", hint: "DICA 1: Serve para aquecer o corpo.", hint_2: "DICA 2: Não é uma camiseta.", options: [{ text: "T-shirt", isCorrect: false, rationale: "T-shirt é para calor." }, { text: "Coat", isCorrect: true, rationale: "Correto! Coat é casaco." }, { text: "Sandals", isCorrect: false, rationale: "Sandals são para calor." }, { text: "Shorts", isCorrect: false, rationale: "Shorts são para calor." }], rationale: "Coat é a roupa ideal para o inverno." },
+        { type: 'mcq', question: "Qual é a estação que vem depois do verão?", topic: "Seasons", hint: "DICA 1: As folhas caem das árvores.", hint_2: "DICA 2: Começa com F.", options: [{ text: "Spring", isCorrect: false, rationale: "Spring é primavera." }, { text: "Fall", isCorrect: true, rationale: "Correto! Fall é outono." }, { text: "Winter", isCorrect: false, rationale: "Winter é inverno." }, { text: "Summer", isCorrect: false, rationale: "Summer é verão." }], rationale: "Fall é a estação do outono." },
+        { type: 'mcq', question: "Qual preposição usamos antes dos dias da semana?", topic: "Prepositions", hint: "DICA 1: É específica para dias.", hint_2: "DICA 2: Tem duas letras.", options: [{ text: "In", isCorrect: false, rationale: "In é para meses." }, { text: "On", isCorrect: true, rationale: "Correto! Dias da semana usam On." }, { text: "At", isCorrect: false, rationale: "At é para horas." }, { text: "For", isCorrect: false, rationale: "Incorreto." }], rationale: "Dias da semana usam a preposição On." },
+        { type: 'mcq', question: "O que é o 'Thanksgiving Day'?", topic: "Holidays", hint: "DICA 1: É um feriado tradicional americano.", hint_2: "DICA 2: Comemora-se com um grande jantar.", options: [{ text: "Natal", isCorrect: false, rationale: "Natal é Christmas." }, { text: "Dia de Ação de Graças", isCorrect: true, rationale: "Correto! É o Thanksgiving." }, { text: "Páscoa", isCorrect: false, rationale: "Páscoa é Easter." }, { text: "Ano Novo", isCorrect: false, rationale: "Ano Novo é New Year." }], rationale: "Thanksgiving Day é o Dia de Ação de Graças." },
+        { type: 'mcq', question: "Como dizemos 'quente' em inglês para a temperatura?", topic: "Weather", hint: "DICA 1: O oposto de frio.", hint_2: "DICA 2: Começa com H.", options: [{ text: "Cold", isCorrect: false, rationale: "Cold é frio." }, { text: "Hot", isCorrect: true, rationale: "Correto! Hot é quente." }, { text: "Cool", isCorrect: false, rationale: "Cool é fresco." }, { text: "Dry", isCorrect: false, rationale: "Dry é seco." }], rationale: "Hot significa quente." },
+        { type: 'mcq', question: "Qual é o mês do Natal?", topic: "Months", hint: "DICA 1: É o último mês do ano.", hint_2: "DICA 2: Começa com D.", options: [{ text: "October", isCorrect: false, rationale: "Incorreto." }, { text: "November", isCorrect: false, rationale: "Incorreto." }, { text: "December", isCorrect: true, rationale: "Correto! Natal é em December." }, { text: "January", isCorrect: false, rationale: "Incorreto." }], rationale: "December é o mês do Natal." },
+        { type: 'mcq', question: "Qual é a estação das flores?", topic: "Seasons", hint: "DICA 1: Vem antes do verão.", hint_2: "DICA 2: Começa com S.", options: [{ text: "Winter", isCorrect: false, rationale: "Inverno." }, { text: "Spring", isCorrect: true, rationale: "Correto! Spring é primavera." }, { text: "Fall", isCorrect: false, rationale: "Outono." }, { text: "Summer", isCorrect: false, rationale: "Verão." }], rationale: "Spring é a primavera." },
+        { type: 'mcq', question: "Como dizemos 'Chuvoso'?", topic: "Weather", hint: "DICA 1: Vem da palavra 'Rain'.", hint_2: "DICA 2: Tem 5 letras.", options: [{ text: "Rainy", isCorrect: true, rationale: "Correto! Rainy é chuvoso." }, { text: "Cloudy", isCorrect: false, rationale: "Nublado." }, { text: "Sunny", isCorrect: false, rationale: "Ensolarado." }, { text: "Windy", isCorrect: false, rationale: "Vento." }], rationale: "Rainy é chuvoso." },
+        { type: 'mcq', question: "O que usamos nos pés em um dia quente de verão?", topic: "Clothes", hint: "DICA 1: Deixa os dedos livres.", hint_2: "DICA 2: Começa com S.", options: [{ text: "Boots", isCorrect: false, rationale: "Botas são para frio." }, { text: "Sandals", isCorrect: true, rationale: "Correto! Sandals." }, { text: "Coat", isCorrect: false, rationale: "Casaco é para frio." }, { text: "Gloves", isCorrect: false, rationale: "Luvas são para frio." }], rationale: "Sandals são sandálias." },
+        { type: 'mcq', question: "Qual é o primeiro dia da semana?", topic: "Days", hint: "DICA 1: Vem antes de segunda.", hint_2: "DICA 2: Começa com S.", options: [{ text: "Monday", isCorrect: false, rationale: "Segunda." }, { text: "Sunday", isCorrect: true, rationale: "Correto! Domingo." }, { text: "Friday", isCorrect: false, rationale: "Sexta." }, { text: "Saturday", isCorrect: false, rationale: "Sábado." }], rationale: "Sunday é o primeiro dia." },
+        { type: 'mcq', question: "Quando o tempo está 'Stormy', o que está acontecendo?", topic: "Weather", hint: "DICA 1: Tem raios e trovões.", hint_2: "DICA 2: É uma chuva forte.", options: [{ text: "Ensolarado", isCorrect: false, rationale: "Sunny." }, { text: "Tempestuoso", isCorrect: true, rationale: "Correto! Stormy." }, { text: "Nevando", isCorrect: false, rationale: "Snowy." }, { text: "Nebuloso", isCorrect: false, rationale: "Foggy." }], rationale: "Stormy é tempestuoso." },
+        { type: 'mcq', question: "Qual mês vem antes de março?", topic: "Months", hint: "DICA 1: É o segundo mês.", hint_2: "DICA 2: Começa com F.", options: [{ text: "January", isCorrect: false, rationale: "Vem antes de fevereiro." }, { text: "February", isCorrect: true, rationale: "Correto! Fevereiro." }, { text: "April", isCorrect: false, rationale: "Vem depois." }, { text: "May", isCorrect: false, rationale: "Vem depois." }], rationale: "February vem antes de March." },
+        { type: 'mcq', question: "O que usamos para proteger as mãos no inverno?", topic: "Clothes", hint: "DICA 1: Tem cinco dedos.", hint_2: "DICA 2: Começa com G.", options: [{ text: "Gloves", isCorrect: true, rationale: "Correto! Luvas." }, { text: "Hat", isCorrect: false, rationale: "Chapéu." }, { text: "Scarf", isCorrect: false, rationale: "Cachecol." }, { text: "Boots", isCorrect: false, rationale: "Botas." }], rationale: "Gloves são luvas." },
+
+        // --- 16-25: TRUE / FALSE ---
+        { type: 'tf', question: "Usamos 'On' antes de meses.", topic: "Prepositions", hint: "DICA 1: Meses usam 'In'.", hint_2: "DICA 2: A afirmação está errada.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Meses usam In." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A palavra 'Sunny' significa ensolarado.", topic: "Weather", hint: "DICA 1: Sun é sol.", hint_2: "DICA 2: A afirmação está certa.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Sunny é ensolarado." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "Em um dia 'Snowy' (nevado), usamos sandálias.", topic: "Weather", hint: "DICA 1: Neve é muito frio.", hint_2: "DICA 2: A afirmação está errada.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Precisamos de botas." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A palavra 'Fall' significa outono.", topic: "Seasons", hint: "DICA 1: É a estação das folhas caídas.", hint_2: "DICA 2: A afirmação está certa.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Fall é outono." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "O mês de 'October' é o mês do Natal.", topic: "Months", hint: "DICA 1: Natal é em dezembro.", hint_2: "DICA 2: A afirmação está errada.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Natal é dezembro." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A palavra 'Scarf' significa cachecol.", topic: "Clothes", hint: "DICA 1: Usamos no pescoço.", hint_2: "DICA 2: A afirmação está certa.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Scarf é cachecol." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "O dia 'Monday' vem depois de 'Tuesday'.", topic: "Days", hint: "DICA 1: Monday é segunda.", hint_2: "DICA 2: Tuesday é terça.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Segunda vem antes de terça." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Usamos 'In' para horas exatas.", topic: "Prepositions", hint: "DICA 1: Horas usam 'At'.", hint_2: "DICA 2: A afirmação está errada.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Horas usam At." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Thanksgiving é um feriado comemorado no Brasil.", topic: "Holidays", hint: "DICA 1: É típico dos EUA.", hint_2: "DICA 2: A afirmação está errada.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! É feriado americano." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Cloudy significa céu com nuvens.", topic: "Weather", hint: "DICA 1: Cloud é nuvem.", hint_2: "DICA 2: A afirmação está certa.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Cloudy é nublado." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+
+        // --- 26-35: DRAG AND DROP ---
+        { type: 'drag-drop', question: "A estação mais quente é o ______.", topic: "Seasons", hint: "DICA 1: Praia e sol.", hint_2: "DICA 2: Começa com S.", options: ["Summer", "Winter", "Spring"], answer: "Summer", rationale: "Summer é o verão." },
+        { type: 'drag-drop', question: "O mês de janeiro é ______.", topic: "Months", hint: "DICA 1: O primeiro mês.", hint_2: "DICA 2: Começa com J.", options: ["January", "June", "July"], answer: "January", rationale: "January é janeiro." },
+        { type: 'drag-drop', question: "Usamos ______ para proteger os pés na chuva.", topic: "Clothes", hint: "DICA 1: É uma bota.", hint_2: "DICA 2: Começa com B.", options: ["Boots", "Sandals", "Hat"], answer: "Boots", rationale: "Boots são botas." },
+        { type: 'drag-drop', question: "Terça-feira em inglês é ______.", topic: "Days", hint: "DICA 1: Começa com T.", hint_2: "DICA 2: Tem 'day' no fim.", options: ["Tuesday", "Thursday", "Wednesday"], answer: "Tuesday", rationale: "Tuesday é terça." },
+        { type: 'drag-drop', question: "O dia de Natal é ______.", topic: "Holidays", hint: "DICA 1: Dezembro.", hint_2: "DICA 2: Feriado cristão.", options: ["Christmas", "Thanksgiving", "Easter"], answer: "Christmas", rationale: "Christmas é Natal." },
+        { type: 'drag-drop', question: "Qual é o oposto de 'Cold'?", topic: "Weather", hint: "DICA 1: Quente.", hint_2: "DICA 2: Hot.", options: ["Hot", "Sunny", "Cool"], answer: "Hot", rationale: "Hot é quente." },
+        { type: 'drag-drop', question: "Sexta-feira em inglês é ______.", topic: "Days", hint: "DICA 1: Vem depois de quinta.", hint_2: "DICA 2: Começa com F.", options: ["Friday", "Monday", "Sunday"], answer: "Friday", rationale: "Friday é sexta." },
+        { type: 'drag-drop', question: "O mês de maio é ______.", topic: "Months", hint: "DICA 1: Mês das mães.", hint_2: "DICA 2: Palavra de três letras.", options: ["May", "March", "June"], answer: "May", rationale: "May é maio." },
+        { type: 'drag-drop', question: "Qual é a estação da neve?", topic: "Seasons", hint: "DICA 1: É muito frio.", hint_2: "DICA 2: Começa com W.", options: ["Winter", "Fall", "Spring"], answer: "Winter", rationale: "Winter é inverno." },
+        { type: 'drag-drop', question: "A palavra 'Sunny' significa ______.", topic: "Weather", hint: "DICA 1: Muito sol.", hint_2: "DICA 2: Céu limpo.", options: ["Ensolarado", "Nublado", "Chuvoso"], answer: "Ensolarado", rationale: "Sunny é ensolarado." },
+
+        // --- 36-40: FILL IN ---
+        { type: 'fill-in', question: "Como escrevemos 'Sexta-feira' em inglês?", topic: "Days", hint: "DICA 1: Começa com F.", hint_2: "DICA 2: Termina com day.", answer: ["friday", "Friday"], rationale: "Friday." },
+        { type: 'fill-in', question: "Escreva 'Inverno' em inglês.", topic: "Seasons", hint: "DICA 1: Começa com W.", hint_2: "DICA 2: Tem 6 letras.", answer: ["winter", "Winter"], rationale: "Winter." },
+        { type: 'fill-in', question: "Complete: '____ Tuesday'.", topic: "Prepositions", hint: "DICA 1: Preposição para dia.", hint_2: "DICA 2: Com 'O'.", answer: ["on", "On"], rationale: "On." },
+        { type: 'fill-in', question: "Escreva 'Quente' em inglês.", topic: "Weather", hint: "DICA 1: Três letras.", hint_2: "DICA 2: Começa com H.", answer: ["hot", "Hot"], rationale: "Hot." },
+        { type: 'fill-in', question: "Escreva 'Outono' em inglês.", topic: "Seasons", hint: "DICA 1: Quatro letras.", hint_2: "DICA 2: Começa com F.", answer: ["fall", "Fall"], rationale: "Fall." }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>

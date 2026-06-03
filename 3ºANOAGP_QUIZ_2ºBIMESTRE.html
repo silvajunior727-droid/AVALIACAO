@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472XM": "ALICE", 
+                "819TS": "ANA TEREZA",
+                "365KS": "APOLO", 
+                "294BS": "BENICIO",
+                "581YS": "CHRISTIAN", 
+                "736PF": "GIULIA",
+	        "301EL": "ISABELLA",
+                "158DJ": "LUCAS", 
+                "627WE": "MARCO ANTONIO", 
+                "862XM": "RODRIGO", 
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- 1-10: MULTIPLE CHOICE ---
+        { type: 'mcq', question: "Como dizemos 'Eu sou do Brasil' em inglês?", topic: "Countries", hint: "DICA 1: Usamos o verbo to be (am).", hint_2: "DICA 2: A preposição usada é 'from'.", options: [{ text: "I am from Brazil", isCorrect: true, rationale: "Correto! I am from Brazil." }, { text: "I is from Brazil", isCorrect: false, rationale: "I usa am, não is." }, { text: "I are from Brazil", isCorrect: false, rationale: "I usa am, não are." }, { text: "He am from Brazil", isCorrect: false, rationale: "He usa is." }], rationale: "I am from Brazil é a forma correta." },
+        { type: 'mcq', question: "Qual a forma curta de 'She is'?", topic: "Verb To Be", hint: "DICA 1: Removemos a primeira letra do is.", hint_2: "DICA 2: Usamos um apóstrofo.", options: [{ text: "She'am", isCorrect: false, rationale: "Incorreto." }, { text: "She'is", isCorrect: false, rationale: "Incorreto." }, { text: "She's", isCorrect: true, rationale: "Correto! She's." }, { text: "She're", isCorrect: false, rationale: "Incorreto." }], rationale: "A contração correta é She's." },
+        { type: 'mcq', question: "Se alguém é da Itália, essa pessoa é:", topic: "Nationalities", hint: "DICA 1: Termina com 'ian'.", hint_2: "DICA 2: É parecido com o nome do país.", options: [{ text: "Indian", isCorrect: false, rationale: "Indian é da Índia." }, { text: "Italian", isCorrect: true, rationale: "Correto! Italian." }, { text: "Spanish", isCorrect: false, rationale: "Spanish é da Espanha." }, { text: "Japanese", isCorrect: false, rationale: "Japanese é do Japão." }], rationale: "Italian é a nacionalidade de quem nasce na Itália." },
+        { type: 'mcq', question: "Qual a resposta curta negativa para 'Is he from China?'", topic: "Short Answers", hint: "DICA 1: Começa com No.", hint_2: "DICA 2: Usa o pronome 'he'.", options: [{ text: "No, he is", isCorrect: false, rationale: "Isso seria afirmativa." }, { text: "No, he isn't", isCorrect: true, rationale: "Correto! No, he isn't." }, { text: "Yes, he is", isCorrect: false, rationale: "Isso é positivo." }, { text: "No, I am not", isCorrect: false, rationale: "O pronome está errado." }], rationale: "No, he isn't é a resposta curta negativa." },
+        { type: 'mcq', question: "Como dizemos 'Eles são do Japão'?", topic: "Countries", hint: "DICA 1: Eles = They.", hint_2: "DICA 2: Eles usam 'are'.", options: [{ text: "They is from Japan", isCorrect: false, rationale: "They usa are." }, { text: "They are from Japan", isCorrect: true, rationale: "Correto! They are." }, { text: "They am from Japan", isCorrect: false, rationale: "They usa are." }, { text: "She are from Japan", isCorrect: false, rationale: "She usa is." }], rationale: "Eles são é They are." },
+        { type: 'mcq', question: "Qual é o país de quem é 'Indian'?", topic: "Nationalities", hint: "DICA 1: Fica na Ásia.", hint_2: "DICA 2: Começa com a letra I.", options: [{ text: "Italy", isCorrect: false, rationale: "Italy é italiano." }, { text: "India", isCorrect: true, rationale: "Correto! India." }, { text: "Indonesia", isCorrect: false, rationale: "Não é este o caso." }, { text: "Iraq", isCorrect: false, rationale: "Não é este o caso." }], rationale: "Indian é quem nasce na India." },
+        { type: 'mcq', question: "Complete: 'We ______ from France'.", topic: "Verb To Be", hint: "DICA 1: We é plural.", hint_2: "DICA 2: Usamos are para nós.", options: [{ text: "is", isCorrect: false, rationale: "Is é singular." }, { text: "are", isCorrect: true, rationale: "Correto! We are." }, { text: "am", isCorrect: false, rationale: "Am é só para I." }, { text: "be", isCorrect: false, rationale: "Incorreto." }], rationale: "We are é a forma correta." },
+        { type: 'mcq', question: "Como dizemos 'Eu não sou do Peru'?", topic: "Verb To Be", hint: "DICA 1: Negativa de I am.", hint_2: "DICA 2: 'am not'.", options: [{ text: "I is not from Peru", isCorrect: false, rationale: "Errado." }, { text: "I am not from Peru", isCorrect: true, rationale: "Correto! I am not." }, { text: "I not am from Peru", isCorrect: false, rationale: "Ordem errada." }, { text: "I're not from Peru", isCorrect: false, rationale: "Errado." }], rationale: "A negativa de I am é I am not." },
+        { type: 'mcq', question: "Qual é a nacionalidade de quem nasce na China?", topic: "Nationalities", hint: "DICA 1: Termina com 'ese'.", hint_2: "DICA 2: É parecido com o país.", options: [{ text: "Chinish", isCorrect: false, rationale: "Incorreto." }, { text: "Chinese", isCorrect: true, rationale: "Correto! Chinese." }, { text: "Chinesian", isCorrect: false, rationale: "Incorreto." }, { text: "Chin", isCorrect: false, rationale: "Incorreto." }], rationale: "Chinese é a nacionalidade de quem nasce na China." },
+        { type: 'mcq', question: "Qual é o plural de 'He'?", topic: "Verb To Be", hint: "DICA 1: É o pronome de terceira pessoa plural.", hint_2: "DICA 2: Significa eles.", options: [{ text: "She", isCorrect: false, rationale: "She é ela." }, { text: "They", isCorrect: true, rationale: "Correto! They." }, { text: "We", isCorrect: false, rationale: "We é nós." }, { text: "You", isCorrect: false, rationale: "You é você/vocês." }], rationale: "They é o plural de he/she." },
+
+        // --- 11-20: TRUE / FALSE ---
+        { type: 'tf', question: "A palavra 'Italian' se refere a alguém da Itália.", topic: "Nationalities", hint: "DICA 1: É o adjetivo pátrio.", hint_2: "DICA 2: Verdadeiro.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "Usamos 'is' para o pronome 'They'.", topic: "Verb To Be", hint: "DICA 1: They é plural.", hint_2: "DICA 2: Plural usa are.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! They usa are." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A resposta 'Yes, I am' é afirmativa.", topic: "Short Answers", hint: "DICA 1: Sim é yes.", hint_2: "DICA 2: A afirmação é verdadeira.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "O país de alguém 'Japanese' é a China.", topic: "Countries", hint: "DICA 1: Japanese é Japão.", hint_2: "DICA 2: A afirmação é falsa.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! É o Japão." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A frase 'She aren't from Brazil' está correta.", topic: "Verb To Be", hint: "DICA 1: She usa is.", hint_2: "DICA 2: A negação seria isn't.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! She usa isn't." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Brazil é um país.", topic: "Countries", hint: "DICA 1: Onde vivemos.", hint_2: "DICA 2: Verdadeiro.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "O pronome 'It' é usado para pessoas.", topic: "Verb To Be", hint: "DICA 1: It é para coisas/animais.", hint_2: "DICA 2: Pessoas usam he/she.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! It é para coisas." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Espanha em inglês é 'Spain'.", topic: "Countries", hint: "DICA 1: O nome é muito parecido.", hint_2: "DICA 2: Verdadeiro.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "Are you from Brazil? -> No, I'm not.", topic: "Short Answers", hint: "DICA 1: É uma negativa possível.", hint_2: "DICA 2: Verdadeiro.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "We are from France. France é uma nacionalidade.", topic: "Countries", hint: "DICA 1: France é país.", hint_2: "DICA 2: Francês seria French.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! France é país." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+
+        // --- 21-30: DRAG AND DROP ---
+        { type: 'drag-drop', question: "Quem nasce na Espanha é ______.", topic: "Nationalities", hint: "DICA 1: Começa com S.", hint_2: "DICA 2: Termina com ish.", options: ["Spanish", "Italian", "Indian"], answer: "Spanish", rationale: "Espanhol é Spanish." },
+        { type: 'drag-drop', question: "Eles são: ______.", topic: "Verb To Be", hint: "DICA 1: Eles = They.", hint_2: "DICA 2: Verbo to be = are.", options: ["They are", "They is", "We are"], answer: "They are", rationale: "They are significa eles são." },
+        { type: 'drag-drop', question: "O país é ______.", topic: "Countries", hint: "DICA 1: Onde nasce um Italian.", hint_2: "DICA 2: Itália.", options: ["Italy", "India", "France"], answer: "Italy", rationale: "Italy é Itália." },
+        { type: 'drag-drop', question: "O plural de 'I' é ______.", topic: "Verb To Be", hint: "DICA 1: Significa nós.", hint_2: "DICA 2: Começa com W.", options: ["We", "They", "You"], answer: "We", rationale: "We é o plural de I." },
+        { type: 'drag-drop', question: "A pessoa do Japão é ______.", topic: "Nationalities", hint: "DICA 1: Começa com J.", hint_2: "DICA 2: Termina com ese.", options: ["Japanese", "Chinese", "French"], answer: "Japanese", rationale: "Japonês é Japanese." },
+        { type: 'drag-drop', question: "Nós somos: ______.", topic: "Verb To Be", hint: "DICA 1: Nós = We.", hint_2: "DICA 2: Verbo = are.", options: ["We are", "We is", "They are"], answer: "We are", rationale: "We are é nós somos." },
+        { type: 'drag-drop', question: "O país é ______.", topic: "Countries", hint: "DICA 1: Onde nasce um Chinese.", hint_2: "DICA 2: China.", options: ["China", "Indian", "Japanese"], answer: "China", rationale: "China é o país." },
+        { type: 'drag-drop', question: "O pronome para um gato é ______.", topic: "Verb To Be", hint: "DICA 1: Animal.", hint_2: "DICA 2: Começa com I.", options: ["It", "He", "She"], answer: "It", rationale: "It é para animais." },
+        { type: 'drag-drop', question: "O país é ______.", topic: "Countries", hint: "DICA 1: Onde nasce um French.", hint_2: "DICA 2: França.", options: ["France", "Spain", "Italy"], answer: "France", rationale: "France é França." },
+        { type: 'drag-drop', question: "Eu sou: ______.", topic: "Verb To Be", hint: "DICA 1: Eu = I.", hint_2: "DICA 2: Verbo = am.", options: ["I am", "I are", "We are"], answer: "I am", rationale: "I am é eu sou." },
+
+        // --- 31-40: FILL IN ---
+        { type: 'fill-in', question: "Complete: 'She ____ from India'.", topic: "Verb To Be", hint: "DICA 1: Singular.", hint_2: "DICA 2: Verbo para She.", answer: ["is", "Is"], rationale: "She is." },
+        { type: 'fill-in', question: "Complete: 'They ____ from Spain'.", topic: "Verb To Be", hint: "DICA 1: Plural.", hint_2: "DICA 2: Verbo para They.", answer: ["are", "Are"], rationale: "They are." },
+        { type: 'fill-in', question: "Nacionalidade de quem nasce na França?", topic: "Nationalities", hint: "DICA 1: Começa com F.", hint_2: "DICA 2: Francês.", answer: ["french", "French"], rationale: "French." },
+        { type: 'fill-in', question: "País de alguém 'Indian'?", topic: "Countries", hint: "DICA 1: Começa com I.", hint_2: "DICA 2: Índia.", answer: ["india", "India"], rationale: "India." },
+        { type: 'fill-in', question: "Complete: '____ you from Italy?'", topic: "Verb To Be", hint: "DICA 1: Verbo para You.", hint_2: "DICA 2: Are.", answer: ["are", "Are"], rationale: "Are you from Italy?" },
+        { type: 'fill-in', question: "Escreva em inglês: Eu estou.", topic: "Verb To Be", hint: "DICA 1: I am.", hint_2: "DICA 2: Contraído.", answer: ["i'm", "I'm"], rationale: "I'm." },
+        { type: 'fill-in', question: "Escreva em inglês: Ele é (curto).", topic: "Verb To Be", hint: "DICA 1: He's.", hint_2: "DICA 2: He is.", answer: ["he's", "He's"], rationale: "He's." },
+        { type: 'fill-in', question: "Qual o país do 'Japanese'?", topic: "Countries", hint: "DICA 1: Começa com J.", hint_2: "DICA 2: Japão.", answer: ["japan", "Japan"], rationale: "Japan." },
+        { type: 'fill-in', question: "Negativa de 'is' (curto).", topic: "Verb To Be", hint: "DICA 1: Isn't.", hint_2: "DICA 2: is not.", answer: ["isn't", "Isn't"], rationale: "Isn't." },
+        { type: 'fill-in', question: "Nacionalidade de quem nasce no Brasil?", topic: "Nationalities", hint: "DICA 1: Começa com B.", hint_2: "DICA 2: Brasileiro.", answer: ["brazilian", "Brazilian"], rationale: "Brazilian." }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>

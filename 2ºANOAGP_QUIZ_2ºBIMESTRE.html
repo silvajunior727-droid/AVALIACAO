@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 2º ANO (2º BIMESTRE)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 50px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            min-height: 400px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: salmon;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+
+        .question-card, .results-card, .intro-card {
+            display: none;
+            flex-direction: column;
+        }
+
+        .intro-card {
+            display: flex;
+            text-align: center;
+        }
+
+        .intro-card input {
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            text-transform: uppercase;
+        }
+
+        .topic-summary {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00bcd4;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-item {
+            background-color: #e9ecef;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .option-item:hover {
+            background-color: #e0f7e0;
+        }
+
+        .option-item.correct {
+            background-color: lightgreen;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(144, 238, 144, 0.5);
+            pointer-events: none;
+        }
+
+        .option-item.incorrect {
+            background-color: salmon;
+            color: white;
+            font-weight: bold;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 4px 8px rgba(250, 128, 114, 0.5);
+            pointer-events: none;
+        }
+
+        /* Drag and Drop / Fill in styles */
+        .interactive-area {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            min-width: 200px;
+            min-height: 50px;
+            border: 2px dashed #888;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            font-weight: bold;
+            color: #666;
+            transition: background-color 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background-color: #d1ecf1;
+            border-color: #0c5460;
+        }
+
+        .drag-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .drag-item {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-item:active {
+            transform: scale(0.95);
+        }
+
+        .fill-in-input {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            text-transform: lowercase;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .justification {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid lightgreen;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .next-btn, .skip-btn, .hint-btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            display: none;
+            float: right;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .next-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .skip-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .hint-btn {
+            background-color: salmon;
+            color: white;
+            display: inline-block;
+            float: none;
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid salmon;
+            border-radius: 5px;
+            font-style: italic;
+            display: none;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .start-btn, .restart-btn, .print-btn, .continue-btn {
+            display: inline-block;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn, .print-btn, .continue-btn {
+            background-color: lightgreen;
+            color: #000;
+        }
+
+        .restart-btn {
+            background-color: salmon;
+            color: white;
+        }
+
+        .results-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .results-card h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-card p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .results-card .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: lightgreen;
+            text-shadow: 1px 1px 2px #000;
+            margin-top: 10px;
+        }
+
+        .attempts-counter {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .question-counter {
+            text-align: left;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .incorrect-questions-list {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .incorrect-questions-list h3 {
+            color: salmon;
+            margin-bottom: 15px;
+        }
+
+        .incorrect-question-item {
+            background-color: #fff3f3;
+            border: 1px solid salmon;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @media print {
+            body { background-color: #fff; padding-top: 0; display: block; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: none; min-height: auto; }
+            #intro-card, #quiz-card, .results-actions, .print-btn, .attempts-counter, .question-counter { display: none !important; }
+            #results-card { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="intro-card" class="intro-card">
+            <h1></h1>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 2º ANO (2º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
+            <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
+            <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
+            <div id="start-actions">
+                <button class="start-btn" onclick="quizApp.startQuiz()">Iniciar / Continuar Quiz</button>
+                <button class="continue-btn" onclick="quizApp.jumpToReport()" style="background-color: #ffc107;">Já fiz o Quiz (Ver Relatório)</button>
+            </div>
+        </div>
+
+        <div id="quiz-card" class="question-card">
+            <div class="attempts-counter">Tentativas restantes: <span id="attempts-left">Ilimitadas</span></div>
+            <div class="question-counter">Questão <span id="current-question-num">1</span> de <span id="total-questions"></span></div>
+            
+            <div id="progress-bar-container" style="display: flex; height: 12px; background: #e9ecef; border-radius: 5px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+                <div id="progress-correct" style="width: 0%; background: lightgreen; transition: width 0.3s;"></div>
+                <div id="progress-incorrect" style="width: 0%; background: salmon; transition: width 0.3s;"></div>
+            </div>
+
+            <div id="topic-summary" class="topic-summary"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="interactive-container" class="interactive-area"></div>
+            <ul id="options-list" class="options-list"></ul>
+            
+            <div id="hint-container">
+                <button id="hint-button" class="hint-btn" onclick="quizApp.showHint()">Mostrar Dica</button>
+                <div id="hint-text" class="hint-text"></div>
+            </div>
+            <div id="justification-text" class="justification"></div>
+            <div class="question-actions">
+                <button id="skip-button" class="skip-btn" onclick="quizApp.skipQuestion()">Pular Questão</button>
+                <button id="next-button" class="next-btn" onclick="quizApp.nextQuestion()">Próxima Questão</button>
+            </div>
+        </div>
+
+        <div id="results-card" class="results-card">
+            <h1>Relatório de Desempenho</h1>
+            <p><strong>Nome:</strong> <span id="report-student-name"></span></p>
+            <p><strong>Código de Acesso:</strong> <span id="report-student-code"></span></p>
+            <p><strong>Pontuação:</strong> <span id="score-display" class="score-display"></span> / <span id="total-score"></span></p>
+            <p><strong>Percentual de Acerto:</strong> <span id="percentage-display"></span></p>
+            
+            <div class="results-actions">
+                <button class="restart-btn" onclick="quizApp.restartQuiz()">Reiniciar Teste</button>
+                <button class="print-btn" onclick="window.print()">Imprimir/Salvar Relatório</button>
+            </div>
+            <div id="incorrect-questions-container" class="incorrect-questions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC_SUMMARIES = {
+            "Pets & Skins": "Revisamos os animais de estimação (cat, dog, turtle, etc.) e as partes que cobrem o corpo deles (scales, shell, hair, feather).",
+            "Demonstratives & Sizes": "Aprendemos a usar 'This is' (Este é/Esta é), 'This is not' (Este não é/Esta não é) e os tamanhos 'Big' (Grande) e 'Small' (Pequeno).",
+            "Numbers 1-20": "Contamos de 1 a 20, incluindo palavras como 'eleven' (11), 'twelve' (12) e 'twenty' (20).",
+            "Wild Animals": "Conhecemos animais selvagens, como o elephant, jaguar, kangaroo, gorilla, lion, giraffe e panda.",
+            "Articles & Time": "Treinamos o uso de 'A/An' (um/uma) e aprendemos a ver as horas exatas com a palavra 'o'clock'.",
+            "Prepositions": "Estudamos onde as coisas estão: in (dentro), on (sobre/encima), under (debaixo) e next to (ao lado).",
+            "Family": "Relembramos a família: father, mother, brother, sister, grandfather, grandmother, uncle, cousin.",
+            "Verb To Be": "Acompanhamos o uso de 'It is' para um animal ou objeto, e 'They are' quando falamos de dois ou mais."
+        };
+
+        const quizApp = {
+            currentQuestionIndex: 0,
+            score: 0,
+            hintClicks: 0,
+            validatedStudentName: '',
+            validatedStudentCode: '',
+            incorrectAnswers: [],
+            
+        studentData: {
+                "472XM": "ANA CLARA", 
+                "819TS": "ANNE",
+                "365KS": "BERNARDO ALMEIDA", 
+                "294BS": "BERNARDO CONCEIÇÃO",
+                "581YS": "GHAEL", 
+                "736PF": "HELENA",
+	        "301EL": "MATHEUS",
+                "JR123": "JUNIOR"
+            },
+
+            questions: [
+        // --- 1-10: MULTIPLE CHOICE ---
+        { type: 'mcq', question: "Como dizemos 'Boa tarde' em inglês?", topic: "Greetings", hint: "DICA 1: Usamos após o meio-dia.", hint_2: "DICA 2: A palavra termina com 'noon'.", options: [{ text: "Good morning", isCorrect: false, rationale: "Isso é bom dia." }, { text: "Good afternoon", isCorrect: true, rationale: "Correto! Boa tarde é Good afternoon." }, { text: "Good night", isCorrect: false, rationale: "Isso é boa noite." }, { text: "Hello", isCorrect: false, rationale: "Isso é Olá." }], rationale: "Good afternoon é a saudação correta para a tarde." },
+        { type: 'mcq', question: "O número 11 em inglês é:", topic: "Numbers", hint: "DICA 1: Vem antes do 12.", hint_2: "DICA 2: Começa com E.", options: [{ text: "Twelve", isCorrect: false, rationale: "Twelve é 12." }, { text: "Eleven", isCorrect: true, rationale: "Correto! 11 é Eleven." }, { text: "Ten", isCorrect: false, rationale: "Ten é 10." }, { text: "Thirteen", isCorrect: false, rationale: "Thirteen é 13." }], rationale: "Eleven representa o número 11." },
+        { type: 'mcq', question: "Qual cor é 'Gray'?", topic: "Colors", hint: "DICA 1: É a cor da fumaça.", hint_2: "DICA 2: Está entre o preto e o branco.", options: [{ text: "Preto", isCorrect: false, rationale: "Preto é Black." }, { text: "Cinza", isCorrect: true, rationale: "Correto! Gray é cinza." }, { text: "Rosa", isCorrect: false, rationale: "Rosa é Pink." }, { text: "Verde", isCorrect: false, rationale: "Verde é Green." }], rationale: "Gray é a tradução de cinza." },
+        { type: 'mcq', question: "Qual é o oposto de 'Night' (Noite)?", topic: "Day and Night", hint: "DICA 1: É quando o sol aparece.", hint_2: "DICA 2: Começa com D.", options: [{ text: "Day", isCorrect: true, rationale: "Correto! Dia é Day." }, { text: "Morning", isCorrect: false, rationale: "Manhã é parte do dia." }, { text: "Evening", isCorrect: false, rationale: "Entardecer." }, { text: "Bedtime", isCorrect: false, rationale: "Hora de dormir." }], rationale: "O dia (Day) é o oposto da noite (Night)." },
+        { type: 'mcq', question: "Como se escreve o número 15 em inglês?", topic: "Numbers", hint: "DICA 1: Termina com 'teen'.", hint_2: "DICA 2: Começa com F.", options: [{ text: "Fifty", isCorrect: false, rationale: "Fifty é 50." }, { text: "Fifteen", isCorrect: true, rationale: "Correto! 15 é Fifteen." }, { text: "Five", isCorrect: false, rationale: "Five é 5." }, { text: "Fourteen", isCorrect: false, rationale: "Fourteen é 14." }], rationale: "Fifteen é o número 15." },
+        { type: 'mcq', question: "A saudação 'Good evening' é usada quando:", topic: "Greetings", hint: "DICA 1: O sol está se pondo.", hint_2: "DICA 2: É o início da noite.", options: [{ text: "Acordamos", isCorrect: false, rationale: "Usamos Good morning." }, { text: "Ao anoitecer", isCorrect: true, rationale: "Correto! Good evening é ao anoitecer." }, { text: "Almoçamos", isCorrect: false, rationale: "Usamos Good afternoon." }, { text: "Vamos dormir", isCorrect: false, rationale: "Usamos Good night." }], rationale: "Good evening usamos ao chegar em algum lugar à noite ou anoitecer." },
+        { type: 'mcq', question: "Qual destas palavras significa 'Hora de dormir'?", topic: "Activities", hint: "DICA 1: É uma palavra composta.", hint_2: "DICA 2: Bed significa cama.", options: [{ text: "Daytime", isCorrect: false, rationale: "É durante o dia." }, { text: "Bedtime", isCorrect: true, rationale: "Correto! Bedtime é hora de dormir." }, { text: "Morning", isCorrect: false, rationale: "É manhã." }, { text: "Afternoon", isCorrect: false, rationale: "É tarde." }], rationale: "Bedtime é o termo para hora de dormir." },
+        { type: 'mcq', question: "Como dizemos 'Sim, ele é' para um objeto?", topic: "Structure", hint: "DICA 1: Afirmativa.", hint_2: "DICA 2: It é para objetos.", options: [{ text: "No, it isn't", isCorrect: false, rationale: "Isso é negativo." }, { text: "Yes, it is", isCorrect: true, rationale: "Correto! Yes, it is." }, { text: "Yes, I am", isCorrect: false, rationale: "Isso é para pessoas." }, { text: "No, I am not", isCorrect: false, rationale: "Isso é negativo." }], rationale: "Yes, it is confirma sobre um objeto ou animal." },
+        { type: 'mcq', question: "Qual cor é 'Brown'?", topic: "Colors", hint: "DICA 1: Cor da terra.", hint_2: "DICA 2: Cor do chocolate.", options: [{ text: "Azul", isCorrect: false, rationale: "Azul é Blue." }, { text: "Marrom", isCorrect: true, rationale: "Correto! Brown é marrom." }, { text: "Amarelo", isCorrect: false, rationale: "Amarelo é Yellow." }, { text: "Roxo", isCorrect: false, rationale: "Roxo é Purple." }], rationale: "Brown é a cor marrom." },
+        { type: 'mcq', question: "O número 20 em inglês é:", topic: "Numbers", hint: "DICA 1: Começa com Tw.", hint_2: "DICA 2: Termina com ty.", options: [{ text: "Twelve", isCorrect: false, rationale: "12." }, { text: "Two", isCorrect: false, rationale: "2." }, { text: "Twenty", isCorrect: true, rationale: "Correto! 20 é Twenty." }, { text: "Twenty-one", isCorrect: false, rationale: "21." }], rationale: "Twenty é o número 20." },
+
+        // --- 11-20: TRUE / FALSE ---
+        { type: 'tf', question: "A palavra 'Morning' significa noite.", topic: "Greetings", hint: "DICA 1: Morning é quando o sol nasce.", hint_2: "DICA 2: Noite é Night.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Morning é manhã." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "O número 13 é escrito como 'Thirteen'.", topic: "Numbers", hint: "DICA 1: Vem depois do 12.", hint_2: "DICA 2: Tem 'teen' no final.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! 13 é Thirteen." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "A frase 'No, it isn't' significa 'Sim, ele é'.", topic: "Structure", hint: "DICA 1: 'No' é negação.", hint_2: "DICA 2: 'isn't' é a contração de is not.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! É uma negação." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A cor 'Purple' é azul.", topic: "Colors", hint: "DICA 1: Azul é Blue.", hint_2: "DICA 2: Purple é a cor de uva.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Purple é roxo." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "Atividades escolares acontecem no período 'Daytime'.", topic: "Activities", hint: "DICA 1: Daytime é dia.", hint_2: "DICA 2: Escola é de dia.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Daytime é dia." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "O número 16 é escrito como 'Sixteen'.", topic: "Numbers", hint: "DICA 1: Six é seis.", hint_2: "DICA 2: O final é teen.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! 16 é Sixteen." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "Good night é a saudação que usamos ao chegar em uma festa à noite.", topic: "Greetings", hint: "DICA 1: Good night é despedida.", hint_2: "DICA 2: Para chegar à noite usamos Good evening.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Good night é despedida." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "A palavra 'Day' significa dia.", topic: "Day and Night", hint: "DICA 1: Day é quando tem sol.", hint_2: "DICA 2: É o oposto de noite.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! Day é dia." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+        { type: 'tf', question: "A cor 'Black' significa branco.", topic: "Colors", hint: "DICA 1: Branco é White.", hint_2: "DICA 2: Black é a cor da escuridão.", options: [{ text: "Falso", isCorrect: true, rationale: "Correto! Black é preto." }, { text: "Verdadeiro", isCorrect: false, rationale: "Errado." }], answer: false },
+        { type: 'tf', question: "O número 19 é 'Nineteen'.", topic: "Numbers", hint: "DICA 1: Nine é nove.", hint_2: "DICA 2: A escrita é correta.", options: [{ text: "Verdadeiro", isCorrect: true, rationale: "Correto! 19 é Nineteen." }, { text: "Falso", isCorrect: false, rationale: "Errado." }], answer: true },
+
+        // --- 21-25: DRAG AND DROP ---
+        { type: 'drag-drop', question: "O número dezesseis é ______.", topic: "Numbers", hint: "DICA 1: Tem sixteen.", hint_2: "DICA 2: Começa com S.", options: ["Sixteen", "Sixty", "Seven"], answer: "Sixteen", rationale: "16 é Sixteen." },
+        { type: 'drag-drop', question: "A cor roxa em inglês é ______.", topic: "Colors", hint: "DICA 1: É cor de uva.", hint_2: "DICA 2: Começa com P.", options: ["Purple", "Pink", "Blue"], answer: "Purple", rationale: "Roxo é Purple." },
+        { type: 'drag-drop', question: "O período do dia é ______.", topic: "Day and Night", hint: "DICA 1: É dia.", hint_2: "DICA 2: Começa com D.", options: ["Daytime", "Nighttime", "Evening"], answer: "Daytime", rationale: "Daytime é o período do dia." },
+        { type: 'drag-drop', question: "O número 12 em inglês é ______.", topic: "Numbers", hint: "DICA 1: Começa com T.", hint_2: "DICA 2: Termina com ve.", options: ["Twelve", "Two", "Twenty"], answer: "Twelve", rationale: "12 é Twelve." },
+        { type: 'drag-drop', question: "A saudação da tarde é ______.", topic: "Greetings", hint: "DICA 1: Começa com Good.", hint_2: "DICA 2: Tarde é Afternoon.", options: ["Good afternoon", "Good morning", "Good night"], answer: "Good afternoon", rationale: "Boa tarde é Good afternoon." },
+
+        // --- 26-30: FILL IN ---
+        { type: 'fill-in', question: "Escreva em inglês a cor PRETA.", topic: "Colors", hint: "DICA 1: Começa com B.", hint_2: "DICA 2: Termina com k.", answer: ["black", "Black"], rationale: "Preto é Black." },
+        { type: 'fill-in', question: "Como se escreve o número 18 em inglês?", topic: "Numbers", hint: "DICA 1: Começa com Eight.", hint_2: "DICA 2: Termina com een.", answer: ["eighteen", "Eighteen"], rationale: "18 é Eighteen." },
+        { type: 'fill-in', question: "Como dizemos 'Noite' em inglês?", topic: "Day and Night", hint: "DICA 1: Palavra de cinco letras.", hint_2: "DICA 2: Começa com N.", answer: ["night", "Night"], rationale: "Noite é Night." },
+        { type: 'fill-in', question: "Complete: 'It _____ a ball' (afirmativo).", topic: "Structure", hint: "DICA 1: Verbo to be para 'It'.", hint_2: "DICA 2: Tem duas letras.", answer: ["is", "Is"], rationale: "Usamos is para It." },
+        { type: 'fill-in', question: "Qual a saudação para a manhã?", topic: "Greetings", hint: "DICA 1: Começa com Good.", hint_2: "DICA 2: Manhã é Morning.", answer: ["morning", "Morning"], rationale: "Bom dia é Good morning." }
+    ],
+
+            init() {
+                this.elements = {
+                    studentCodeInput: document.getElementById('student-code'),
+                    introCard: document.getElementById('intro-card'),
+                    quizCard: document.getElementById('quiz-card'),
+                    resultsCard: document.getElementById('results-card'),
+                    topicSummary: document.getElementById('topic-summary'),
+                    questionText: document.getElementById('question-text'),
+                    optionsList: document.getElementById('options-list'),
+                    interactiveContainer: document.getElementById('interactive-container'),
+                    nextButton: document.getElementById('next-button'),
+                    skipButton: document.getElementById('skip-button'),
+                    hintButton: document.getElementById('hint-button'),
+                    hintText: document.getElementById('hint-text'),
+                    justificationText: document.getElementById('justification-text'),
+                    currentQuestionNumSpan: document.getElementById('current-question-num'),
+                    totalQuestionsSpan: document.getElementById('total-questions'),
+                    scoreDisplay: document.getElementById('score-display'),
+                    totalScoreDisplay: document.getElementById('total-score'),
+                    percentageDisplay: document.getElementById('percentage-display'),
+                    reportStudentName: document.getElementById('report-student-name'),
+                    reportStudentCode: document.getElementById('report-student-code'),
+                    incorrectQuestionsContainer: document.getElementById('incorrect-questions-container'),
+                    progressCorrect: document.getElementById('progress-correct'),
+                    progressIncorrect: document.getElementById('progress-incorrect')
+                };
+                this.elements.totalQuestionsSpan.textContent = this.questions.length;
+                this.elements.totalScoreDisplay.textContent = this.questions.length;
+            },
+
+            jumpToReport() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        this.validatedStudentCode = code;
+                        this.validatedStudentName = this.studentData[code];
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        this.elements.introCard.style.display = 'none';
+                        this.showResults();
+                    } else {
+                        alert('Nenhum relatório final salvo encontrado para este código. Por favor, inicie o quiz.');
+                    }
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            updateProgress() {
+                const total = this.questions.length;
+                const correctPerc = (this.score / total) * 100;
+                const incorrectPerc = (this.incorrectAnswers.length / total) * 100;
+                this.elements.progressCorrect.style.width = `${correctPerc}%`;
+                this.elements.progressIncorrect.style.width = `${incorrectPerc}%`;
+            },
+
+            saveProgress() {
+                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                    currentIndex: this.currentQuestionIndex,
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+            },
+
+            clearProgress() {
+                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+            },
+
+            startQuiz() {
+                const code = this.elements.studentCodeInput.value.trim().toUpperCase();
+                if (this.studentData[code]) {
+                    this.validatedStudentCode = code;
+                    this.validatedStudentName = this.studentData[code];
+                    this.elements.introCard.style.display = 'none';
+                    this.elements.quizCard.style.display = 'flex';
+
+                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    if (savedProgress) {
+                        const data = JSON.parse(savedProgress);
+                        this.currentQuestionIndex = data.currentIndex;
+                        this.score = data.score;
+                        this.incorrectAnswers = data.incorrectAnswers;
+                        
+                        if(this.currentQuestionIndex >= this.questions.length) {
+                            this.currentQuestionIndex = 0;
+                            this.score = 0;
+                            this.incorrectAnswers = [];
+                        }
+                    } else {
+                        this.currentQuestionIndex = 0;
+                        this.score = 0;
+                        this.incorrectAnswers = [];
+                    }
+
+                    this.loadQuestion();
+                    this.updateProgress();
+                } else {
+                    alert('Código de acesso inválido! Tente novamente.');
+                }
+            },
+
+            loadQuestion() {
+                this.hintClicks = 0;
+                this.elements.hintText.style.display = 'none';
+                this.elements.justificationText.style.display = 'none';
+                this.elements.nextButton.style.display = 'none';
+                this.elements.skipButton.style.display = 'inline-block';
+                this.elements.optionsList.innerHTML = '';
+                this.elements.interactiveContainer.innerHTML = '';
+                this.elements.interactiveContainer.style.display = 'none';
+
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.currentQuestionNumSpan.textContent = this.currentQuestionIndex + 1;
+                
+                // Show Topic Summary
+                if(TOPIC_SUMMARIES[currentQ.topic]) {
+                    this.elements.topicSummary.style.display = 'block';
+                    this.elements.topicSummary.innerHTML = `<strong>Tópico: ${currentQ.topic}</strong><br>${TOPIC_SUMMARIES[currentQ.topic]}`;
+                } else {
+                    this.elements.topicSummary.style.display = 'none';
+                }
+
+                this.elements.questionText.textContent = currentQ.question;
+                
+                // Reset Hint text logic
+                this.elements.hintText.innerHTML = ""; 
+
+                // Process Question Types
+                if (currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    currentQ.options.forEach((opt) => {
+                        const li = document.createElement('li');
+                        li.className = 'option-item';
+                        li.textContent = opt.text;
+                        li.onclick = () => this.handleSelection(opt.isCorrect, opt.text, currentQ.question, opt.rationale, li);
+                        this.elements.optionsList.appendChild(li);
+                    });
+                } else if (currentQ.type === 'drag-drop') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const dropZone = document.createElement('div');
+                    dropZone.className = 'drop-zone';
+                    dropZone.id = 'drop-zone';
+                    dropZone.textContent = "Arraste ou Clique para responder";
+                    
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.className = 'drag-options';
+
+                    // Logic for drop zone
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        const data = e.dataTransfer.getData('text/plain');
+                        this.processDragDropAnswer(data, dropZone, currentQ);
+                    });
+
+                    currentQ.options.forEach(optText => {
+                        const dragItem = document.createElement('div');
+                        dragItem.className = 'drag-item';
+                        dragItem.textContent = optText;
+                        dragItem.draggable = true;
+                        
+                        dragItem.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', optText);
+                        });
+
+                        // Clicar para preencher
+                        dragItem.addEventListener('click', () => {
+                            this.processDragDropAnswer(optText, dropZone, currentQ);
+                        });
+
+                        optionsContainer.appendChild(dragItem);
+                    });
+
+                    this.elements.interactiveContainer.appendChild(dropZone);
+                    this.elements.interactiveContainer.appendChild(optionsContainer);
+
+                } else if (currentQ.type === 'fill-in') {
+                    this.elements.interactiveContainer.style.display = 'flex';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'fill-in-input';
+                    input.placeholder = 'Digite a palavra...';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'submit-btn';
+                    btn.textContent = 'Confirmar';
+                    btn.onclick = () => {
+                        const val = input.value.trim().toLowerCase();
+                        if(val === "") return;
+                        input.disabled = true;
+                        btn.style.display = 'none';
+                        const isCorrect = currentQ.answer.includes(val);
+                        this.handleSelection(isCorrect, val, currentQ.question, currentQ.rationale, null);
+                    };
+
+                    this.elements.interactiveContainer.appendChild(input);
+                    this.elements.interactiveContainer.appendChild(btn);
+                }
+            },
+
+            processDragDropAnswer(userText, dropZone, currentQ) {
+                if(dropZone.getAttribute('data-answered') === 'true') return;
+                dropZone.setAttribute('data-answered', 'true');
+                dropZone.textContent = userText;
+                
+                const isCorrect = (userText === currentQ.answer);
+                if(isCorrect) {
+                    dropZone.style.backgroundColor = 'lightgreen';
+                    dropZone.style.color = '#000';
+                } else {
+                    dropZone.style.backgroundColor = 'salmon';
+                    dropZone.style.color = '#fff';
+                }
+
+                // Desabilitar itens para não clicar de novo
+                const items = this.elements.interactiveContainer.querySelectorAll('.drag-item');
+                items.forEach(i => { i.style.pointerEvents = 'none'; i.style.opacity = '0.6'; });
+
+                this.handleSelection(isCorrect, userText, currentQ.question, currentQ.rationale, null);
+            },
+
+            handleSelection(isCorrect, userText, questionText, rationale, htmlElement) {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                // Block other options in MCQ/TF
+                if(htmlElement) {
+                    const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                    allOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                }
+
+                this.elements.skipButton.style.display = 'none';
+                this.elements.nextButton.style.display = 'inline-block';
+                
+                this.elements.justificationText.style.display = 'block';
+                this.elements.justificationText.innerHTML = `<strong>Justificativa:</strong> ${rationale}`;
+
+                if (isCorrect) {
+                    if(htmlElement) htmlElement.classList.add('correct');
+                    this.score++;
+                } else {
+                    if(htmlElement) {
+                        htmlElement.classList.add('incorrect');
+                        // Show correct option
+                        const allOptions = this.elements.optionsList.querySelectorAll('.option-item');
+                        allOptions.forEach(opt => {
+                            if(currentQ.options && currentQ.options.find(o => o.text === opt.textContent && o.isCorrect)) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // Determinar a resposta correta para o relatório
+                    let correctAnswerText = "Ver Justificativa";
+                    if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                        const correctOpt = currentQ.options.find(o => o.isCorrect);
+                        if(correctOpt) correctAnswerText = correctOpt.text;
+                    } else if (currentQ.type === 'drag-drop') {
+                        correctAnswerText = currentQ.answer;
+                    } else if (currentQ.type === 'fill-in') {
+                        correctAnswerText = currentQ.answer.join(" ou ");
+                    }
+
+                    this.incorrectAnswers.push({
+                        q: questionText,
+                        userAnswer: userText,
+                        correctAnswer: correctAnswerText,
+                        justification: rationale
+                    });
+                }
+                
+                this.updateProgress();
+            },
+
+            showHint() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                this.elements.hintText.style.display = 'block';
+                
+                if(this.hintClicks === 0) {
+                    this.elements.hintText.innerHTML = currentQ.hint;
+                    this.hintClicks++;
+                } else if(this.hintClicks === 1 && currentQ.hint_2) {
+                    this.elements.hintText.innerHTML += `<br><br>${currentQ.hint_2}`;
+                    this.hintClicks++;
+                }
+            },
+
+            skipQuestion() {
+                const currentQ = this.questions[this.currentQuestionIndex];
+                
+                let correctAnswerText = "Ver Justificativa";
+                let rationaleText = currentQ.rationale || "";
+
+                if(currentQ.type === 'mcq' || currentQ.type === 'tf') {
+                    const correctOpt = currentQ.options.find(o => o.isCorrect);
+                    if(correctOpt) {
+                        correctAnswerText = correctOpt.text;
+                        rationaleText = correctOpt.rationale;
+                    }
+                } else if (currentQ.type === 'drag-drop') {
+                    correctAnswerText = currentQ.answer;
+                } else if (currentQ.type === 'fill-in') {
+                    correctAnswerText = currentQ.answer.join(" ou ");
+                }
+
+                this.incorrectAnswers.push({
+                    q: currentQ.question,
+                    userAnswer: "Pulou a questão",
+                    correctAnswer: correctAnswerText,
+                    justification: rationaleText
+                });
+                
+                this.updateProgress();
+                this.nextQuestion();
+            },
+
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.saveProgress();
+                    this.loadQuestion();
+                } else {
+                    this.clearProgress();
+                    this.showResults();
+                }
+            },
+
+            showResults() {
+                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                    score: this.score,
+                    incorrectAnswers: this.incorrectAnswers
+                }));
+
+                this.elements.quizCard.style.display = 'none';
+                this.elements.resultsCard.style.display = 'block';
+                
+                this.elements.reportStudentName.textContent = this.validatedStudentName;
+                this.elements.reportStudentCode.textContent = this.validatedStudentCode;
+                this.elements.scoreDisplay.textContent = this.score;
+                
+                const percentage = ((this.score / this.questions.length) * 100).toFixed(1);
+                this.elements.percentageDisplay.textContent = `${percentage}%`;
+
+                this.elements.incorrectQuestionsContainer.innerHTML = '<h3>Questões Incorretas / Puladas:</h3>';
+                if (this.incorrectAnswers.length === 0) {
+                    this.elements.incorrectQuestionsContainer.innerHTML += '<p>Parabéns! Você não errou nenhuma questão.</p>';
+                } else {
+                    this.incorrectAnswers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'incorrect-question-item';
+                        div.innerHTML = `
+                            <p><strong>Questão:</strong> ${item.q}</p>
+                            <p><strong>Sua Resposta:</strong> <span style="color: salmon;">${item.userAnswer}</span></p>
+                            <p><strong>Resposta Correta:</strong> <span style="color: #2e8b57;">${item.correctAnswer}</span></p>
+                            <p style="margin-top: 10px; font-size: 0.9em; background: #fff; padding: 10px; border-left: 4px solid lightgreen;"> 
+                                ${item.justification}
+                            </p>
+                        `;
+                        this.elements.incorrectQuestionsContainer.appendChild(div);
+                    });
+                }
+            },
+
+            restartQuiz() {
+                this.clearProgress();
+                this.currentQuestionIndex = 0;
+                this.score = 0;
+                this.incorrectAnswers = [];
+                this.elements.resultsCard.style.display = 'none';
+                this.elements.introCard.style.display = 'flex';
+                this.elements.studentCodeInput.value = '';
+                
+                if(this.elements.progressCorrect) this.elements.progressCorrect.style.width = '0%';
+                if(this.elements.progressIncorrect) this.elements.progressIncorrect.style.width = '0%';
+            }
+        };
+
+        window.onload = function() {
+            quizApp.init();
+        };
+    </script>
+</body>
+</html>
