@@ -5,86 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Central de Atividades - 2º Bimestre</title>
     <style>
-        /* Estilos Gerais */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        /* O Container Principal */
-        .container {
-            background-color: white;
-            width: 100%;
-            max-width: 600px;
-            margin: 20px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        /* Cabeçalho */
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 20px;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 24px;
-        }
-
-        p.subtitle {
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
-        /* A Lista de Links */
-        .quiz-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* O visual de cada Botão/Link */
-        .quiz-link {
-            display: block;
-            text-decoration: none;
-            background-color: #3498db;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            transition: transform 0.2s, background-color 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .quiz-link:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        /* Seta no final do botão */
-        .arrow {
-            font-size: 1.2em;
-        }
-
-        /* Rodapé */
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 12px;
-            color: #bdc3c7;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .container { background-color: white; width: 100%; max-width: 600px; margin: 20px; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        h1 { color: #2c3e50; margin: 0; font-size: 24px; }
+        p.subtitle { color: #7f8c8d; margin-top: 5px; }
+        .quiz-list { display: flex; flex-direction: column; gap: 10px; }
+        .quiz-link { display: block; text-decoration: none; background-color: #3498db; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; transition: transform 0.2s, background-color 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .quiz-link:hover { background-color: #2980b9; transform: translateY(-2px); }
+        .arrow { font-size: 1.2em; }
+        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #bdc3c7; }
     </style>
 </head>
 <body>
@@ -92,101 +22,28 @@
     <div class="container">
         <header>
             <h1>Central de Atividades</h1>
-            <p class="subtitle">Selecione um exercício abaixo para começar - 2º Bimestre:</p>
+            <p class="subtitle">Selecione sua turma - 2º Bimestre:</p>
         </header>
 
         <div class="quiz-list">
-
-            <a href="1ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 1º Ano AGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="1ºANOBGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 1º Ano BGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="1ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 1º Ano Médio - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="2ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 2º Ano AGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="2ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 2º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="2ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 2º Ano Médio - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="3ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 3º Ano AGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="3ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 3º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="3ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 3º Ano Médio - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="4ºANOABGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 4º Ano ABGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="4ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 4º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="5ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 5º Ano AGP - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="5ºANOA_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 5º Ano A - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="5ºANOB_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 5º Ano B - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="6ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 6º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="7ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 7º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="8ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 8º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
-            <a href="9ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link">
-                <span>📝 9º Ano - Inglês</span>
-                <span class="arrow">→</span>
-            </a>
-
+            <a href="1ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 1º Ano AGP</span><span class="arrow">→</span></a>
+            <a href="1ºANOBGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 1º Ano BGP</span><span class="arrow">→</span></a>
+            <a href="1ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 1º Ano Médio</span><span class="arrow">→</span></a>
+            <a href="2ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 2º Ano</span><span class="arrow">→</span></a>
+            <a href="2ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 2º Ano AGP</span><span class="arrow">→</span></a>
+            <a href="2ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 2º Ano Médio</span><span class="arrow">→</span></a>
+            <a href="3ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 3º Ano</span><span class="arrow">→</span></a>
+            <a href="3ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 3º Ano AGP</span><span class="arrow">→</span></a>
+            <a href="3ºM_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 3º Ano Médio</span><span class="arrow">→</span></a>
+            <a href="4ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 4º Ano</span><span class="arrow">→</span></a>
+            <a href="4ºANOABGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 4º Ano ABGP</span><span class="arrow">→</span></a>
+            <a href="5ºANOA_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 5º Ano A</span><span class="arrow">→</span></a>
+            <a href="5ºANOAGP_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 5º Ano AGP</span><span class="arrow">→</span></a>
+            <a href="5ºANOB_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 5º Ano B</span><span class="arrow">→</span></a>
+            <a href="6ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 6º Ano</span><span class="arrow">→</span></a>
+            <a href="7ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 7º Ano</span><span class="arrow">→</span></a>
+            <a href="8ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 8º Ano</span><span class="arrow">→</span></a>
+            <a href="9ºANO_QUIZ_2ºBIMESTRE.html" class="quiz-link"><span>📝 9º Ano</span><span class="arrow">→</span></a>
         </div>
         <footer>
             <p>Bons estudos!</p>
