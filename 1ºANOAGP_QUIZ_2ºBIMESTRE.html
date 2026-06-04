@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 1º ANO (2º BIMESTRE)</title>
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 1º ANO AGP (2º BIMESTRE)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -349,7 +349,7 @@
     <div class="container">
         <div id="intro-card" class="intro-card">
             <h1></h1>
-            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 1º ANO (2º BIMESTRE)</h2>
+            <h2>AVALIAÇÃO DE LÍNGUA INGLESA - 1º ANO AGP (2º BIMESTRE)</h2>
             <p id="personalized-welcome" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px; color: salmon;">Olá, Aluno (a) - grato por sua visita!!!</p>
             <p id="quiz-description">Por favor, insira seu código de acesso para iniciar a avaliação ou continuar de onde parou. Este teste aborda o conteúdo completo do Bimestre.</p>
             <input type="text" id="student-code" placeholder="Digite seu Código de Acesso">
@@ -505,7 +505,7 @@
             jumpToReport() {
                 const code = this.elements.studentCodeInput.value.trim().toUpperCase();
                 if (this.studentData[code]) {
-                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    const savedData = localStorage.getItem('1anoagp_report_' + code);
                     if (savedData) {
                         const data = JSON.parse(savedData);
                         this.validatedStudentCode = code;
@@ -531,7 +531,7 @@
             },
 
             saveProgress() {
-                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                localStorage.setItem('1anoagp_progress_' + this.validatedStudentCode, JSON.stringify({
                     currentIndex: this.currentQuestionIndex,
                     score: this.score,
                     incorrectAnswers: this.incorrectAnswers
@@ -539,7 +539,7 @@
             },
 
             clearProgress() {
-                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+                localStorage.removeItem('1anoagp_progress_' + this.validatedStudentCode);
             },
 
             startQuiz() {
@@ -550,7 +550,7 @@
                     this.elements.introCard.style.display = 'none';
                     this.elements.quizCard.style.display = 'flex';
 
-                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    const savedProgress = localStorage.getItem('1anoagp_progress_' + code);
                     if (savedProgress) {
                         const data = JSON.parse(savedProgress);
                         this.currentQuestionIndex = data.currentIndex;
@@ -807,7 +807,7 @@
             },
 
             showResults() {
-                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                localStorage.setItem('1anoagp_report_' + this.validatedStudentCode, JSON.stringify({
                     score: this.score,
                     incorrectAnswers: this.incorrectAnswers
                 }));
