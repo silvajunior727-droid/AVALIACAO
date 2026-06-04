@@ -428,6 +428,7 @@
                 "581YS": "ISRAEL", 
                 "736PF": "JOAQUIM",
 	        "301EL": "LUCCA",
+		"425OP": "MANUELLA",
                 "158DJ": "MARIA VITÓRIA", 
                 "627WE": "NAYA", 
                 "862XM": "VALENTIM", 
@@ -507,7 +508,7 @@
             jumpToReport() {
                 const code = this.elements.studentCodeInput.value.trim().toUpperCase();
                 if (this.studentData[code]) {
-                    const savedData = localStorage.getItem('masterclass_report_' + code);
+                    const savedData = localStorage.getItem('1anobgp_report_' + code);
                     if (savedData) {
                         const data = JSON.parse(savedData);
                         this.validatedStudentCode = code;
@@ -533,7 +534,7 @@
             },
 
             saveProgress() {
-                localStorage.setItem('masterclass_progress_' + this.validatedStudentCode, JSON.stringify({
+                localStorage.setItem('1anobgp_progress_' + this.validatedStudentCode, JSON.stringify({
                     currentIndex: this.currentQuestionIndex,
                     score: this.score,
                     incorrectAnswers: this.incorrectAnswers
@@ -541,7 +542,7 @@
             },
 
             clearProgress() {
-                localStorage.removeItem('masterclass_progress_' + this.validatedStudentCode);
+                localStorage.removeItem('1anobgp_progress_' + this.validatedStudentCode);
             },
 
             startQuiz() {
@@ -552,7 +553,7 @@
                     this.elements.introCard.style.display = 'none';
                     this.elements.quizCard.style.display = 'flex';
 
-                    const savedProgress = localStorage.getItem('masterclass_progress_' + code);
+                    const savedProgress = localStorage.getItem('1anobgp_progress_' + code);
                     if (savedProgress) {
                         const data = JSON.parse(savedProgress);
                         this.currentQuestionIndex = data.currentIndex;
@@ -628,7 +629,7 @@
                         e.preventDefault();
                         dropZone.classList.add('dragover');
                     });
-                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+                    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover')); 
                     dropZone.addEventListener('drop', (e) => {
                         e.preventDefault();
                         dropZone.classList.remove('dragover');
@@ -809,7 +810,7 @@
             },
 
             showResults() {
-                localStorage.setItem('masterclass_report_' + this.validatedStudentCode, JSON.stringify({
+                localStorage.setItem('1anobgp_report_' + this.validatedStudentCode, JSON.stringify({
                     score: this.score,
                     incorrectAnswers: this.incorrectAnswers
                 }));
