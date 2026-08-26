@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 4º ANO (3º BIMESTRE)</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ESTILOS GERAIS E FUNDO ELEGANTE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 850px;
+            min-height: 400px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin-bottom: 5px; }
+        h2 { text-align: center; color: #7f8c8d; font-size: 1.2rem; margin-top: 0; }
+
+        .card { display: none; flex-direction: column; }
+        .active-card { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* INPUTS E FILTROS */
+        input[type="text"] {
+            padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; width: 100%; box-sizing: border-box;
+            font-size: 1.1rem; text-align: center; transition: border-color 0.3s;
+        }
+        input[type="text"]:focus { border-color: #90EE90; outline: none; }
+
+        /* --------------------------------------------------- */
+        /* BOTÕES 3D (Com Borda Baixa)                         */
+        /* --------------------------------------------------- */
+        .btn-3d {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; padding: 12px 25px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 10px;
+        }
+        .btn-green {
+            background-color: #90EE90; color: #2c3e50;
+            box-shadow: 0 6px 0 #75c975;
+        }
+        .btn-green:active { transform: translateY(6px); box-shadow: 0 0 0 #75c975; }
+
+        .btn-salmon {
+            background-color: #FA8072; color: white;
+            box-shadow: 0 6px 0 #d9695d;
+        }
+        .btn-salmon:active { transform: translateY(6px); box-shadow: 0 0 0 #d9695d; }
+
+        .btn-blue {
+            background-color: #3498db; color: white;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #2980b9; }
+
+        /* ESTILOS DOS BOTÕES DO RODAPÉ DA QUESTÃO (TAMANHOS UNIFORMES) */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-quiz-action {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 0.95rem; padding: 10px 18px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 0;
+        }
+        .btn-report-quiz {
+            background-color: #3498db; color: white; box-shadow: 0 5px 0 #2980b9;
+        }
+        .btn-report-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #2980b9; }
+
+        .btn-hint-quiz {
+            background-color: #6a0dad; color: white; box-shadow: 0 5px 0 #4c0880;
+        }
+        .btn-hint-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #4c0880; }
+
+        /* BARRA DE PROGRESSO */
+        .progress-container {
+            width: 100%; background-color: #e9ecef; border-radius: 10px;
+            height: 12px; margin-bottom: 20px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background-color: #90EE90; width: 0%;
+            transition: width 0.4s ease-out; border-radius: 10px;
+        }
+
+        /* ÁREA DA QUESTÃO */
+        .question-text { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .question-counter { text-align: left; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        #hint-text {
+            margin-top: 15px; padding: 12px; background-color: #f8f9fa;
+            border-left: 5px solid #6a0dad; border-radius: 5px; font-style: italic; display: none;
+        }
+
+        /* 1. Múltipla Escolha */
+        .option-btn {
+            background-color: #f8f9fa; border: 2px solid #e0e0e0; padding: 15px;
+            margin-bottom: 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; width: 100%; text-align: left; font-size: 1.1rem;
+        }
+        .option-btn:hover { background-color: #f1f3f5; border-color: #ccc; }
+        .option-btn.selected { background-color: #e8f5e9; border-color: #90EE90; font-weight: bold; transform: scale(1.01); box-shadow: 0 4px 10px rgba(144, 238, 144, 0.2);}
+
+        /* 2. Verdadeiro ou Falso */
+        .tf-container { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .tf-btn { padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background-color: #f8f9fa; transition: all 0.2s; width: 45%; }
+        .tf-btn.selected-true { background-color: #e8f5e9; border-color: #90EE90; color: #2c3e50; }
+        .tf-btn.selected-false { background-color: #ffeeee; border-color: #FA8072; color: #c0392b; }
+
+        /* 3. Digitação */
+        .typing-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
+        .typing-input {
+            padding: 15px; font-size: 1.3rem; border: 2px solid #ccc; border-radius: 8px;
+            width: 80%; text-align: center; text-transform: lowercase;
+        }
+        .typing-input:focus { border-color: #90EE90; outline: none; }
+
+        /* 4. Arrastar e Soltar */
+        .drag-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0;}
+        .sentence-display { font-size: 1.3rem; margin-bottom: 25px; line-height: 2; }
+        .drop-zone { display: inline-block; min-width: 80px; min-height: 30px; border-bottom: 3px dashed #7f8c8d; margin: 0 10px; padding: 0 10px; color: #3498db; font-weight: bold; cursor: pointer; transition: all 0.3s;}
+        .drop-zone:hover { border-bottom-color: #3498db; }
+        .words-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-word { background-color: #3498db; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;}
+        .drag-word:active { transform: translateY(4px); box-shadow: 0 0 0 #2980b9;}
+        .drag-word.used { background-color: #bdc3c7; box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* DASHBOARD E TABELA */
+        .styled-table { border-collapse: collapse; margin: 20px 0; font-size: 0.95em; width: 100%; box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 8px; overflow: hidden; }
+        .styled-table thead tr { background-color: #90EE90; color: #2c3e50; text-align: left; cursor: pointer; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .styled-table tbody tr:hover { background-color: #f9f9f9; }
+
+        /* RELATÓRIO FINAL */
+        .results-details { background-color: #fdfbfb; padding: 20px; border-left: 5px solid #90EE90; border-radius: 8px; margin-top: 20px; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        .report-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #eee; background: #fff;}
+        .report-item.correct { border-left: 5px solid #90EE90; }
+        .report-item.incorrect { border-left: 5px solid #FA8072; }
+        .report-rationale { font-size: 0.95rem; color: #7f8c8d; margin-top: 8px; font-style: italic; }
+
+        /* IMPRESSÃO (PDF) */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            .btn-3d, #intro-card, #quiz-card, #dashboard-card, .progress-container, .no-print { display: none !important; }
+            #results-card { display: block !important; }
+            .report-item { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="intro-card" class="card active-card intro-card">
+            <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
+            <h2>4º ANO (3º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
+            <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
+            <input type="text" id="student-code" placeholder="Código de Acesso">
+            <button class="btn-3d btn-green" id="start-btn" onclick="app.startQuiz()">Iniciar Avaliação</button>
+        </div>
+
+        <!-- DASHBOARD MASTER (JR1971) -->
+        <div id="dashboard-card" class="card">
+            <h1 style="color: #FA8072; margin-bottom: 0;">Painel do Professor</h1>
+            <p style="text-align: center; margin-top: 5px;">Acompanhamento em tempo real (Tentativas em linhas separadas).</p>
+            
+            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;" class="no-print">
+                <input type="text" id="filter-input" placeholder="🔍 Filtrar por nome do aluno..." onkeyup="app.filterTable()" style="flex: 1; min-width: 200px; margin-top: 0;">
+                <button class="btn-3d btn-green" onclick="app.exportToCSV()">Salvar Excel</button>
+                <button class="btn-3d btn-salmon" onclick="app.exitMaster()">Sair</button>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="styled-table" id="dashboard-table">
+<thead>
+                        <tr>
+                            <th onclick="app.sortTable(0)">Aluno ↕</th>
+                            <th onclick="app.sortTable(1)">Código ↕</th>
+                            <th onclick="app.sortTable(2)">Série ↕</th> <!-- NOVA COLUNA AQUI -->
+                            <th onclick="app.sortTable(3)">Nota Final ↕</th>
+                            <th onclick="app.sortTable(4)">Data/Hora Tentativa ↕</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA DA AVALIAÇÃO -->
+        <div id="quiz-card" class="card">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="question-counter">Questão <span id="current-q-num">1</span> de <span id="total-q-num">50</span></div>
+            </div>
+            
+            <div id="question-text" class="question-text"></div>
+            <div id="answer-area"></div>
+
+            <div id="hint-container">
+                <div id="hint-text"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <div class="left-actions">
+                    <button class="btn-quiz-action btn-report-quiz" onclick="app.openReportsModal()">📋 Relatório</button>
+                    <button class="btn-quiz-action btn-hint-quiz" onclick="app.showHint()">💡 Dica</button>
+                </div>
+                <div>
+                    <button class="btn-3d btn-green" id="confirm-btn" onclick="app.confirmAnswer()">✔️ Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS / RELATÓRIO INDIVIDUAL -->
+        <div id="results-card" class="card">
+            <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Relatório de Desempenho</h1>
+            <div class="results-details">
+                <p><strong>Aluno(a):</strong> <span id="res-name"></span></p>
+                <p><strong>Acertos:</strong> <span id="res-score"></span> de <span id="res-total">50</span></p>
+                <p><strong>Aproveitamento:</strong> <span id="res-perc"></span>%</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;" class="no-print">
+                <button class="btn-3d btn-green" onclick="window.print()">Salvar PDF (Relatório)</button>
+                <button class="btn-3d btn-blue" onclick="app.backToQuizOrIntro()">Voltar</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #7f8c8d;">Revisão das Questões desta Rodada:</h3>
+            <div id="detailed-report"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO FIREBASE E DADOS
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt9b_YXS9koqsQhyyduaVizPUtDc22KCs",
+            authDomain: "quizzes-dos-colegios.firebaseapp.com",
+            projectId: "quizzes-dos-colegios",
+            storageBucket: "quizzes-dos-colegios.firebasestorage.app",
+            messagingSenderId: "143672230264",
+            appId: "1:143672230264:web:b40c17e2a39e574057888d"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
+        const db = firebase.firestore();
+
+// ==========================================
+        // 1. BLOCO DE ALUNOS - 4º ANO
+        // ==========================================
+        const studentData = {
+            "472AM": "ANA JULIA", 
+            "819AS": "BIANCA",
+            "365AS": "ENRICO", 
+            "294BS": "FABIO GAEL",
+            "581BS": "GUILHERME", 
+            "736DF": "HUGO",
+            "158DG": "JOAQUIM", 
+            "942EN": "JOSE",
+            "627ES": "LEONARDO CAVALCANTE", 
+            "301ES": "LEONARDO FERRAZ",
+            "514HB": "LETICIA", 
+            "892HS": "LILLY",
+            "463HB": "LIVIA", 
+            "275HC": "LORENZO",
+            "184JS": "LUIZA CABRAL",
+            "134NS": "LUNA",
+            "659LB": "MARCOS", 
+            "328LC": "MARIA JULIA",
+            "705LM": "MIGUEL", 
+            "416LG": "RAFAELA",
+            "853MV": "TEO", 
+            "JR123": "JUNIOR"
+        };
+
+        // ==========================================
+        // 2. BANCO DE QUESTÕES COMPLETO (44 QUESTÕES) - 4º ANO
+        // ==========================================
+        const questionsDb = [
+            // --- TÓPICO 1: PARTES DA CASA E OBJETOS (THERE IS / THERE ARE) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual cômodo da casa usamos para dormir?", 
+                hint: "Tem a palavra 'cama' (bed) no nome.", 
+                opts: ["Kitchen", "Bathroom", "Bedroom", "Backyard"], 
+                ans: 2, 
+                rat: "'Bedroom' é o quarto, onde fica a cama." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza para o inglês a palavra JANELA: 'The _______ is open.'", 
+                hint: "Começa com W.", 
+                ans: "window", 
+                rat: "'Window' significa janela." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase afirmativa no plural:", 
+                txtPre: "There", 
+                txtPost: "two bedrooms in my house.", 
+                opts: ["is", "are", "isn't", "aren't"], 
+                ans: "are", 
+                rat: "Usamos 'There are' para indicar existência no plural (dois quartos)." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'There is a big table in the kitchen' significa que há uma cama grande na cozinha.", 
+                hint: "Table não é cama.", 
+                ans: false, 
+                rat: "Falso. Significa que há uma MESA (table) grande na cozinha." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Onde encontramos uma 'armchair' (poltrona)?", 
+                hint: "Fica na sala.", 
+                opts: ["Living room", "Kitchen", "Bathroom", "Roof"], 
+                ans: 0, 
+                rat: "A 'armchair' (poltrona) normalmente fica na 'living room' (sala de estar)." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza o objeto: 'I take a shower with SOAP.' O que é SOAP?", 
+                hint: "Faz espuma no banho.", 
+                ans: "sabonete", 
+                rat: "'Soap' é sabonete." 
+            },
+            { 
+                type: "drag", 
+                q: "Onde guardamos a 'toothbrush' (escova de dentes)?", 
+                txtPre: "In the", 
+                txtPost: ".", 
+                opts: ["bathroom", "living room", "kitchen", "backyard"], 
+                ans: "bathroom", 
+                rat: "A escova de dentes fica no 'bathroom' (banheiro)." 
+            },
+            { 
+                type: "true_false", 
+                q: "A pergunta 'Is there a blue ball?' é respondida com 'Yes, there is' (se for afirmativo).", 
+                hint: "Singular.", 
+                ans: true, 
+                rat: "Verdadeiro. Para perguntas com 'Is there', a resposta curta afirmativa é 'Yes, there is'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'escada de incêndio' em inglês?", 
+                hint: "Fire = fogo.", 
+                opts: ["Front door", "Parking lot", "Fire escape", "Mailbox"], 
+                ans: 2, 
+                rat: "'Fire escape' é a escada de incêndio." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete: Nós comemos com 'knife', 'fork' e '_______' (colher).", 
+                hint: "Começa com S.", 
+                ans: "spoon", 
+                rat: "'Spoon' significa colher." 
+            },
+
+            // --- TÓPICO 2: DIAS DA SEMANA ---
+            { 
+                type: "multiple_choice", 
+                q: "Como se diz 'Domingo' em inglês?", 
+                hint: "Dia do Sol.", 
+                opts: ["Monday", "Sunday", "Friday", "Saturday"], 
+                ans: 1, 
+                rat: "'Sunday' é domingo." 
+            },
+            { 
+                type: "typing", 
+                q: "O dia que vem depois de 'Monday' (Segunda) é '_______' (Terça).", 
+                hint: "Começa com T U.", 
+                ans: "tuesday", 
+                rat: "'Tuesday' é terça-feira." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a ordem dos dias:", 
+                txtPre: "Thursday,", 
+                txtPost: ", Saturday.", 
+                opts: ["Sunday", "Friday", "Monday", "Wednesday"], 
+                ans: "Friday", 
+                rat: "A sexta-feira (Friday) fica entre a quinta (Thursday) e o sábado (Saturday)." 
+            },
+            { 
+                type: "true_false", 
+                q: "'Wednesday' é a palavra correta para Quarta-feira.", 
+                hint: "Meio da semana.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Wednesday' significa quarta-feira." 
+            },
+
+            // --- TÓPICO 3: PRONOMES PESSOAIS E POSSESSIVOS ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual o pronome possessivo usado para 'I' (Eu)?", 
+                hint: "I have a jacket. ___ jacket is new.", 
+                opts: ["Your", "His", "My", "Her"], 
+                ans: 2, 
+                rat: "O possessivo de 'I' é 'My' (Meu/Minha)." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete: 'She has a cat. _______ cat is sleepy.'", 
+                hint: "Dela.", 
+                ans: "her", 
+                rat: "O pronome possessivo para 'She' (Ela) é 'Her' (Dela)." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o possessivo de 'He':", 
+                txtPre: "He has a dog.", 
+                txtPost: "dog is playful.", 
+                opts: ["Its", "His", "Her", "Their"], 
+                ans: "His", 
+                rat: "O possessivo de 'He' (Ele) é 'His' (Dele)." 
+            },
+            { 
+                type: "true_false", 
+                q: "O possessivo de 'They' (Eles/Elas) é 'Our'.", 
+                hint: "Our é de We.", 
+                ans: false, 
+                rat: "Falso. O possessivo de 'They' é 'Their'. 'Our' é possessivo de 'We' (Nós)." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual frase está correta?", 
+                hint: "Possessivo de animal/coisa.", 
+                opts: ["It has a bowl. Its bowl is empty.", "It has a bowl. His bowl is empty.", "It has a bowl. My bowl is empty.", "It has a bowl. Her bowl is empty."], 
+                ans: 0, 
+                rat: "Para 'It', o pronome possessivo correto é 'Its'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete: 'We have a house. _______ house is big.'", 
+                hint: "Nosso / Nossa.", 
+                ans: "our", 
+                rat: "O possessivo de 'We' (Nós) é 'Our' (Nosso/Nossa)." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase para Você/Vocês:", 
+                txtPre: "You have a car.", 
+                txtPost: "car is clean.", 
+                opts: ["Your", "My", "His", "Their"], 
+                ans: "Your", 
+                rat: "O possessivo de 'You' é 'Your'." 
+            },
+            { 
+                type: "true_false", 
+                q: "Na frase 'They have a garden. Their garden is beautiful', 'Their' significa 'deles/delas'.", 
+                hint: "Correto.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Their' é o possessivo de 'They'." 
+            },
+
+            // --- TÓPICO 4: ROTINA DIÁRIA E COMANDOS ---
+            { 
+                type: "multiple_choice", 
+                q: "O comando 'Wake up!' significa:", 
+                hint: "Logo de manhã.", 
+                opts: ["Sente-se!", "Acorde!", "Vá para a escola!", "Coma!"], 
+                ans: 1, 
+                rat: "'Wake up!' é o comando para 'Acorde!'." 
+            },
+            { 
+                type: "typing", 
+                q: "Para dizer 'Tome banho!', usamos a expressão 'Take a _______!'.", 
+                hint: "Chuveiro.", 
+                ans: "shower", 
+                rat: "'Take a shower' significa tomar banho." 
+            },
+            { 
+                type: "drag", 
+                q: "Qual comando usamos para 'Vá para a escola!'?", 
+                txtPre: "", 
+                txtPost: "to school!", 
+                opts: ["Go", "Eat", "Stand", "Sit"], 
+                ans: "Go", 
+                rat: "'Go' significa 'Ir'. 'Go to school!' = Vá para a escola." 
+            },
+            { 
+                type: "true_false", 
+                q: "O comando 'Sit down!' significa 'Levante-se!'.", 
+                hint: "Down é para baixo.", 
+                ans: false, 
+                rat: "Falso. 'Sit down' significa 'Sente-se'. Levantar é 'Stand up'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Beba um copo de água!'?", 
+                hint: "Beba = Drink.", 
+                opts: ["Eat cheese!", "Drink glass of water!", "Get up!", "Stand up!"], 
+                ans: 1, 
+                rat: "'Drink glass of water!' é a tradução correta." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete o comando 'Levante-se!': '_______ up!'.", 
+                hint: "S T A N D", 
+                ans: "stand", 
+                rat: "'Stand up!' significa 'Levante-se'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a instrução:", 
+                txtPre: "Eat", 
+                txtPost: "!", 
+                opts: ["fruit", "shower", "up", "down"], 
+                ans: "fruit", 
+                rat: "'Eat fruit!' (Coma frutas!) faz sentido, pois 'Eat' é comer." 
+            },
+            { 
+                type: "true_false", 
+                q: "'Get up!' significa levantar da cama.", 
+                hint: "Sair da cama.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Get up!' significa levantar." 
+            },
+
+            // --- TÓPICO 5: AÇÕES COM CAN / CAN'T ---
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Ela sabe dançar' usando o verbo poder/saber?", 
+                hint: "Habilidade positiva.", 
+                opts: ["She can't dance.", "She can dance.", "She is dance.", "She can't sing."], 
+                ans: 1, 
+                rat: "Usamos 'can' para indicar habilidade: 'She can dance'." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza a habilidade: 'He can SING.' (Ele sabe _______ ).", 
+                hint: "Fazer música com a voz.", 
+                ans: "cantar", 
+                rat: "'Sing' significa cantar." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase negativa 'Eles não sabem nadar':", 
+                txtPre: "They", 
+                txtPost: "swim.", 
+                opts: ["can", "can't", "is", "are"], 
+                ans: "can't", 
+                rat: "Usamos 'can't' (cannot) para indicar que não se tem a habilidade." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'I can play football' significa 'Eu não sei jogar futebol'.", 
+                hint: "Can = sei/posso.", 
+                ans: false, 
+                rat: "Falso. Significa 'Eu SEI jogar futebol'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Nós não podemos voar'?", 
+                hint: "Habilidade de pássaro.", 
+                opts: ["We can't swim.", "We can't fly.", "We can fly.", "They can't fly."], 
+                ans: 1, 
+                rat: "'We can't fly' é a tradução correta." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a pergunta sobre habilidade: '_______ you help me?'", 
+                hint: "Verbo poder.", 
+                ans: "can", 
+                rat: "Para fazer perguntas com 'can', ele vai para o início da frase." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase sobre a habilidade do Adam:", 
+                txtPre: "Adam", 
+                txtPost: "sing.", 
+                opts: ["can", "can't", "is", "are"], 
+                ans: "can", 
+                rat: "Se Adam tem a habilidade, usamos 'can'." 
+            },
+
+            // --- TÓPICO 6: PRESENT CONTINUOUS ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual o gerúndio (forma contínua) do verbo 'study' (estudar)?", 
+                hint: "Adiciona -ING.", 
+                opts: ["Studys", "Studying", "Studied", "Studyng"], 
+                ans: 1, 
+                rat: "No Present Continuous, o verbo recebe -ing: 'studying'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase: 'I am _______ English.' (Eu estou estudando).", 
+                hint: "Study + ing.", 
+                ans: "studying", 
+                rat: "'Studying' indica a ação acontecendo no momento." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase 'Ele está dormindo':", 
+                txtPre: "He", 
+                txtPost: "sleeping.", 
+                opts: ["is", "am", "are", "do"], 
+                ans: "is", 
+                rat: "Para 'He', o verbo to be correto no Present Continuous é 'is'." 
+            },
+            { 
+                type: "true_false", 
+                q: "Na frase 'They are playing football', a ação está acontecendo no presente momento.", 
+                hint: "Are playing.", 
+                ans: true, 
+                rat: "Verdadeiro. O Present Continuous indica ações que estão ocorrendo no momento da fala." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Nós estamos assistindo TV'?", 
+                hint: "Assistir = watch.", 
+                opts: ["We are cook TV.", "We are watching TV.", "We watch TV.", "We is watching TV."], 
+                ans: 1, 
+                rat: "O correto é pronome (We) + to be (are) + verbo com -ing (watching)." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza o verbo da frase: 'She is COOKING.' (Ela está _______ ).", 
+                hint: "Preparar comida.", 
+                ans: "cozinhando", 
+                rat: "'Cooking' significa cozinhando." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a ação 'Eles estão jogando':", 
+                txtPre: "They are", 
+                txtPost: "football.", 
+                opts: ["playing", "sleeping", "cooking", "watching"], 
+                ans: "playing", 
+                rat: "'Playing' é o verbo jogar no gerúndio." 
+            }
+        ];
+
+        // ==========================================
+        // 3. LÓGICA PRINCIPAL DO APLICATIVO
+        // ==========================================
+const app = {
+            serieAtual: "4º ANO", // ADICIONE ESTA LINHA
+            currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
+            questions: [], history: [], sortDirection: false,
+        
+
+            init() {
+                this.questions = this.shuffle([...questionsDb]);
+                document.getElementById('total-q-num').innerText = this.questions.length;
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            startQuiz() {
+                const code = document.getElementById('student-code').value.trim().toUpperCase();
+                
+                if (code === "JR1971") {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('dashboard-card').classList.add('active-card');
+                    this.loadDashboard();
+                    return;
+                }
+
+                if (!studentData[code]) {
+                    alert("Código inválido! Tente novamente.");
+                    return;
+                }
+
+                this.studentCode = code;
+                this.studentName = studentData[code];
+                
+                try {
+                    const savedState = localStorage.getItem('quiz_progress_' + this.studentCode);
+                    if (savedState) {
+                        if (confirm(`Olá, ${this.studentName}! Encontramos uma avaliação em andamento. Deseja continuar de onde parou?`)) {
+                            const data = JSON.parse(savedState);
+                            this.currentQ = data.currentQ;
+                            this.score = data.score;
+                            this.history = data.history;
+                            this.questions = data.questions;
+                        } else {
+                            localStorage.removeItem('quiz_progress_' + this.studentCode);
+                            this.init(); 
+                        }
+                    } else {
+                        this.init();
+                    }
+                } catch (e) {
+                    this.init();
+                }
+
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('student-code').style.display = 'none';
+                document.getElementById('quiz-description').style.display = 'none';
+                
+                const welcomeMsg = document.getElementById('personalized-welcome');
+                if(this.studentName === "JÚNIOR") {
+                    welcomeMsg.innerText = "Oi, JÚNIOR - grato por sua visita!!!";
+                } else {
+                    welcomeMsg.innerText = `Bem-vindo(a), ${this.studentName}! Boa Prova!`;
+                }
+                welcomeMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.add('active-card');
+                    this.renderQuestion();
+                }, 2000);
+            },
+
+            renderQuestion() {
+                this.selectedAnswer = null;
+                document.getElementById('hint-text').style.display = 'none';
+                document.getElementById('current-q-num').innerText = this.currentQ + 1;
+                
+                const progress = (this.currentQ / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+
+                const q = this.questions[this.currentQ];
+                document.getElementById('question-text').innerText = `${this.currentQ + 1}. ${q.q}`;
+                document.getElementById('hint-text').innerText = q.hint || "Pense com cuidado e analise o contexto da frase!";
+                
+                const area = document.getElementById('answer-area');
+                area.innerHTML = ''; 
+
+                if (q.type === "multiple_choice") {
+                    q.opts.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn';
+                        btn.innerText = opt;
+                        btn.onclick = () => this.selectMC(btn, idx, opt);
+                        area.appendChild(btn);
+                    });
+                } 
+                else if (q.type === "true_false") {
+                    const cont = document.createElement('div');
+                    cont.className = 'tf-container';
+                    
+                    const bTrue = document.createElement('button');
+                    bTrue.className = 'tf-btn'; bTrue.innerText = 'Verdadeiro';
+                    bTrue.onclick = () => this.selectTF(bTrue, true, cont);
+                    
+                    const bFalse = document.createElement('button');
+                    bFalse.className = 'tf-btn'; bFalse.innerText = 'Falso';
+                    bFalse.onclick = () => this.selectTF(bFalse, false, cont);
+                    
+                    cont.appendChild(bTrue); cont.appendChild(bFalse);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "typing") {
+                    const cont = document.createElement('div');
+                    cont.className = 'typing-container';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.className = 'typing-input';
+                    inp.placeholder = 'Digite aqui...';
+                    inp.oninput = (e) => this.selectedAnswer = e.target.value.trim().toLowerCase();
+                    cont.appendChild(inp);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "drag") {
+                    const cont = document.createElement('div');
+                    cont.className = 'drag-container';
+                    
+                    const sent = document.createElement('div');
+                    sent.className = 'sentence-display';
+                    sent.innerHTML = `${q.txtPre} <span class="drop-zone" id="drop-target" onclick="app.clearDrop()">...</span> ${q.txtPost}`;
+                    
+                    const bank = document.createElement('div');
+                    bank.className = 'words-bank';
+                    
+                    let words = this.shuffle([...q.opts]);
+                    words.forEach(w => {
+                        const wBtn = document.createElement('button');
+                        wBtn.className = 'drag-word';
+                        wBtn.innerText = w;
+                        wBtn.onclick = () => this.fillDrop(w, wBtn);
+                        bank.appendChild(wBtn);
+                    });
+
+                    cont.appendChild(sent);
+                    cont.appendChild(bank);
+                    area.appendChild(cont);
+                }
+            },
+
+            selectMC(btn, index, textVal) {
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedAnswer = { index: index, text: textVal }; 
+            },
+
+            selectTF(btn, val, container) {
+                container.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected-true', 'selected-false'));
+                btn.classList.add(val ? 'selected-true' : 'selected-false');
+                this.selectedAnswer = val;
+            },
+
+            fillDrop(word, btnElement) {
+                if(btnElement.classList.contains('used')) return;
+                if(this.selectedAnswer) {
+                    document.querySelectorAll('.drag-word').forEach(b => {
+                        if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                    });
+                }
+                document.getElementById('drop-target').innerText = word;
+                document.getElementById('drop-target').style.color = '#2c3e50';
+                btnElement.classList.add('used');
+                this.selectedAnswer = word;
+            },
+
+            clearDrop() {
+                if(!this.selectedAnswer) return;
+                document.querySelectorAll('.drag-word').forEach(b => {
+                    if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                });
+                document.getElementById('drop-target').innerText = '...';
+                document.getElementById('drop-target').style.color = '#3498db';
+                this.selectedAnswer = null;
+            },
+
+            showHint() {
+                document.getElementById('hint-text').style.display = 'block';
+            },
+
+            confirmAnswer() {
+                if (this.selectedAnswer === null || this.selectedAnswer === "") {
+                    alert("Responda a questão antes de avançar.");
+                    return;
+                }
+
+                const currentAnswer = this.selectedAnswer;
+                this.selectedAnswer = null; 
+
+                const q = this.questions[this.currentQ];
+                let isCorrect = false;
+                let userAnswerText = currentAnswer;
+                let correctAnswerText = q.ans;
+
+                if (q.type === "typing" || q.type === "drag") {
+                    isCorrect = (currentAnswer.toLowerCase() === q.ans.toLowerCase());
+                } else if (q.type === "multiple_choice") {
+                    isCorrect = (currentAnswer.index === q.ans);
+                    userAnswerText = currentAnswer.text;
+                    correctAnswerText = q.opts[q.ans];
+                } else if (q.type === "true_false") {
+                    isCorrect = (currentAnswer === q.ans);
+                    userAnswerText = currentAnswer ? "Verdadeiro" : "Falso";
+                    correctAnswerText = q.ans ? "Verdadeiro" : "Falso";
+                }
+
+                if (isCorrect) this.score++;
+
+                this.history.push({
+                    question: q.q,
+                    userAns: userAnswerText,
+                    correctAns: correctAnswerText,
+                    isRight: isCorrect,
+                    rationale: q.rat || "Estude este tópico no Roteiro para aprofundar."
+                });
+
+                this.currentQ++;
+
+                try {
+                    if (this.currentQ < this.questions.length) {
+                        const currentState = {
+                            currentQ: this.currentQ,
+                            score: this.score,
+                            history: this.history,
+                            questions: this.questions
+                        };
+                        localStorage.setItem('quiz_progress_' + this.studentCode, JSON.stringify(currentState));
+                    }
+                } catch (e) {
+                    console.warn("Erro ao salvar progresso:", e);
+                }
+
+                if (this.currentQ < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    setTimeout(() => this.finishQuiz(), 500);
+                }
+            },
+
+            finishQuiz() {
+                document.getElementById('quiz-card').classList.remove('active-card');
+                document.getElementById('results-card').classList.add('active-card');
+                
+                localStorage.removeItem('quiz_progress_' + this.studentCode);
+
+                const total = this.questions.length;
+                const perc = Math.round((this.score / total) * 100);
+                document.getElementById('res-name').innerText = this.studentName;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-total').innerText = total;
+                document.getElementById('res-perc').innerText = perc;
+
+                if (perc >= 60) confetti({ particleCount: 400, spread: 90, origin: { y: 0.6 } });
+
+                const reportData = {
+                    date: new Date().toLocaleString('pt-BR'),
+                    score: this.score,
+                    total: total,
+                    perc: perc,
+                    history: [...this.history]
+                };
+
+                try {
+                    let existingReports = JSON.parse(localStorage.getItem('student_reports_' + this.studentCode) || '[]');
+                    existingReports.push(reportData);
+                    localStorage.setItem('student_reports_' + this.studentCode, JSON.stringify(existingReports));
+                } catch(e) {}
+
+                this.generateReportHtml(reportData.history);
+                this.logAttemptToFirebase(perc, total, reportData);
+            },
+
+            generateReportHtml(historyArray) {
+                const repDiv = document.getElementById('detailed-report');
+                repDiv.innerHTML = '';
+                historyArray.forEach((h, i) => {
+                    const statusClass = h.isRight ? 'correct' : 'incorrect';
+                    const icon = h.isRight ? '✔️ Acertou' : '❌ Errou';
+                    repDiv.innerHTML += `
+                        <div class="report-item ${statusClass}">
+                            <p><strong>${i+1}.</strong> ${h.question}</p>
+                            <p>Sua resposta: <strong>${h.userAns}</strong> (${icon})</p>
+                            ${!h.isRight ? `<p>Resposta Correta: <strong>${h.correctAns}</strong></p>` : ''}
+                            <p class="report-rationale">📖 Explicação: ${h.rationale}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            openReportsModal() {
+                const savedReports = localStorage.getItem('student_reports_' + this.studentCode);
+                if (!savedReports) {
+                    alert("Você ainda não concluiu nenhuma rodada desta avaliação!");
+                    return;
+                }
+                const reports = JSON.parse(savedReports);
+                let choice = prompt(`Você possui ${reports.length} rodada(s) concluída(s). Digite o número da rodada que deseja visualizar (1 a ${reports.length}):`);
+                let index = parseInt(choice) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < reports.length) {
+                    const selected = reports[index];
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.remove('active-card');
+                    document.getElementById('results-card').classList.add('active-card');
+                    
+                    document.getElementById('res-name').innerText = this.studentName;
+                    document.getElementById('res-score').innerText = selected.score;
+                    document.getElementById('res-total').innerText = selected.total;
+                    document.getElementById('res-perc').innerText = selected.perc;
+                    this.generateReportHtml(selected.history);
+                } else if (choice !== null) {
+                    alert("Rodada inválida.");
+                }
+            },
+
+            backToQuizOrIntro() {
+                document.getElementById('results-card').classList.remove('active-card');
+                if (this.currentQ > 0 && this.currentQ < this.questions.length) {
+                    document.getElementById('quiz-card').classList.add('active-card');
+                } else {
+                    document.getElementById('intro-card').classList.add('active-card');
+                }
+            },
+
+            // ---------------- FIREBASE FUNCTIONS ----------------
+logAttemptToFirebase(perc, total, reportData) {
+                db.collection("avaliacao_ingles").add({
+                    nome: this.studentName,
+                    codigo: this.studentCode,
+                    serie: this.serieAtual, // ADICIONE ESTA LINHA
+                    notaFinal: `${this.score}/${total} (${perc}%)`,
+                    dataTentativa: reportData.date,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    detalhesRodada: reportData
+                }).catch(e => console.error("Erro ao registrar tentativa no Firebase:", e));
+            },
+
+            // ---------------- DASHBOARD MASTER ----------------
+            loadDashboard() {
+                const tbody = document.getElementById('dashboard-tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+                
+                db.collection("avaliacao_ingles").orderBy("timestamp", "desc").get().then(snap => {
+                    tbody.innerHTML = '';
+                    if(snap.empty) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma tentativa encontrada.</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const d = doc.data();
+tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${d.nome}</strong></td>
+                                <td>${d.codigo}</td>
+                                <td>${d.serie || 'Antigo'}</td> <!-- ADICIONE ESTA LINHA -->
+                                <td>${d.notaFinal}</td>
+                                <td>${d.dataTentativa || 'N/A'}</td>
+                                <td>
+                                    <button class="btn-3d btn-blue" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0;" onclick="app.teacherViewReport('${doc.id}')" title="Ver Relatório desta tentativa">👁️</button>
+                                    <button class="btn-3d btn-salmon" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0; margin-left: 5px;" onclick="app.deleteAttempt('${doc.id}', '${d.nome}')" title="Excluir tentativa">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }).catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Erro de permissão! Verifique as Rules no Firebase.</td></tr>';
+                });
+            },
+
+            teacherViewReport(docId) {
+                db.collection("avaliacao_ingles").doc(docId).get().then(doc => {
+                    if (doc.exists) {
+                        const d = doc.data();
+                        if (d.detalhesRodada) {
+                            document.getElementById('dashboard-card').classList.remove('active-card');
+                            document.getElementById('results-card').classList.add('active-card');
+                            
+                            document.getElementById('res-name').innerText = d.nome + ` (Tentativa em: ${d.dataTentativa})`;
+                            document.getElementById('res-score').innerText = d.detalhesRodada.score;
+                            document.getElementById('res-total').innerText = d.detalhesRodada.total;
+                            document.getElementById('res-perc').innerText = d.detalhesRodada.perc;
+                            this.generateReportHtml(d.detalhesRodada.history);
+                        } else {
+                            alert("Detalhes detalhados indisponíveis para este registro antigo.");
+                        }
+                    }
+                });
+            },
+
+            deleteAttempt(docId, studentName) {
+                if (confirm(`Tem certeza que deseja apagar esta tentativa específica do aluno(a) ${studentName}?`)) {
+                    db.collection("avaliacao_ingles").doc(docId).delete().then(() => {
+                        alert("Tentativa excluída com sucesso!");
+                        this.loadDashboard(); 
+                    }).catch(error => {
+                        console.error("Erro ao deletar tentativa: ", error);
+                        alert("Erro ao tentar excluir.");
+                    });
+                }
+            },
+
+            filterTable() {
+                let input = document.getElementById("filter-input");
+                let filter = input.value.toUpperCase();
+                let table = document.getElementById("dashboard-table");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    }
+                }
+            },
+
+            sortTable(n) {
+                let table = document.getElementById("dashboard-table");
+                let rows, switching, i, x, y, shouldSwitch;
+                switching = true;
+                this.sortDirection = !this.sortDirection;
+                
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        
+                        if (!x || !y) continue;
+
+                        let valX = x.innerHTML.toLowerCase();
+                        let valY = y.innerHTML.toLowerCase();
+                        
+                        if (this.sortDirection) {
+                            if (valX > valY) { shouldSwitch = true; break; }
+                        } else {
+                            if (valX < valY) { shouldSwitch = true; break; }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            },
+
+            exportToCSV() {
+                let table = document.getElementById("dashboard-table");
+                let csv = [];
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                    for (let j = 0; j < cols.length - 1; j++) 
+                        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                    csv.push(row.join(","));
+                }
+                let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+                let downloadLink = document.createElement("a");
+                downloadLink.download = "relatorio_tentativas_ingles.csv";
+                downloadLink.href = window.URL.createObjectURL(csvFile);
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            exitMaster() {
+                document.getElementById('dashboard-card').classList.remove('active-card');
+                document.getElementById('student-code').value = '';
+                document.getElementById('intro-card').classList.add('active-card');
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>

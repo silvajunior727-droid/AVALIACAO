@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 8º ANO (3º BIMESTRE)</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ESTILOS GERAIS E FUNDO ELEGANTE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 850px;
+            min-height: 400px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin-bottom: 5px; }
+        h2 { text-align: center; color: #7f8c8d; font-size: 1.2rem; margin-top: 0; }
+
+        .card { display: none; flex-direction: column; }
+        .active-card { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* INPUTS E FILTROS */
+        input[type="text"] {
+            padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; width: 100%; box-sizing: border-box;
+            font-size: 1.1rem; text-align: center; transition: border-color 0.3s;
+        }
+        input[type="text"]:focus { border-color: #90EE90; outline: none; }
+
+        /* --------------------------------------------------- */
+        /* BOTÕES 3D (Com Borda Baixa)                         */
+        /* --------------------------------------------------- */
+        .btn-3d {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; padding: 12px 25px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 10px;
+        }
+        .btn-green {
+            background-color: #90EE90; color: #2c3e50;
+            box-shadow: 0 6px 0 #75c975;
+        }
+        .btn-green:active { transform: translateY(6px); box-shadow: 0 0 0 #75c975; }
+
+        .btn-salmon {
+            background-color: #FA8072; color: white;
+            box-shadow: 0 6px 0 #d9695d;
+        }
+        .btn-salmon:active { transform: translateY(6px); box-shadow: 0 0 0 #d9695d; }
+
+        .btn-blue {
+            background-color: #3498db; color: white;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #2980b9; }
+
+        /* ESTILOS DOS BOTÕES DO RODAPÉ DA QUESTÃO (TAMANHOS UNIFORMES) */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-quiz-action {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 0.95rem; padding: 10px 18px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 0;
+        }
+        .btn-report-quiz {
+            background-color: #3498db; color: white; box-shadow: 0 5px 0 #2980b9;
+        }
+        .btn-report-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #2980b9; }
+
+        .btn-hint-quiz {
+            background-color: #6a0dad; color: white; box-shadow: 0 5px 0 #4c0880;
+        }
+        .btn-hint-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #4c0880; }
+
+        /* BARRA DE PROGRESSO */
+        .progress-container {
+            width: 100%; background-color: #e9ecef; border-radius: 10px;
+            height: 12px; margin-bottom: 20px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background-color: #90EE90; width: 0%;
+            transition: width 0.4s ease-out; border-radius: 10px;
+        }
+
+        /* ÁREA DA QUESTÃO */
+        .question-text { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .question-counter { text-align: left; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        #hint-text {
+            margin-top: 15px; padding: 12px; background-color: #f8f9fa;
+            border-left: 5px solid #6a0dad; border-radius: 5px; font-style: italic; display: none;
+        }
+
+        /* 1. Múltipla Escolha */
+        .option-btn {
+            background-color: #f8f9fa; border: 2px solid #e0e0e0; padding: 15px;
+            margin-bottom: 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; width: 100%; text-align: left; font-size: 1.1rem;
+        }
+        .option-btn:hover { background-color: #f1f3f5; border-color: #ccc; }
+        .option-btn.selected { background-color: #e8f5e9; border-color: #90EE90; font-weight: bold; transform: scale(1.01); box-shadow: 0 4px 10px rgba(144, 238, 144, 0.2);}
+
+        /* 2. Verdadeiro ou Falso */
+        .tf-container { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .tf-btn { padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background-color: #f8f9fa; transition: all 0.2s; width: 45%; }
+        .tf-btn.selected-true { background-color: #e8f5e9; border-color: #90EE90; color: #2c3e50; }
+        .tf-btn.selected-false { background-color: #ffeeee; border-color: #FA8072; color: #c0392b; }
+
+        /* 3. Digitação */
+        .typing-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
+        .typing-input {
+            padding: 15px; font-size: 1.3rem; border: 2px solid #ccc; border-radius: 8px;
+            width: 80%; text-align: center; text-transform: lowercase;
+        }
+        .typing-input:focus { border-color: #90EE90; outline: none; }
+
+        /* 4. Arrastar e Soltar */
+        .drag-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0;}
+        .sentence-display { font-size: 1.3rem; margin-bottom: 25px; line-height: 2; }
+        .drop-zone { display: inline-block; min-width: 80px; min-height: 30px; border-bottom: 3px dashed #7f8c8d; margin: 0 10px; padding: 0 10px; color: #3498db; font-weight: bold; cursor: pointer; transition: all 0.3s;}
+        .drop-zone:hover { border-bottom-color: #3498db; }
+        .words-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-word { background-color: #3498db; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;}
+        .drag-word:active { transform: translateY(4px); box-shadow: 0 0 0 #2980b9;}
+        .drag-word.used { background-color: #bdc3c7; box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* DASHBOARD E TABELA */
+        .styled-table { border-collapse: collapse; margin: 20px 0; font-size: 0.95em; width: 100%; box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 8px; overflow: hidden; }
+        .styled-table thead tr { background-color: #90EE90; color: #2c3e50; text-align: left; cursor: pointer; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .styled-table tbody tr:hover { background-color: #f9f9f9; }
+
+        /* RELATÓRIO FINAL */
+        .results-details { background-color: #fdfbfb; padding: 20px; border-left: 5px solid #90EE90; border-radius: 8px; margin-top: 20px; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        .report-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #eee; background: #fff;}
+        .report-item.correct { border-left: 5px solid #90EE90; }
+        .report-item.incorrect { border-left: 5px solid #FA8072; }
+        .report-rationale { font-size: 0.95rem; color: #7f8c8d; margin-top: 8px; font-style: italic; }
+
+        /* IMPRESSÃO (PDF) */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            .btn-3d, #intro-card, #quiz-card, #dashboard-card, .progress-container, .no-print { display: none !important; }
+            #results-card { display: block !important; }
+            .report-item { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="intro-card" class="card active-card intro-card">
+            <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
+            <h2>8º ANO (3º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
+            <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
+            <input type="text" id="student-code" placeholder="Código de Acesso">
+            <button class="btn-3d btn-green" id="start-btn" onclick="app.startQuiz()">Iniciar Avaliação</button>
+        </div>
+
+        <!-- DASHBOARD MASTER (JR1971) -->
+        <div id="dashboard-card" class="card">
+            <h1 style="color: #FA8072; margin-bottom: 0;">Painel do Professor</h1>
+            <p style="text-align: center; margin-top: 5px;">Acompanhamento em tempo real (Tentativas em linhas separadas).</p>
+            
+            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;" class="no-print">
+                <input type="text" id="filter-input" placeholder="🔍 Filtrar por nome do aluno..." onkeyup="app.filterTable()" style="flex: 1; min-width: 200px; margin-top: 0;">
+                <button class="btn-3d btn-green" onclick="app.exportToCSV()">Salvar Excel</button>
+                <button class="btn-3d btn-salmon" onclick="app.exitMaster()">Sair</button>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="styled-table" id="dashboard-table">
+<thead>
+                        <tr>
+                            <th onclick="app.sortTable(0)">Aluno ↕</th>
+                            <th onclick="app.sortTable(1)">Código ↕</th>
+                            <th onclick="app.sortTable(2)">Série ↕</th> <!-- NOVA COLUNA AQUI -->
+                            <th onclick="app.sortTable(3)">Nota Final ↕</th>
+                            <th onclick="app.sortTable(4)">Data/Hora Tentativa ↕</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA DA AVALIAÇÃO -->
+        <div id="quiz-card" class="card">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="question-counter">Questão <span id="current-q-num">1</span> de <span id="total-q-num">50</span></div>
+            </div>
+            
+            <div id="question-text" class="question-text"></div>
+            <div id="answer-area"></div>
+
+            <div id="hint-container">
+                <div id="hint-text"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <div class="left-actions">
+                    <button class="btn-quiz-action btn-report-quiz" onclick="app.openReportsModal()">📋 Relatório</button>
+                    <button class="btn-quiz-action btn-hint-quiz" onclick="app.showHint()">💡 Dica</button>
+                </div>
+                <div>
+                    <button class="btn-3d btn-green" id="confirm-btn" onclick="app.confirmAnswer()">✔️ Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS / RELATÓRIO INDIVIDUAL -->
+        <div id="results-card" class="card">
+            <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Relatório de Desempenho</h1>
+            <div class="results-details">
+                <p><strong>Aluno(a):</strong> <span id="res-name"></span></p>
+                <p><strong>Acertos:</strong> <span id="res-score"></span> de <span id="res-total">50</span></p>
+                <p><strong>Aproveitamento:</strong> <span id="res-perc"></span>%</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;" class="no-print">
+                <button class="btn-3d btn-green" onclick="window.print()">Salvar PDF (Relatório)</button>
+                <button class="btn-3d btn-blue" onclick="app.backToQuizOrIntro()">Voltar</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #7f8c8d;">Revisão das Questões desta Rodada:</h3>
+            <div id="detailed-report"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO FIREBASE E DADOS
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt9b_YXS9koqsQhyyduaVizPUtDc22KCs",
+            authDomain: "quizzes-dos-colegios.firebaseapp.com",
+            projectId: "quizzes-dos-colegios",
+            storageBucket: "quizzes-dos-colegios.firebasestorage.app",
+            messagingSenderId: "143672230264",
+            appId: "1:143672230264:web:b40c17e2a39e574057888d"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
+        const db = firebase.firestore();
+
+const studentData = {
+            "819AS": "ANA LIVIA",
+            "365AS": "DANIEL", 
+            "294BS": "ELIZA",
+            "581BS": "GUSTAVO", 
+            "736DF": "JOÃO VITOR",
+            "158DG": "JUAN", 
+            "942EN": "MANUELLA",
+            "235PW": "MARIA CLARA",
+            "627ES": "MARIANE", 
+            "301ES": "MIRELA",
+            "514HB": "SOFIA", 
+            "JR123": "JUNIOR"
+        };
+
+// ==========================================
+        // 2. BANCO DE QUESTÕES COMPLETO (50 QUESTÕES)
+        // ==========================================
+        const questionsDb = [
+            // --- BLOCO 1: COMPARATIVE (EQUALITY & SUPERIORITY) ---
+            { 
+                type: "multiple_choice", 
+                q: "Complete a frase baseada no material do 8º ano: 'São Paulo is _______ as Rio de Janeiro.' (crowded)", 
+                hint: "Usa-se a estrutura de igualdade com as...as.", 
+                opts: ["as crowded", "more crowded", "crowder", "the most crowded"], 
+                ans: 0, 
+                rat: "Na comparação de igualdade, usamos a estrutura 'as + adjetivo + as'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Segundo o material do 8º ano, qual é o comparativo de superioridade correto para o adjetivo curto 'deep' (The Pacific Ocean / The Atlantic Ocean)?", 
+                hint: "Adjetivos curtos recebem -er + than.", 
+                opts: ["deeper than", "more deep than", "deepest than", "as deep than"], 
+                ans: 0, 
+                rat: "Para adjetivos curtos no comparativo de superioridade, acrescenta-se '-er than'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a forma comparativa correta para o adjetivo longo 'independent' (cats / dogs)?", 
+                hint: "Adjetivos longos usam 'more' antes do adjetivo.", 
+                opts: ["independenter than", "more independent than", "the most independent", "as independent as"], 
+                ans: 1, 
+                rat: "Adjetivos longos formam o comparativo de superioridade com 'more ... than'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase comparativa: 'English is _______ than Chinese.' (easy)", 
+                hint: "Adjetivos terminados em consoante + y trocam o y por -ier.", 
+                ans: "easier", 
+                rat: "Adjetivos com duas sílabas terminados em 'y' mudam para '-ier than'." 
+            },
+            { 
+                type: "true_false", 
+                q: "De acordo com o quadro 'Be Careful!' do material, o adjetivo 'hot' dobra a última consoante no comparativo ('hotter than').", 
+                hint: "Padrão Consoante-Vogal-Consoante dobra a consoante final.", 
+                ans: true, 
+                rat: "Verdadeiro. Adjetivos CVC dobram a letra final antes de receber '-er'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Complete a comparação de superioridade: 'The Karakoram Highway is _______ Ruta 40.' (dangerous)", 
+                hint: "Adjetivo longo usa 'more'.", 
+                opts: ["dangerouser than", "more dangerous than", "the most dangerous", "as dangerous as"], 
+                ans: 1, 
+                rat: "Adjetivos longos utilizam 'more' seguido de 'than'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase usando o comparativo do adjetivo curto 'old': 'My grandfather is _______ my father.'", 
+                hint: "Acrescente -er ao adjetivo.", 
+                ans: "older than", 
+                rat: "Adjetivos curtos ganham '-er than' para indicar superioridade." 
+            },
+            { 
+                type: "true_false", 
+                q: "A estrutura 'as ... as' é utilizada para indicar desigualdade entre dois elementos.", 
+                hint: "Pense na regra de igualdade estudada na Parte 9.", 
+                ans: false, 
+                rat: "Falso. 'As ... as' é usada estritamente para expressar igualdade." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Escolha a opção correta para preencher a lacuna: 'A glass of juice is _______ a glass of Coke.' (healthy)", 
+                hint: "Terminado em y.", 
+                opts: ["healthier than", "more healthy than", "healthiest than", "as healthy than"], 
+                ans: 0, 
+                rat: "Adjetivos bi-silábicos terminados em 'y' trocam o 'y' por '-ier than'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase comparativa:", 
+                txtPre: "This book is", 
+                txtPost: "that one. (interesting)", 
+                opts: ["more interesting than", "interestinger than", "as interesting as", "the most interesting"], 
+                ans: "more interesting than", 
+                rat: "Adjetivos longos usam 'more ... than' no comparativo de superioridade." 
+            },
+
+            // --- BLOCO 2: SUPERLATIVE ---
+            { 
+                type: "multiple_choice", 
+                q: "Complete com a forma superlativa correta: 'The _______ mountain in the world is Mount Everest.' (high)", 
+                hint: "Superlativo de adjetivos curtos usa 'the' antes e '-est' no final.", 
+                opts: ["higher", "more high", "the highest", "the most high"], 
+                ans: 2, 
+                rat: "O superlativo de adjetivos curtos é formado por 'the + adjetivo + -est'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é o superlativo correto do adjetivo longo 'difficult' (Japanese is _______ language to learn)?", 
+                hint: "Adjetivos longos no superlativo usam 'the most'.", 
+                opts: ["the difficulter", "more difficult", "the most difficult", "difficultest"], 
+                ans: 2, 
+                rat: "Adjetivos longos formam o superlativo com 'the most'." 
+            },
+            { 
+                type: "true_false", 
+                q: "Segundo o material, a forma superlativa do adjetivo 'happy' é 'the happiest'.", 
+                hint: "O 'y' muda para 'i' antes de receber '-est'.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Happy' vira 'the happiest' no grau superlativo." 
+            },
+            { 
+                type: "typing", 
+                q: "Escreva a forma superlativa do adjetivo 'large' (The largest human mattress dominoes...).", 
+                hint: "Se já termina em 'e', acrescenta-se apenas '-st'.", 
+                ans: "largest", 
+                rat: "Adjetivos terminados em 'e' ganham '-st' no superlativo." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Escolha a forma superlativa adequada para o adjetivo 'sunny' (Spain is _______ country in Europe):", 
+                hint: "Terminado em y.", 
+                opts: ["the sunniest", "the most sunny", "sunnier than", "the sunnyest"], 
+                ans: 0, 
+                rat: "Adjetivos terminados em 'y' trocam o 'y' por '-iest' precedido de 'the'." 
+            },
+            { 
+                type: "true_false", 
+                q: "No superlativo, utilizamos 'the' antes do adjetivo para indicar que o ser se destaca acima de todos os outros.", 
+                hint: "Regra geral dos superlativos.", 
+                ans: true, 
+                rat: "Verdadeiro. O artigo 'the' é obrigatório antes dos superlativos." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete com o superlativo de 'cold' (Antarctica is _______ place on Earth):", 
+                hint: "Adjetivo curto + est.", 
+                ans: "the coldest", 
+                rat: "O superlativo de 'cold' é 'the coldest'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é o superlativo de 'expensive' para indicar o carro mais caro?", 
+                hint: "Adjetivo longo.", 
+                opts: ["the expensivest", "the most expensive", "more expensive than", "expensiver"], 
+                ans: 1, 
+                rat: "Adjetivos longos usam 'the most' no superlativo." 
+            },
+            { 
+                type: "drag", 
+                q: "Preencha com o superlativo correto:", 
+                txtPre: "Cheetahs are", 
+                txtPost: "land animals. (fast)", 
+                opts: ["the fastest", "faster than", "the most fast", "fastest"], 
+                ans: "the fastest", 
+                rat: "Adjetivos curtos formam o superlativo com 'the + adjetivo + -est'." 
+            },
+            { 
+                type: "true_false", 
+                q: "O adjetivo 'big' dobra a letra 'g' no superlativo ('the biggest').", 
+                hint: "Regra de CVC.", 
+                ans: true, 
+                rat: "Verdadeiro. Consoante-Vogal-Consoante dobra a consoante final." 
+            },
+
+            // --- BLOCO 3: SPECIAL CASES ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a forma comparativa irregular do adjetivo 'bad' (Yesterday the weather was bad, but today it is even _______)?", 
+                hint: "Bad possui uma forma irregular nos graus dos adjetivos.", 
+                opts: ["badder than", "worse than", "the worst", "more bad than"], 
+                ans: 1, 
+                rat: "O comparativo irregular de 'bad' é 'worse than'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a forma superlativa irregular de 'good' (Cristiano Ronaldo was _______ FIFA Men's Player in 2016)?", 
+                hint: "Good passa por uma alteração total em sua forma superlativa.", 
+                opts: ["better", "goodest", "the best", "the most good"], 
+                ans: 2, 
+                rat: "O superlativo irregular de 'good' é 'the best'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A forma superlativa de 'far' apresentada no material é 'the furthest' (ou 'the farthest').", 
+                hint: "Refere-se a distância máxima.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Far' tem como formas superlativas irregulares 'the furthest' ou 'the farthest'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete com o comparativo irregular de 'good' (We have _______ computers than we had 3 years ago.):", 
+                hint: "O comparativo de good é...", 
+                ans: "better", 
+                rat: "O comparativo de superioridade de 'good' é 'better than'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é o superlativo irregular de 'bad' (Monday is _______ day of the week)?", 
+                hint: "O oposto de 'the best'.", 
+                opts: ["the badder", "the worst", "worse than", "the baddest"], 
+                ans: 1, 
+                rat: "O superlativo irregular de 'bad' é 'the worst'." 
+            },
+            { 
+                type: "true_false", 
+                q: "As palavras 'further' e 'farther' são equivalentes para indicar distâncias no comparativo.", 
+                hint: "Visto no Apêndice/Gramática do material.", 
+                ans: true, 
+                rat: "Verdadeiro. Ambas são formas comparativas válidas para 'far' focando em distância." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase com o superlativo irregular correto de 'bad': 'That was _______ movie I have ever watched.'", 
+                hint: "O pior de todos.", 
+                ans: "the worst", 
+                rat: "'The worst' é a forma superlativa de 'bad'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Escolha a opção correta para expressar uma distância maior no comparativo: 'Neptune is _______ Mars from the Sun.'", 
+                hint: "Comparativo de far.", 
+                opts: ["further than", "the furthest", "farther", "the farther"], 
+                ans: 0, 
+                rat: "Usamos 'further than' para comparar distâncias entre dois pontos." 
+            },
+            { 
+                type: "true_false", 
+                q: "O superlativo de 'good' é 'the better'.", 
+                hint: "Better é comparativo.", 
+                ans: false, 
+                rat: "Falso. O superlativo de 'good' é 'the best'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o comparativo correto:", 
+                txtPre: "His grade was", 
+                txtPost: "mine. (bad)", 
+                opts: ["worse than", "badder than", "the worst", "more bad than"], 
+                ans: "worse than", 
+                rat: "O comparativo irregular de 'bad' é 'worse than'." 
+            },
+
+            // --- BLOCO 4: ADJECTIVE SUFFIXES (-FUL / -LESS) ---
+            { 
+                type: "multiple_choice", 
+                q: "O que o sufixo '-ful' geralmente indica quando adicionado a uma palavra, segundo o material de gramática?", 
+                hint: "Pense na tradução de 'careful' (cheio de cuidado).", 
+                opts: ["Without (sem)", "Full of (cheio de)", "Not possible", "Before the word"], 
+                ans: 1, 
+                rat: "O sufixo '-ful' indica 'full of' (cheio de), enquanto '-less' indica ausência ('without')." 
+            },
+            { 
+                type: "typing", 
+                q: "Forme o antônimo usando o sufixo adequado: Se 'careful' significa cheio de cuidado, como fica a palavra para 'sem cuidado'?", 
+                hint: "Usa o sufixo que significa 'sem' (-less).", 
+                ans: "careless", 
+                rat: "'Careless' significa sem cuidado, utilizando o sufixo '-less'." 
+            },
+            { 
+                type: "true_false", 
+                q: "No exercício do material, a frase 'Air pollution is harmful to our health' usa o sufixo '-ful' para indicar que é cheio de danos.", 
+                hint: "Harm + ful = prejudicial.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Harmful' significa cheio de dano / prejudicial." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Complete a frase do material: 'The _______ children were asking for food and care.' (sem um tostão / sem dinheiro)", 
+                hint: "Penny + sufixo indicando ausência.", 
+                opts: ["pennyful", "penniless", "pennyless", "helpful"], 
+                ans: 1, 
+                rat: "'Penniless' significa sem um tostão / sem dinheiro ('without money')." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase: 'The _______ couple grew older together.' (sem filhos - child)", 
+                hint: "Usa o sufixo para 'sem'.", 
+                ans: "childless", 
+                rat: "'Childless' significa sem filhos ('without children')." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual palavra significa 'cheio de esperança', utilizando o sufixo correto estudado?", 
+                hint: "Hope + sufixo de abundância.", 
+                opts: ["hopeless", "hopeful", "hoper", "hopefuly"], 
+                ans: 1, 
+                rat: "'Hopeful' significa cheio de esperança." 
+            },
+            { 
+                type: "true_false", 
+                q: "O sufixo '-less' tem sentido oposto ao sufixo '-ful', indicando ausência ou falta de algo.", 
+                hint: "Conceito básico de sufixos na unidade.", 
+                ans: true, 
+                rat: "Verdadeiro. '-less' significa 'without' (sem), o oposto de '-ful'." 
+            },
+            { 
+                type: "typing", 
+                q: "Forme um adjetivo com o sufixo '-ful' usando a palavra 'color' (cheio de cores / colorido):", 
+                hint: "Color + ful", 
+                ans: "colorful", 
+                rat: "'Colorful' significa cheio de cores / colorido." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que significa a palavra 'homeless' baseada nas regras de sufixos?", 
+                hint: "Home + less", 
+                opts: ["Com uma casa grande", "Sem casa / morador de rua", "Cheio de lares", "A construção de uma casa"], 
+                ans: 1, 
+                rat: "'Homeless' significa sem casa, desabrigado ('without home')." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com o adjetivo derivado correto:", 
+                txtPre: "This broken old toy is completely", 
+                txtPost: ". (without worth)", 
+                opts: ["worthless", "worthful", "worthy", "worthlessy"], 
+                ans: "worthless", 
+                rat: "'Worthless' significa sem valor ('without worth')." 
+            },
+
+            // --- BLOCO 5: REVISÃO GERAL (COMPATÍVEL COM O ROTEIRO) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a forma comparativa de superioridade correta para o adjetivo 'big'?", 
+                hint: "Dobra a consoante final.", 
+                opts: ["biger than", "bigger than", "more big than", "the biggest"], 
+                ans: 1, 
+                rat: "Adjetivos curtos CVC dobram a consoante e adicionam '-er than'." 
+            },
+            { 
+                type: "true_false", 
+                q: "O comparativo de superioridade de adjetivos curtos é feito adicionando a palavra 'more' antes deles.", 
+                hint: "Regra geral de adjetivos curtos vs longos.", 
+                ans: false, 
+                rat: "Falso. 'More' é usado apenas para adjetivos longos." 
+            },
+            { 
+                type: "typing", 
+                q: "Escreva o superlativo do adjetivo 'tall' (The _______ boy in the class):", 
+                hint: "The + adjetivo + est", 
+                ans: "the tallest", 
+                rat: "O superlativo de 'tall' é 'the tallest'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Complete a frase com o comparativo correto: 'My house is _______ than yours.' (small)", 
+                hint: "Adjetivo curto.", 
+                opts: ["smaller than", "more small than", "the smallest", "as small as"], 
+                ans: 0, 
+                rat: "Adjetivos curtos formam o comparativo com '-er than'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A palavra 'tasteful' significa sem sabor.", 
+                hint: "Sufixo -ful indica abundância (saboroso).", 
+                ans: false, 
+                rat: "Falso. 'Tasteful' significa com bom gosto/saboroso; sem sabor seria 'tasteless'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete com o superlativo de 'old' (He is _______ man in the town):", 
+                hint: "The + oldest", 
+                ans: "the oldest", 
+                rat: "O superlativo de 'old' é 'the oldest'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Escolha a alternativa que apresenta corretamente um caso especial de comparativo irregular:", 
+                hint: "Good ou Bad.", 
+                opts: ["good / better than", "bad / badder than", "big / bigger than", "tall / taller than"], 
+                ans: 0, 
+                rat: "O comparativo irregular de 'good' é 'better than'." 
+            },
+            { 
+                type: "true_false", 
+                q: "O sufixo '-less' em 'endless' indica algo que não tem fim (sem fim).", 
+                hint: "End + less", 
+                ans: true, 
+                rat: "Verdadeiro. 'Endless' significa sem fim." 
+            },
+            { 
+                type: "typing", 
+                q: "Escreva o comparativo de superioridade do adjetivo 'fast':", 
+                hint: "Fast + er than", 
+                ans: "faster than", 
+                rat: "O comparativo de 'fast' é 'faster than'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Para concluir: qual alternativa define corretamente a função dos graus dos adjetivos estudados no 3º bimestre?", 
+                hint: "Objetivo gramatical principal do bimestre.", 
+                opts: ["Comparar características, qualidades ou indicar extremos.", "Indicar ações no passado contínuo.", "Formar substantivos próprios.", "Descrever apenas cores e tamanhos."], 
+                ans: 0, 
+                rat: "Os graus dos adjetivos (comparativo e superlativo) servem justamente para comparar características ou colocá-las no grau máximo/mínimo." 
+            }
+        ];
+
+        // ==========================================
+        // 3. LÓGICA PRINCIPAL DO APLICATIVO
+        // ==========================================
+const app = {
+            serieAtual: "8º ANO", // ADICIONE ESTA LINHA
+            currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
+            questions: [], history: [], sortDirection: false,
+        
+
+            init() {
+                this.questions = this.shuffle([...questionsDb]);
+                document.getElementById('total-q-num').innerText = this.questions.length;
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            startQuiz() {
+                const code = document.getElementById('student-code').value.trim().toUpperCase();
+                
+                if (code === "JR1971") {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('dashboard-card').classList.add('active-card');
+                    this.loadDashboard();
+                    return;
+                }
+
+                if (!studentData[code]) {
+                    alert("Código inválido! Tente novamente.");
+                    return;
+                }
+
+                this.studentCode = code;
+                this.studentName = studentData[code];
+                
+                try {
+                    const savedState = localStorage.getItem('quiz_progress_' + this.studentCode);
+                    if (savedState) {
+                        if (confirm(`Olá, ${this.studentName}! Encontramos uma avaliação em andamento. Deseja continuar de onde parou?`)) {
+                            const data = JSON.parse(savedState);
+                            this.currentQ = data.currentQ;
+                            this.score = data.score;
+                            this.history = data.history;
+                            this.questions = data.questions;
+                        } else {
+                            localStorage.removeItem('quiz_progress_' + this.studentCode);
+                            this.init(); 
+                        }
+                    } else {
+                        this.init();
+                    }
+                } catch (e) {
+                    this.init();
+                }
+
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('student-code').style.display = 'none';
+                document.getElementById('quiz-description').style.display = 'none';
+                
+                const welcomeMsg = document.getElementById('personalized-welcome');
+                if(this.studentName === "JÚNIOR") {
+                    welcomeMsg.innerText = "Oi, JÚNIOR - grato por sua visita!!!";
+                } else {
+                    welcomeMsg.innerText = `Bem-vindo(a), ${this.studentName}! Boa Prova!`;
+                }
+                welcomeMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.add('active-card');
+                    this.renderQuestion();
+                }, 2000);
+            },
+
+            renderQuestion() {
+                this.selectedAnswer = null;
+                document.getElementById('hint-text').style.display = 'none';
+                document.getElementById('current-q-num').innerText = this.currentQ + 1;
+                
+                const progress = (this.currentQ / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+
+                const q = this.questions[this.currentQ];
+                document.getElementById('question-text').innerText = `${this.currentQ + 1}. ${q.q}`;
+                document.getElementById('hint-text').innerText = q.hint || "Pense com cuidado e analise o contexto da frase!";
+                
+                const area = document.getElementById('answer-area');
+                area.innerHTML = ''; 
+
+                if (q.type === "multiple_choice") {
+                    q.opts.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn';
+                        btn.innerText = opt;
+                        btn.onclick = () => this.selectMC(btn, idx, opt);
+                        area.appendChild(btn);
+                    });
+                } 
+                else if (q.type === "true_false") {
+                    const cont = document.createElement('div');
+                    cont.className = 'tf-container';
+                    
+                    const bTrue = document.createElement('button');
+                    bTrue.className = 'tf-btn'; bTrue.innerText = 'Verdadeiro';
+                    bTrue.onclick = () => this.selectTF(bTrue, true, cont);
+                    
+                    const bFalse = document.createElement('button');
+                    bFalse.className = 'tf-btn'; bFalse.innerText = 'Falso';
+                    bFalse.onclick = () => this.selectTF(bFalse, false, cont);
+                    
+                    cont.appendChild(bTrue); cont.appendChild(bFalse);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "typing") {
+                    const cont = document.createElement('div');
+                    cont.className = 'typing-container';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.className = 'typing-input';
+                    inp.placeholder = 'Digite aqui...';
+                    inp.oninput = (e) => this.selectedAnswer = e.target.value.trim().toLowerCase();
+                    cont.appendChild(inp);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "drag") {
+                    const cont = document.createElement('div');
+                    cont.className = 'drag-container';
+                    
+                    const sent = document.createElement('div');
+                    sent.className = 'sentence-display';
+                    sent.innerHTML = `${q.txtPre} <span class="drop-zone" id="drop-target" onclick="app.clearDrop()">...</span> ${q.txtPost}`;
+                    
+                    const bank = document.createElement('div');
+                    bank.className = 'words-bank';
+                    
+                    let words = this.shuffle([...q.opts]);
+                    words.forEach(w => {
+                        const wBtn = document.createElement('button');
+                        wBtn.className = 'drag-word';
+                        wBtn.innerText = w;
+                        wBtn.onclick = () => this.fillDrop(w, wBtn);
+                        bank.appendChild(wBtn);
+                    });
+
+                    cont.appendChild(sent);
+                    cont.appendChild(bank);
+                    area.appendChild(cont);
+                }
+            },
+
+            selectMC(btn, index, textVal) {
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedAnswer = { index: index, text: textVal }; 
+            },
+
+            selectTF(btn, val, container) {
+                container.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected-true', 'selected-false'));
+                btn.classList.add(val ? 'selected-true' : 'selected-false');
+                this.selectedAnswer = val;
+            },
+
+            fillDrop(word, btnElement) {
+                if(btnElement.classList.contains('used')) return;
+                if(this.selectedAnswer) {
+                    document.querySelectorAll('.drag-word').forEach(b => {
+                        if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                    });
+                }
+                document.getElementById('drop-target').innerText = word;
+                document.getElementById('drop-target').style.color = '#2c3e50';
+                btnElement.classList.add('used');
+                this.selectedAnswer = word;
+            },
+
+            clearDrop() {
+                if(!this.selectedAnswer) return;
+                document.querySelectorAll('.drag-word').forEach(b => {
+                    if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                });
+                document.getElementById('drop-target').innerText = '...';
+                document.getElementById('drop-target').style.color = '#3498db';
+                this.selectedAnswer = null;
+            },
+
+            showHint() {
+                document.getElementById('hint-text').style.display = 'block';
+            },
+
+            confirmAnswer() {
+                if (this.selectedAnswer === null || this.selectedAnswer === "") {
+                    alert("Responda a questão antes de avançar.");
+                    return;
+                }
+
+                const currentAnswer = this.selectedAnswer;
+                this.selectedAnswer = null; 
+
+                const q = this.questions[this.currentQ];
+                let isCorrect = false;
+                let userAnswerText = currentAnswer;
+                let correctAnswerText = q.ans;
+
+                if (q.type === "typing" || q.type === "drag") {
+                    isCorrect = (currentAnswer.toLowerCase() === q.ans.toLowerCase());
+                } else if (q.type === "multiple_choice") {
+                    isCorrect = (currentAnswer.index === q.ans);
+                    userAnswerText = currentAnswer.text;
+                    correctAnswerText = q.opts[q.ans];
+                } else if (q.type === "true_false") {
+                    isCorrect = (currentAnswer === q.ans);
+                    userAnswerText = currentAnswer ? "Verdadeiro" : "Falso";
+                    correctAnswerText = q.ans ? "Verdadeiro" : "Falso";
+                }
+
+                if (isCorrect) this.score++;
+
+                this.history.push({
+                    question: q.q,
+                    userAns: userAnswerText,
+                    correctAns: correctAnswerText,
+                    isRight: isCorrect,
+                    rationale: q.rat || "Estude este tópico no Roteiro para aprofundar."
+                });
+
+                this.currentQ++;
+
+                try {
+                    if (this.currentQ < this.questions.length) {
+                        const currentState = {
+                            currentQ: this.currentQ,
+                            score: this.score,
+                            history: this.history,
+                            questions: this.questions
+                        };
+                        localStorage.setItem('quiz_progress_' + this.studentCode, JSON.stringify(currentState));
+                    }
+                } catch (e) {
+                    console.warn("Erro ao salvar progresso:", e);
+                }
+
+                if (this.currentQ < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    setTimeout(() => this.finishQuiz(), 500);
+                }
+            },
+
+            finishQuiz() {
+                document.getElementById('quiz-card').classList.remove('active-card');
+                document.getElementById('results-card').classList.add('active-card');
+                
+                localStorage.removeItem('quiz_progress_' + this.studentCode);
+
+                const total = this.questions.length;
+                const perc = Math.round((this.score / total) * 100);
+                document.getElementById('res-name').innerText = this.studentName;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-total').innerText = total;
+                document.getElementById('res-perc').innerText = perc;
+
+                if (perc >= 60) confetti({ particleCount: 400, spread: 90, origin: { y: 0.6 } });
+
+                const reportData = {
+                    date: new Date().toLocaleString('pt-BR'),
+                    score: this.score,
+                    total: total,
+                    perc: perc,
+                    history: [...this.history]
+                };
+
+                try {
+                    let existingReports = JSON.parse(localStorage.getItem('student_reports_' + this.studentCode) || '[]');
+                    existingReports.push(reportData);
+                    localStorage.setItem('student_reports_' + this.studentCode, JSON.stringify(existingReports));
+                } catch(e) {}
+
+                this.generateReportHtml(reportData.history);
+                this.logAttemptToFirebase(perc, total, reportData);
+            },
+
+            generateReportHtml(historyArray) {
+                const repDiv = document.getElementById('detailed-report');
+                repDiv.innerHTML = '';
+                historyArray.forEach((h, i) => {
+                    const statusClass = h.isRight ? 'correct' : 'incorrect';
+                    const icon = h.isRight ? '✔️ Acertou' : '❌ Errou';
+                    repDiv.innerHTML += `
+                        <div class="report-item ${statusClass}">
+                            <p><strong>${i+1}.</strong> ${h.question}</p>
+                            <p>Sua resposta: <strong>${h.userAns}</strong> (${icon})</p>
+                            ${!h.isRight ? `<p>Resposta Correta: <strong>${h.correctAns}</strong></p>` : ''}
+                            <p class="report-rationale">📖 Explicação: ${h.rationale}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            openReportsModal() {
+                const savedReports = localStorage.getItem('student_reports_' + this.studentCode);
+                if (!savedReports) {
+                    alert("Você ainda não concluiu nenhuma rodada desta avaliação!");
+                    return;
+                }
+                const reports = JSON.parse(savedReports);
+                let choice = prompt(`Você possui ${reports.length} rodada(s) concluída(s). Digite o número da rodada que deseja visualizar (1 a ${reports.length}):`);
+                let index = parseInt(choice) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < reports.length) {
+                    const selected = reports[index];
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.remove('active-card');
+                    document.getElementById('results-card').classList.add('active-card');
+                    
+                    document.getElementById('res-name').innerText = this.studentName;
+                    document.getElementById('res-score').innerText = selected.score;
+                    document.getElementById('res-total').innerText = selected.total;
+                    document.getElementById('res-perc').innerText = selected.perc;
+                    this.generateReportHtml(selected.history);
+                } else if (choice !== null) {
+                    alert("Rodada inválida.");
+                }
+            },
+
+            backToQuizOrIntro() {
+                document.getElementById('results-card').classList.remove('active-card');
+                if (this.currentQ > 0 && this.currentQ < this.questions.length) {
+                    document.getElementById('quiz-card').classList.add('active-card');
+                } else {
+                    document.getElementById('intro-card').classList.add('active-card');
+                }
+            },
+
+            // ---------------- FIREBASE FUNCTIONS ----------------
+logAttemptToFirebase(perc, total, reportData) {
+                db.collection("avaliacao_ingles").add({
+                    nome: this.studentName,
+                    codigo: this.studentCode,
+                    serie: this.serieAtual, // ADICIONE ESTA LINHA
+                    notaFinal: `${this.score}/${total} (${perc}%)`,
+                    dataTentativa: reportData.date,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    detalhesRodada: reportData
+                }).catch(e => console.error("Erro ao registrar tentativa no Firebase:", e));
+            },
+
+            // ---------------- DASHBOARD MASTER ----------------
+            loadDashboard() {
+                const tbody = document.getElementById('dashboard-tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+                
+                db.collection("avaliacao_ingles").orderBy("timestamp", "desc").get().then(snap => {
+                    tbody.innerHTML = '';
+                    if(snap.empty) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma tentativa encontrada.</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const d = doc.data();
+tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${d.nome}</strong></td>
+                                <td>${d.codigo}</td>
+                                <td>${d.serie || 'Antigo'}</td> <!-- ADICIONE ESTA LINHA -->
+                                <td>${d.notaFinal}</td>
+                                <td>${d.dataTentativa || 'N/A'}</td>
+                                <td>
+                                    <button class="btn-3d btn-blue" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0;" onclick="app.teacherViewReport('${doc.id}')" title="Ver Relatório desta tentativa">👁️</button>
+                                    <button class="btn-3d btn-salmon" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0; margin-left: 5px;" onclick="app.deleteAttempt('${doc.id}', '${d.nome}')" title="Excluir tentativa">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }).catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Erro de permissão! Verifique as Rules no Firebase.</td></tr>';
+                });
+            },
+
+            teacherViewReport(docId) {
+                db.collection("avaliacao_ingles").doc(docId).get().then(doc => {
+                    if (doc.exists) {
+                        const d = doc.data();
+                        if (d.detalhesRodada) {
+                            document.getElementById('dashboard-card').classList.remove('active-card');
+                            document.getElementById('results-card').classList.add('active-card');
+                            
+                            document.getElementById('res-name').innerText = d.nome + ` (Tentativa em: ${d.dataTentativa})`;
+                            document.getElementById('res-score').innerText = d.detalhesRodada.score;
+                            document.getElementById('res-total').innerText = d.detalhesRodada.total;
+                            document.getElementById('res-perc').innerText = d.detalhesRodada.perc;
+                            this.generateReportHtml(d.detalhesRodada.history);
+                        } else {
+                            alert("Detalhes detalhados indisponíveis para este registro antigo.");
+                        }
+                    }
+                });
+            },
+
+            deleteAttempt(docId, studentName) {
+                if (confirm(`Tem certeza que deseja apagar esta tentativa específica do aluno(a) ${studentName}?`)) {
+                    db.collection("avaliacao_ingles").doc(docId).delete().then(() => {
+                        alert("Tentativa excluída com sucesso!");
+                        this.loadDashboard(); 
+                    }).catch(error => {
+                        console.error("Erro ao deletar tentativa: ", error);
+                        alert("Erro ao tentar excluir.");
+                    });
+                }
+            },
+
+            filterTable() {
+                let input = document.getElementById("filter-input");
+                let filter = input.value.toUpperCase();
+                let table = document.getElementById("dashboard-table");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    }
+                }
+            },
+
+            sortTable(n) {
+                let table = document.getElementById("dashboard-table");
+                let rows, switching, i, x, y, shouldSwitch;
+                switching = true;
+                this.sortDirection = !this.sortDirection;
+                
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        
+                        if (!x || !y) continue;
+
+                        let valX = x.innerHTML.toLowerCase();
+                        let valY = y.innerHTML.toLowerCase();
+                        
+                        if (this.sortDirection) {
+                            if (valX > valY) { shouldSwitch = true; break; }
+                        } else {
+                            if (valX < valY) { shouldSwitch = true; break; }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            },
+
+            exportToCSV() {
+                let table = document.getElementById("dashboard-table");
+                let csv = [];
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                    for (let j = 0; j < cols.length - 1; j++) 
+                        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                    csv.push(row.join(","));
+                }
+                let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+                let downloadLink = document.createElement("a");
+                downloadLink.download = "relatorio_tentativas_ingles.csv";
+                downloadLink.href = window.URL.createObjectURL(csvFile);
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            exitMaster() {
+                document.getElementById('dashboard-card').classList.remove('active-card');
+                document.getElementById('student-code').value = '';
+                document.getElementById('intro-card').classList.add('active-card');
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>

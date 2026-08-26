@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 6º ANO (3º BIMESTRE)</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ESTILOS GERAIS E FUNDO ELEGANTE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 850px;
+            min-height: 400px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin-bottom: 5px; }
+        h2 { text-align: center; color: #7f8c8d; font-size: 1.2rem; margin-top: 0; }
+
+        .card { display: none; flex-direction: column; }
+        .active-card { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* INPUTS E FILTROS */
+        input[type="text"] {
+            padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; width: 100%; box-sizing: border-box;
+            font-size: 1.1rem; text-align: center; transition: border-color 0.3s;
+        }
+        input[type="text"]:focus { border-color: #90EE90; outline: none; }
+
+        /* --------------------------------------------------- */
+        /* BOTÕES 3D (Com Borda Baixa)                         */
+        /* --------------------------------------------------- */
+        .btn-3d {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; padding: 12px 25px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 10px;
+        }
+        .btn-green {
+            background-color: #90EE90; color: #2c3e50;
+            box-shadow: 0 6px 0 #75c975;
+        }
+        .btn-green:active { transform: translateY(6px); box-shadow: 0 0 0 #75c975; }
+
+        .btn-salmon {
+            background-color: #FA8072; color: white;
+            box-shadow: 0 6px 0 #d9695d;
+        }
+        .btn-salmon:active { transform: translateY(6px); box-shadow: 0 0 0 #d9695d; }
+
+        .btn-blue {
+            background-color: #3498db; color: white;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #2980b9; }
+
+        /* ESTILOS DOS BOTÕES DO RODAPÉ DA QUESTÃO (TAMANHOS UNIFORMES) */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-quiz-action {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 0.95rem; padding: 10px 18px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 0;
+        }
+        .btn-report-quiz {
+            background-color: #3498db; color: white; box-shadow: 0 5px 0 #2980b9;
+        }
+        .btn-report-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #2980b9; }
+
+        .btn-hint-quiz {
+            background-color: #6a0dad; color: white; box-shadow: 0 5px 0 #4c0880;
+        }
+        .btn-hint-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #4c0880; }
+
+        /* BARRA DE PROGRESSO */
+        .progress-container {
+            width: 100%; background-color: #e9ecef; border-radius: 10px;
+            height: 12px; margin-bottom: 20px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background-color: #90EE90; width: 0%;
+            transition: width 0.4s ease-out; border-radius: 10px;
+        }
+
+        /* ÁREA DA QUESTÃO */
+        .question-text { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .question-counter { text-align: left; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        #hint-text {
+            margin-top: 15px; padding: 12px; background-color: #f8f9fa;
+            border-left: 5px solid #6a0dad; border-radius: 5px; font-style: italic; display: none;
+        }
+
+        /* 1. Múltipla Escolha */
+        .option-btn {
+            background-color: #f8f9fa; border: 2px solid #e0e0e0; padding: 15px;
+            margin-bottom: 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; width: 100%; text-align: left; font-size: 1.1rem;
+        }
+        .option-btn:hover { background-color: #f1f3f5; border-color: #ccc; }
+        .option-btn.selected { background-color: #e8f5e9; border-color: #90EE90; font-weight: bold; transform: scale(1.01); box-shadow: 0 4px 10px rgba(144, 238, 144, 0.2);}
+
+        /* 2. Verdadeiro ou Falso */
+        .tf-container { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .tf-btn { padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background-color: #f8f9fa; transition: all 0.2s; width: 45%; }
+        .tf-btn.selected-true { background-color: #e8f5e9; border-color: #90EE90; color: #2c3e50; }
+        .tf-btn.selected-false { background-color: #ffeeee; border-color: #FA8072; color: #c0392b; }
+
+        /* 3. Digitação */
+        .typing-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
+        .typing-input {
+            padding: 15px; font-size: 1.3rem; border: 2px solid #ccc; border-radius: 8px;
+            width: 80%; text-align: center; text-transform: lowercase;
+        }
+        .typing-input:focus { border-color: #90EE90; outline: none; }
+
+        /* 4. Arrastar e Soltar */
+        .drag-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0;}
+        .sentence-display { font-size: 1.3rem; margin-bottom: 25px; line-height: 2; }
+        .drop-zone { display: inline-block; min-width: 80px; min-height: 30px; border-bottom: 3px dashed #7f8c8d; margin: 0 10px; padding: 0 10px; color: #3498db; font-weight: bold; cursor: pointer; transition: all 0.3s;}
+        .drop-zone:hover { border-bottom-color: #3498db; }
+        .words-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-word { background-color: #3498db; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;}
+        .drag-word:active { transform: translateY(4px); box-shadow: 0 0 0 #2980b9;}
+        .drag-word.used { background-color: #bdc3c7; box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* DASHBOARD E TABELA */
+        .styled-table { border-collapse: collapse; margin: 20px 0; font-size: 0.95em; width: 100%; box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 8px; overflow: hidden; }
+        .styled-table thead tr { background-color: #90EE90; color: #2c3e50; text-align: left; cursor: pointer; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .styled-table tbody tr:hover { background-color: #f9f9f9; }
+
+        /* RELATÓRIO FINAL */
+        .results-details { background-color: #fdfbfb; padding: 20px; border-left: 5px solid #90EE90; border-radius: 8px; margin-top: 20px; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        .report-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #eee; background: #fff;}
+        .report-item.correct { border-left: 5px solid #90EE90; }
+        .report-item.incorrect { border-left: 5px solid #FA8072; }
+        .report-rationale { font-size: 0.95rem; color: #7f8c8d; margin-top: 8px; font-style: italic; }
+
+        /* IMPRESSÃO (PDF) */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            .btn-3d, #intro-card, #quiz-card, #dashboard-card, .progress-container, .no-print { display: none !important; }
+            #results-card { display: block !important; }
+            .report-item { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="intro-card" class="card active-card intro-card">
+            <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
+            <h2>6º ANO (3º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
+            <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
+            <input type="text" id="student-code" placeholder="Código de Acesso">
+            <button class="btn-3d btn-green" id="start-btn" onclick="app.startQuiz()">Iniciar Avaliação</button>
+        </div>
+
+        <!-- DASHBOARD MASTER (JR1971) -->
+        <div id="dashboard-card" class="card">
+            <h1 style="color: #FA8072; margin-bottom: 0;">Painel do Professor</h1>
+            <p style="text-align: center; margin-top: 5px;">Acompanhamento em tempo real (Tentativas em linhas separadas).</p>
+            
+            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;" class="no-print">
+                <input type="text" id="filter-input" placeholder="🔍 Filtrar por nome do aluno..." onkeyup="app.filterTable()" style="flex: 1; min-width: 200px; margin-top: 0;">
+                <button class="btn-3d btn-green" onclick="app.exportToCSV()">Salvar Excel</button>
+                <button class="btn-3d btn-salmon" onclick="app.exitMaster()">Sair</button>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="styled-table" id="dashboard-table">
+<thead>
+                        <tr>
+                            <th onclick="app.sortTable(0)">Aluno ↕</th>
+                            <th onclick="app.sortTable(1)">Código ↕</th>
+                            <th onclick="app.sortTable(2)">Série ↕</th> <!-- NOVA COLUNA AQUI -->
+                            <th onclick="app.sortTable(3)">Nota Final ↕</th>
+                            <th onclick="app.sortTable(4)">Data/Hora Tentativa ↕</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA DA AVALIAÇÃO -->
+        <div id="quiz-card" class="card">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="question-counter">Questão <span id="current-q-num">1</span> de <span id="total-q-num">50</span></div>
+            </div>
+            
+            <div id="question-text" class="question-text"></div>
+            <div id="answer-area"></div>
+
+            <div id="hint-container">
+                <div id="hint-text"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <div class="left-actions">
+                    <button class="btn-quiz-action btn-report-quiz" onclick="app.openReportsModal()">📋 Relatório</button>
+                    <button class="btn-quiz-action btn-hint-quiz" onclick="app.showHint()">💡 Dica</button>
+                </div>
+                <div>
+                    <button class="btn-3d btn-green" id="confirm-btn" onclick="app.confirmAnswer()">✔️ Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS / RELATÓRIO INDIVIDUAL -->
+        <div id="results-card" class="card">
+            <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Relatório de Desempenho</h1>
+            <div class="results-details">
+                <p><strong>Aluno(a):</strong> <span id="res-name"></span></p>
+                <p><strong>Acertos:</strong> <span id="res-score"></span> de <span id="res-total">50</span></p>
+                <p><strong>Aproveitamento:</strong> <span id="res-perc"></span>%</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;" class="no-print">
+                <button class="btn-3d btn-green" onclick="window.print()">Salvar PDF (Relatório)</button>
+                <button class="btn-3d btn-blue" onclick="app.backToQuizOrIntro()">Voltar</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #7f8c8d;">Revisão das Questões desta Rodada:</h3>
+            <div id="detailed-report"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO FIREBASE E DADOS
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt9b_YXS9koqsQhyyduaVizPUtDc22KCs",
+            authDomain: "quizzes-dos-colegios.firebaseapp.com",
+            projectId: "quizzes-dos-colegios",
+            storageBucket: "quizzes-dos-colegios.firebasestorage.app",
+            messagingSenderId: "143672230264",
+            appId: "1:143672230264:web:b40c17e2a39e574057888d"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
+        const db = firebase.firestore();
+
+const studentData = {
+            "472AM": "ARTHUR OLIVEIRA",
+            "542AJK": "ARTHUR DE SOUSA",
+            "819AS": "BRYAN",
+            "365AS": "DAVI",
+            "294BS": "EMANUELLE",
+            "581BS": "GABRIEL",
+            "736DF": "GUILHERME",
+            "158DG": "ISAQUE",
+            "942EN": "LARISSA",
+            "627ES": "MANUELA CAVALCANTE",
+            "301ES": "MANUELLA SANTOS",
+            "514HB": "MARIA EDUARDA",
+            "892HS": "MATHEUS",
+            "463HB": "NICOLLE",
+            "275HC": "THIAGO",
+            "JR123": "JUNIOR"
+        };
+
+// ==========================================
+        // 2. BANCO DE QUESTÕES COMPLETO (50 QUESTÕES) - 6º ANO
+        // ==========================================
+        const questionsDb = [
+            // --- BLOCO 1: CLOTHES & ACCESSORIES (Página 2) ---
+            { 
+                type: "multiple_choice", 
+                q: "De acordo com o material, qual é a palavra em inglês para 'cachecol'?", 
+                hint: "Fica na seção de Accessories.", 
+                opts: ["Tie", "Scarf", "Belt", "Socks"], 
+                ans: 1, 
+                rat: "'Scarf' é o acessório traduzido como cachecol[cite: 6]." 
+            },
+            { 
+                type: "typing", 
+                q: "Escreva a palavra em inglês para 'gravata' (Accessories):", 
+                hint: "Tem apenas 3 letras, começa com 't'.", 
+                ans: "tie", 
+                rat: "Na seção de acessórios, gravata é 'tie'[cite: 6]." 
+            },
+            { 
+                type: "true_false", 
+                q: "A palavra 'Sneakers' refere-se a sapatos de salto alto (Heels).", 
+                hint: "Veja a seção Shoes.", 
+                ans: false, 
+                rat: "Falso. 'Sneakers' significa tênis, enquanto sapatos de salto são 'heels'[cite: 6]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com a peça de roupa correta (Bottom):", 
+                txtPre: "Hoje eu estou usando uma camiseta e uma calça jeans, ou seja, T-shirt and", 
+                txtPost: ".", 
+                opts: ["jeans", "skirt", "belt", "boots"], 
+                ans: "jeans", 
+                rat: "Na seção 'Bottom', a palavra para calça jeans é simplesmente 'jeans'[cite: 6]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual das seguintes opções é considerada 'Outerwear' (roupas de frio/agasalhos)?", 
+                hint: "Roupas usadas por cima de outras.", 
+                opts: ["Shorts", "Socks", "Jacket", "Sandals"], 
+                ans: 2, 
+                rat: "'Jacket' (jaqueta) faz parte da categoria 'Outerwear'[cite: 6]." 
+            },
+            { 
+                type: "typing", 
+                q: "Qual é a palavra em inglês para 'meias' (Accessories)?", 
+                hint: "Começa com 's' e termina com 's'.", 
+                ans: "socks", 
+                rat: "'Socks' é a palavra correta para meias[cite: 6]." 
+            },
+            { 
+                type: "true_false", 
+                q: "'Belt' é um acessório usado na cintura, que significa 'cinto'.", 
+                hint: "Seção de Accessories.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Belt' significa cinto[cite: 6]." 
+            },
+
+            // --- BLOCO 2: PRESENT CONTINUOUS - AFFIRMATIVE (Páginas 4 a 6) ---
+            { 
+                type: "multiple_choice", 
+                q: "Complete a frase no Presente Contínuo: 'She _____ reading.'", 
+                hint: "Qual verbo To Be acompanha 'She'?", 
+                opts: ["am", "are", "is", "be"], 
+                ans: 2, 
+                rat: "Para o pronome 'She', usamos o verbo 'is' seguido do verbo com -ing: 'She is reading'[cite: 6]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Verbos terminados em 'e' perdem essa vogal para adicionar o 'ing' (Ex: write -> writing).", 
+                hint: "Lembre da regra 'Be Careful!'.", 
+                ans: true, 
+                rat: "Verdadeiro. Segundo a regra, omitimos a vogal 'e' antes de acrescentar 'ing'[cite: 6]." 
+            },
+            { 
+                type: "typing", 
+                q: "Acrescente -ing ao verbo 'eat' (comer) para completar a frase: 'The boy is _____.'", 
+                hint: "Apenas adicione o sufixo.", 
+                ans: "eating", 
+                rat: "O verbo 'eat' torna-se 'eating' no Present Continuous[cite: 6]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com o verbo To Be correto:", 
+                txtPre: "They", 
+                txtPost: "studying for the test.", 
+                opts: ["is", "am", "are", "be"], 
+                ans: "are", 
+                rat: "O pronome 'They' (eles/elas) exige o verbo 'are'[cite: 6]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como escrevemos o gerúndio (forma -ing) do verbo 'put' (colocar)?", 
+                hint: "CVC (Consoante, Vogal, Consoante).", 
+                opts: ["puting", "putting", "puteeng", "puttin"], 
+                ans: 1, 
+                rat: "Para verbos terminados em Consoante-Vogal-Consoante (CVC), dobra-se a última letra: 'putting'[cite: 6]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase: 'I _____ brushing my hair.' (Eu estou)", 
+                hint: "Qual verbo To Be usamos para 'I'?", 
+                ans: "am", 
+                rat: "Para o pronome 'I', usamos 'am'[cite: 6]." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'He are washing his hands' está correta.", 
+                hint: "Concordância do verbo To Be.", 
+                ans: false, 
+                rat: "Falso. O correto é 'He is washing his hands'[cite: 6]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com o verbo na forma correta:", 
+                txtPre: "Steve and Sally are", 
+                txtPost: "their books.", 
+                opts: ["reading", "read", "readings", "readying"], 
+                ans: "reading", 
+                rat: "Como são duas pessoas (They), a frase usa 'are' + o verbo com -ing ('reading')[cite: 6]." 
+            },
+
+            // --- BLOCO 3: QUESTION WORDS (Páginas 7 a 9) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual 'Question Word' usamos para perguntar sobre lugares (Onde)?", 
+                hint: "Começa com 'Wh'.", 
+                opts: ["What", "Who", "Where", "How"], 
+                ans: 2, 
+                rat: "'Where' é a palavra interrogativa utilizada para saber o local (onde)[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a pergunta: '_____ are you doing?' 'I am swimming.'", 
+                hint: "O que?", 
+                ans: "what", 
+                rat: "Para perguntar 'O que' você está fazendo, usamos 'What'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Para perguntar o nome de uma pessoa ou quem ela é, usamos a palavra 'Who'.", 
+                hint: "Who is who?", 
+                ans: true, 
+                rat: "Verdadeiro. 'Who' significa 'Quem'[cite: 6, 7]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a pergunta sobre o clima:", 
+                txtPre: "", 
+                txtPost: "is the weather? It is snowy.", 
+                opts: ["How", "What", "Where", "Who"], 
+                ans: "How", 
+                rat: "A expressão correta para perguntar como está o tempo é 'How is the weather?'[cite: 6, 7]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Leia a resposta: 'They are on the beach.' Qual é a pergunta correta?", 
+                hint: "Pergunta sobre o lugar.", 
+                opts: ["Who are they?", "What are they doing?", "Where are the boys?", "How are they?"], 
+                ans: 2, 
+                rat: "Como a resposta indica um local (on the beach), a pergunta deve iniciar com 'Where'[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete: '_____ is wearing a pink tank top?' 'The girl is.'", 
+                hint: "Quem?", 
+                ans: "who", 
+                rat: "Para perguntar 'Quem' está usando algo, usamos 'Who'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'Where is he playing the violin?' pergunta 'O que' ele está tocando.", 
+                hint: "Tradução de Where.", 
+                ans: false, 
+                rat: "Falso. 'Where' pergunta 'Onde' ele está tocando. Para perguntar 'O que', usaríamos 'What'[cite: 6, 7]." 
+            },
+
+            // --- BLOCO 4: FEELINGS (Páginas 13 e 14) ---
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'assustado' ou 'com medo' em inglês?", 
+                hint: "Seção de sentimentos.", 
+                opts: ["shy", "sad", "frightened", "jealous"], 
+                ans: 2, 
+                rat: "'Frightened' (ou scared) significa assustado/com medo[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Qual é o oposto de triste ('sad')?", 
+                hint: "h _ _ _ _", 
+                ans: "happy", 
+                rat: "O oposto de sad (triste) é happy (feliz)[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Se uma pessoa está 'exhausted', significa que ela está muito descansada e relaxada.", 
+                hint: "Exhausted = exausto.", 
+                ans: false, 
+                rat: "Falso. 'Exhausted' significa muito cansado ou exausto[cite: 6, 7]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o sentimento correto:", 
+                txtPre: "The boy got the first place in the competition. He is feeling very", 
+                txtPost: "today.", 
+                opts: ["proud", "lonely", "sick", "hungry"], 
+                ans: "proud", 
+                rat: "'Proud' significa orgulhoso, um sentimento comum ao ganhar uma competição (indicado pelo nº 1 no desenho)[cite: 6, 7]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual destas palavras significa 'tímido'?", 
+                hint: "Rosto envergonhado.", 
+                opts: ["grumpy", "shy", "angry", "sleepy"], 
+                ans: 1, 
+                rat: "'Shy' é o adjetivo em inglês para tímido[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete o sentimento: I want to eat a hamburger! I am very _____.", 
+                hint: "Fome.", 
+                ans: "hungry", 
+                rat: "'Hungry' significa com fome[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "O sentimento 'lonely' indica que a pessoa está se sentindo solitária.", 
+                hint: "Pense na palavra alone.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Lonely' significa solitário(a)[cite: 6, 7]." 
+            },
+
+            // --- BLOCO 5: PRESENT CONTINUOUS - NEGATIVE & INTERROGATIVE (Páginas 15 a 17) ---
+            { 
+                type: "multiple_choice", 
+                q: "Complete a frase negando a primeira ação: 'He _____ washing his hair. He is washing his hands.'", 
+                hint: "Negativa de 'is'.", 
+                opts: ["aren't", "is", "isn't", "am not"], 
+                ans: 2, 
+                rat: "A forma negativa do verbo 'is' é 'isn't' (is not)[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Para fazer uma pergunta com 'they', o que colocamos no início? '_____ they dancing?'", 
+                hint: "Verbo To Be.", 
+                ans: "are", 
+                rat: "Na forma interrogativa, o verbo To Be (Are) vem antes do sujeito (they)[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Na resposta curta afirmativa 'Yes, they are.', não usamos a forma contraída (they're) no final.", 
+                hint: "Regra das Short Answers.", 
+                ans: true, 
+                rat: "Verdadeiro. Nas respostas curtas afirmativas, o verbo não é contraído[cite: 6, 7]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a pergunta:", 
+                txtPre: "", 
+                txtPost: "the dog eating? No, it isn't. It is sleeping.", 
+                opts: ["Is", "Are", "Am", "Does"], 
+                ans: "Is", 
+                rat: "O pronome correspondente para 'the dog' é 'it', portanto, a pergunta inicia com 'Is'[cite: 6, 7]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Os meninos não estão lendo' em inglês?", 
+                hint: "Plural + negativa.", 
+                opts: ["The children isn't reading.", "The children am not reading.", "The children aren't reading.", "The children not are reading."], 
+                ans: 2, 
+                rat: "'The children' (as crianças/os meninos) é plural (they), então a negativa correta é 'aren't reading'[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a resposta curta negativa: 'Is she drinking coke?' 'No, she _____.'", 
+                hint: "Negativa de is.", 
+                ans: "isn't", 
+                rat: "A resposta curta negativa para perguntas com 'Is she' é 'No, she isn't'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Para transformar a frase 'You are studying' em pergunta, basta escrever 'Are you studying?'.", 
+                hint: "Inversão do verbo.", 
+                ans: true, 
+                rat: "Verdadeiro. No Present Continuous interrogativo, invertemos o sujeito e o verbo To Be[cite: 6, 7]." 
+            },
+
+            // --- BLOCO 6: TIME (Páginas 18 e 19) ---
+            { 
+                type: "multiple_choice", 
+                q: "Que horas são? 'It's half past one.'", 
+                hint: "Half past significa meia hora passada de...", 
+                opts: ["13:15", "13:30", "13:00", "12:30"], 
+                ans: 1, 
+                rat: "'Half past one' significa que já se passou meia hora (30 minutos) da uma hora, ou seja, 13:30[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se diz quando é uma hora em ponto? 'It's one _____'.", 
+                hint: "Começa com o'.", 
+                ans: "o'clock", 
+                rat: "Usamos 'o'clock' apenas para as horas inteiras/exatas[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "A sigla 'AM' (ante meridiem) é usada para indicar os horários após o meio-dia (tarde/noite).", 
+                hint: "Veja o quadro 'Be Careful!'.", 
+                ans: false, 
+                rat: "Falso. 'AM' é usado antes do meio-dia (madrugada/manhã). O correto para a tarde é 'PM'[cite: 6, 7]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a hora (13:15):", 
+                txtPre: "It's a", 
+                txtPost: "past one.", 
+                opts: ["quarter", "half", "twenty", "five"], 
+                ans: "quarter", 
+                rat: "15 minutos representam um quarto de hora, portanto 'a quarter past one'[cite: 6, 7]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Se o relógio marca 13:50, como dizemos em inglês?", 
+                hint: "Faltam dez para as duas.", 
+                opts: ["It's ten past one.", "It's ten to two.", "It's half past one.", "It's fifty to two."], 
+                ans: 1, 
+                rat: "Como faltam dez minutos para as duas, dizemos 'It's ten to two'[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete as horas (13:05): 'It's _____ past one.'", 
+                hint: "Cinco.", 
+                ans: "five", 
+                rat: "Passaram-se cinco minutos da uma hora, logo 'five past one'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Quando dizemos 'It's midnight', estamos afirmando que é meio-dia.", 
+                hint: "Mid = meio, Night = noite.", 
+                ans: false, 
+                rat: "Falso. 'Midnight' é meia-noite. Meio-dia é 'midday' ou 'noon'[cite: 6, 7]." 
+            },
+
+            // --- BLOCO 7: EXTRA EXERCISES (Página 36) ---
+            { 
+                type: "multiple_choice", 
+                q: "De acordo com os exercícios da página 36, o que a Mary (01) está fazendo?", 
+                hint: "Ela está lavando algo.", 
+                opts: ["Washing the dishes.", "Cleaning the floor.", "Painting a vase.", "Swimming in the sea."], 
+                ans: 0, 
+                rat: "A frase correspondente à imagem 01 é 'Mary is washing the dishes'[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "O que o Diego (10) está fazendo? 'Diego is _____ too much.' (rindo)", 
+                hint: "l a u g h i n g", 
+                ans: "laughing", 
+                rat: "A frase da página 36 diz 'Diego is laughing too much'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "Na imagem (08), o personagem Samuel is sleeping.", 
+                hint: "Samuel dormindo.", 
+                ans: true, 
+                rat: "Verdadeiro. A frase do número 08 é 'Samuel is sleeping'[cite: 6, 7]." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase do Robert (14):", 
+                txtPre: "Robert is", 
+                txtPost: "a healthy sandwich and drinking orange juice.", 
+                opts: ["eating", "cooking", "playing", "reading"], 
+                ans: "eating", 
+                rat: "A frase completa é 'Robert is eating a healthy sandwich...'[cite: 6, 7]." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que Esther e Willie (15) estão fazendo juntos?", 
+                hint: "É um jogo de tabuleiro.", 
+                opts: ["Playing tennis", "Playing chess", "Dancing", "Talking"], 
+                ans: 1, 
+                rat: "A frase da página 36 diz 'Esther and Willie are playing chess' (jogando xadrez)[cite: 6, 7]." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase da Lucy (11): 'Lucy is _____ with her little black and white dog.' (andando)", 
+                hint: "w a l k i n g", 
+                ans: "walking", 
+                rat: "A frase correta é 'Lucy is walking with her little black and white dog'[cite: 6, 7]." 
+            },
+            { 
+                type: "true_false", 
+                q: "De acordo com o texto da página 36, Pablo (06) is cooking.", 
+                hint: "Verifique o que Pablo está fazendo.", 
+                ans: false, 
+                rat: "Falso. A frase (06) é 'Pablo is cleaning the floor'. Quem está cozinhando (09) é o Igor[cite: 6, 7]." 
+            }
+        ];
+
+        // ==========================================
+        // 3. LÓGICA PRINCIPAL DO APLICATIVO
+        // ==========================================
+const app = {
+            serieAtual: "6º ANO", // ADICIONE ESTA LINHA
+            currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
+            questions: [], history: [], sortDirection: false,
+        
+
+            init() {
+                this.questions = this.shuffle([...questionsDb]);
+                document.getElementById('total-q-num').innerText = this.questions.length;
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            startQuiz() {
+                const code = document.getElementById('student-code').value.trim().toUpperCase();
+                
+                if (code === "JR1971") {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('dashboard-card').classList.add('active-card');
+                    this.loadDashboard();
+                    return;
+                }
+
+                if (!studentData[code]) {
+                    alert("Código inválido! Tente novamente.");
+                    return;
+                }
+
+                this.studentCode = code;
+                this.studentName = studentData[code];
+                
+                try {
+                    const savedState = localStorage.getItem('quiz_progress_' + this.studentCode);
+                    if (savedState) {
+                        if (confirm(`Olá, ${this.studentName}! Encontramos uma avaliação em andamento. Deseja continuar de onde parou?`)) {
+                            const data = JSON.parse(savedState);
+                            this.currentQ = data.currentQ;
+                            this.score = data.score;
+                            this.history = data.history;
+                            this.questions = data.questions;
+                        } else {
+                            localStorage.removeItem('quiz_progress_' + this.studentCode);
+                            this.init(); 
+                        }
+                    } else {
+                        this.init();
+                    }
+                } catch (e) {
+                    this.init();
+                }
+
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('student-code').style.display = 'none';
+                document.getElementById('quiz-description').style.display = 'none';
+                
+                const welcomeMsg = document.getElementById('personalized-welcome');
+                if(this.studentName === "JÚNIOR") {
+                    welcomeMsg.innerText = "Oi, JÚNIOR - grato por sua visita!!!";
+                } else {
+                    welcomeMsg.innerText = `Bem-vindo(a), ${this.studentName}! Boa Prova!`;
+                }
+                welcomeMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.add('active-card');
+                    this.renderQuestion();
+                }, 2000);
+            },
+
+            renderQuestion() {
+                this.selectedAnswer = null;
+                document.getElementById('hint-text').style.display = 'none';
+                document.getElementById('current-q-num').innerText = this.currentQ + 1;
+                
+                const progress = (this.currentQ / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+
+                const q = this.questions[this.currentQ];
+                document.getElementById('question-text').innerText = `${this.currentQ + 1}. ${q.q}`;
+                document.getElementById('hint-text').innerText = q.hint || "Pense com cuidado e analise o contexto da frase!";
+                
+                const area = document.getElementById('answer-area');
+                area.innerHTML = ''; 
+
+                if (q.type === "multiple_choice") {
+                    q.opts.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn';
+                        btn.innerText = opt;
+                        btn.onclick = () => this.selectMC(btn, idx, opt);
+                        area.appendChild(btn);
+                    });
+                } 
+                else if (q.type === "true_false") {
+                    const cont = document.createElement('div');
+                    cont.className = 'tf-container';
+                    
+                    const bTrue = document.createElement('button');
+                    bTrue.className = 'tf-btn'; bTrue.innerText = 'Verdadeiro';
+                    bTrue.onclick = () => this.selectTF(bTrue, true, cont);
+                    
+                    const bFalse = document.createElement('button');
+                    bFalse.className = 'tf-btn'; bFalse.innerText = 'Falso';
+                    bFalse.onclick = () => this.selectTF(bFalse, false, cont);
+                    
+                    cont.appendChild(bTrue); cont.appendChild(bFalse);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "typing") {
+                    const cont = document.createElement('div');
+                    cont.className = 'typing-container';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.className = 'typing-input';
+                    inp.placeholder = 'Digite aqui...';
+                    inp.oninput = (e) => this.selectedAnswer = e.target.value.trim().toLowerCase();
+                    cont.appendChild(inp);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "drag") {
+                    const cont = document.createElement('div');
+                    cont.className = 'drag-container';
+                    
+                    const sent = document.createElement('div');
+                    sent.className = 'sentence-display';
+                    sent.innerHTML = `${q.txtPre} <span class="drop-zone" id="drop-target" onclick="app.clearDrop()">...</span> ${q.txtPost}`;
+                    
+                    const bank = document.createElement('div');
+                    bank.className = 'words-bank';
+                    
+                    let words = this.shuffle([...q.opts]);
+                    words.forEach(w => {
+                        const wBtn = document.createElement('button');
+                        wBtn.className = 'drag-word';
+                        wBtn.innerText = w;
+                        wBtn.onclick = () => this.fillDrop(w, wBtn);
+                        bank.appendChild(wBtn);
+                    });
+
+                    cont.appendChild(sent);
+                    cont.appendChild(bank);
+                    area.appendChild(cont);
+                }
+            },
+
+            selectMC(btn, index, textVal) {
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedAnswer = { index: index, text: textVal }; 
+            },
+
+            selectTF(btn, val, container) {
+                container.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected-true', 'selected-false'));
+                btn.classList.add(val ? 'selected-true' : 'selected-false');
+                this.selectedAnswer = val;
+            },
+
+            fillDrop(word, btnElement) {
+                if(btnElement.classList.contains('used')) return;
+                if(this.selectedAnswer) {
+                    document.querySelectorAll('.drag-word').forEach(b => {
+                        if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                    });
+                }
+                document.getElementById('drop-target').innerText = word;
+                document.getElementById('drop-target').style.color = '#2c3e50';
+                btnElement.classList.add('used');
+                this.selectedAnswer = word;
+            },
+
+            clearDrop() {
+                if(!this.selectedAnswer) return;
+                document.querySelectorAll('.drag-word').forEach(b => {
+                    if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                });
+                document.getElementById('drop-target').innerText = '...';
+                document.getElementById('drop-target').style.color = '#3498db';
+                this.selectedAnswer = null;
+            },
+
+            showHint() {
+                document.getElementById('hint-text').style.display = 'block';
+            },
+
+            confirmAnswer() {
+                if (this.selectedAnswer === null || this.selectedAnswer === "") {
+                    alert("Responda a questão antes de avançar.");
+                    return;
+                }
+
+                const currentAnswer = this.selectedAnswer;
+                this.selectedAnswer = null; 
+
+                const q = this.questions[this.currentQ];
+                let isCorrect = false;
+                let userAnswerText = currentAnswer;
+                let correctAnswerText = q.ans;
+
+                if (q.type === "typing" || q.type === "drag") {
+                    isCorrect = (currentAnswer.toLowerCase() === q.ans.toLowerCase());
+                } else if (q.type === "multiple_choice") {
+                    isCorrect = (currentAnswer.index === q.ans);
+                    userAnswerText = currentAnswer.text;
+                    correctAnswerText = q.opts[q.ans];
+                } else if (q.type === "true_false") {
+                    isCorrect = (currentAnswer === q.ans);
+                    userAnswerText = currentAnswer ? "Verdadeiro" : "Falso";
+                    correctAnswerText = q.ans ? "Verdadeiro" : "Falso";
+                }
+
+                if (isCorrect) this.score++;
+
+                this.history.push({
+                    question: q.q,
+                    userAns: userAnswerText,
+                    correctAns: correctAnswerText,
+                    isRight: isCorrect,
+                    rationale: q.rat || "Estude este tópico no Roteiro para aprofundar."
+                });
+
+                this.currentQ++;
+
+                try {
+                    if (this.currentQ < this.questions.length) {
+                        const currentState = {
+                            currentQ: this.currentQ,
+                            score: this.score,
+                            history: this.history,
+                            questions: this.questions
+                        };
+                        localStorage.setItem('quiz_progress_' + this.studentCode, JSON.stringify(currentState));
+                    }
+                } catch (e) {
+                    console.warn("Erro ao salvar progresso:", e);
+                }
+
+                if (this.currentQ < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    setTimeout(() => this.finishQuiz(), 500);
+                }
+            },
+
+            finishQuiz() {
+                document.getElementById('quiz-card').classList.remove('active-card');
+                document.getElementById('results-card').classList.add('active-card');
+                
+                localStorage.removeItem('quiz_progress_' + this.studentCode);
+
+                const total = this.questions.length;
+                const perc = Math.round((this.score / total) * 100);
+                document.getElementById('res-name').innerText = this.studentName;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-total').innerText = total;
+                document.getElementById('res-perc').innerText = perc;
+
+                if (perc >= 60) confetti({ particleCount: 400, spread: 90, origin: { y: 0.6 } });
+
+                const reportData = {
+                    date: new Date().toLocaleString('pt-BR'),
+                    score: this.score,
+                    total: total,
+                    perc: perc,
+                    history: [...this.history]
+                };
+
+                try {
+                    let existingReports = JSON.parse(localStorage.getItem('student_reports_' + this.studentCode) || '[]');
+                    existingReports.push(reportData);
+                    localStorage.setItem('student_reports_' + this.studentCode, JSON.stringify(existingReports));
+                } catch(e) {}
+
+                this.generateReportHtml(reportData.history);
+                this.logAttemptToFirebase(perc, total, reportData);
+            },
+
+            generateReportHtml(historyArray) {
+                const repDiv = document.getElementById('detailed-report');
+                repDiv.innerHTML = '';
+                historyArray.forEach((h, i) => {
+                    const statusClass = h.isRight ? 'correct' : 'incorrect';
+                    const icon = h.isRight ? '✔️ Acertou' : '❌ Errou';
+                    repDiv.innerHTML += `
+                        <div class="report-item ${statusClass}">
+                            <p><strong>${i+1}.</strong> ${h.question}</p>
+                            <p>Sua resposta: <strong>${h.userAns}</strong> (${icon})</p>
+                            ${!h.isRight ? `<p>Resposta Correta: <strong>${h.correctAns}</strong></p>` : ''}
+                            <p class="report-rationale">📖 Explicação: ${h.rationale}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            openReportsModal() {
+                const savedReports = localStorage.getItem('student_reports_' + this.studentCode);
+                if (!savedReports) {
+                    alert("Você ainda não concluiu nenhuma rodada desta avaliação!");
+                    return;
+                }
+                const reports = JSON.parse(savedReports);
+                let choice = prompt(`Você possui ${reports.length} rodada(s) concluída(s). Digite o número da rodada que deseja visualizar (1 a ${reports.length}):`);
+                let index = parseInt(choice) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < reports.length) {
+                    const selected = reports[index];
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.remove('active-card');
+                    document.getElementById('results-card').classList.add('active-card');
+                    
+                    document.getElementById('res-name').innerText = this.studentName;
+                    document.getElementById('res-score').innerText = selected.score;
+                    document.getElementById('res-total').innerText = selected.total;
+                    document.getElementById('res-perc').innerText = selected.perc;
+                    this.generateReportHtml(selected.history);
+                } else if (choice !== null) {
+                    alert("Rodada inválida.");
+                }
+            },
+
+            backToQuizOrIntro() {
+                document.getElementById('results-card').classList.remove('active-card');
+                if (this.currentQ > 0 && this.currentQ < this.questions.length) {
+                    document.getElementById('quiz-card').classList.add('active-card');
+                } else {
+                    document.getElementById('intro-card').classList.add('active-card');
+                }
+            },
+
+            // ---------------- FIREBASE FUNCTIONS ----------------
+logAttemptToFirebase(perc, total, reportData) {
+                db.collection("avaliacao_ingles").add({
+                    nome: this.studentName,
+                    codigo: this.studentCode,
+                    serie: this.serieAtual, // ADICIONE ESTA LINHA
+                    notaFinal: `${this.score}/${total} (${perc}%)`,
+                    dataTentativa: reportData.date,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    detalhesRodada: reportData
+                }).catch(e => console.error("Erro ao registrar tentativa no Firebase:", e));
+            },
+
+            // ---------------- DASHBOARD MASTER ----------------
+            loadDashboard() {
+                const tbody = document.getElementById('dashboard-tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+                
+                db.collection("avaliacao_ingles").orderBy("timestamp", "desc").get().then(snap => {
+                    tbody.innerHTML = '';
+                    if(snap.empty) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma tentativa encontrada.</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const d = doc.data();
+tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${d.nome}</strong></td>
+                                <td>${d.codigo}</td>
+                                <td>${d.serie || 'Antigo'}</td> <!-- ADICIONE ESTA LINHA -->
+                                <td>${d.notaFinal}</td>
+                                <td>${d.dataTentativa || 'N/A'}</td>
+                                <td>
+                                    <button class="btn-3d btn-blue" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0;" onclick="app.teacherViewReport('${doc.id}')" title="Ver Relatório desta tentativa">👁️</button>
+                                    <button class="btn-3d btn-salmon" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0; margin-left: 5px;" onclick="app.deleteAttempt('${doc.id}', '${d.nome}')" title="Excluir tentativa">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }).catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Erro de permissão! Verifique as Rules no Firebase.</td></tr>';
+                });
+            },
+
+            teacherViewReport(docId) {
+                db.collection("avaliacao_ingles").doc(docId).get().then(doc => {
+                    if (doc.exists) {
+                        const d = doc.data();
+                        if (d.detalhesRodada) {
+                            document.getElementById('dashboard-card').classList.remove('active-card');
+                            document.getElementById('results-card').classList.add('active-card');
+                            
+                            document.getElementById('res-name').innerText = d.nome + ` (Tentativa em: ${d.dataTentativa})`;
+                            document.getElementById('res-score').innerText = d.detalhesRodada.score;
+                            document.getElementById('res-total').innerText = d.detalhesRodada.total;
+                            document.getElementById('res-perc').innerText = d.detalhesRodada.perc;
+                            this.generateReportHtml(d.detalhesRodada.history);
+                        } else {
+                            alert("Detalhes detalhados indisponíveis para este registro antigo.");
+                        }
+                    }
+                });
+            },
+
+            deleteAttempt(docId, studentName) {
+                if (confirm(`Tem certeza que deseja apagar esta tentativa específica do aluno(a) ${studentName}?`)) {
+                    db.collection("avaliacao_ingles").doc(docId).delete().then(() => {
+                        alert("Tentativa excluída com sucesso!");
+                        this.loadDashboard(); 
+                    }).catch(error => {
+                        console.error("Erro ao deletar tentativa: ", error);
+                        alert("Erro ao tentar excluir.");
+                    });
+                }
+            },
+
+            filterTable() {
+                let input = document.getElementById("filter-input");
+                let filter = input.value.toUpperCase();
+                let table = document.getElementById("dashboard-table");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    }
+                }
+            },
+
+            sortTable(n) {
+                let table = document.getElementById("dashboard-table");
+                let rows, switching, i, x, y, shouldSwitch;
+                switching = true;
+                this.sortDirection = !this.sortDirection;
+                
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        
+                        if (!x || !y) continue;
+
+                        let valX = x.innerHTML.toLowerCase();
+                        let valY = y.innerHTML.toLowerCase();
+                        
+                        if (this.sortDirection) {
+                            if (valX > valY) { shouldSwitch = true; break; }
+                        } else {
+                            if (valX < valY) { shouldSwitch = true; break; }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            },
+
+            exportToCSV() {
+                let table = document.getElementById("dashboard-table");
+                let csv = [];
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                    for (let j = 0; j < cols.length - 1; j++) 
+                        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                    csv.push(row.join(","));
+                }
+                let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+                let downloadLink = document.createElement("a");
+                downloadLink.download = "relatorio_tentativas_ingles.csv";
+                downloadLink.href = window.URL.createObjectURL(csvFile);
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            exitMaster() {
+                document.getElementById('dashboard-card').classList.remove('active-card');
+                document.getElementById('student-code').value = '';
+                document.getElementById('intro-card').classList.add('active-card');
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>

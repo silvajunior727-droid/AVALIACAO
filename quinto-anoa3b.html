@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 5º ANO A (3º BIMESTRE)</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ESTILOS GERAIS E FUNDO ELEGANTE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 850px;
+            min-height: 400px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin-bottom: 5px; }
+        h2 { text-align: center; color: #7f8c8d; font-size: 1.2rem; margin-top: 0; }
+
+        .card { display: none; flex-direction: column; }
+        .active-card { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* INPUTS E FILTROS */
+        input[type="text"] {
+            padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; width: 100%; box-sizing: border-box;
+            font-size: 1.1rem; text-align: center; transition: border-color 0.3s;
+        }
+        input[type="text"]:focus { border-color: #90EE90; outline: none; }
+
+        /* --------------------------------------------------- */
+        /* BOTÕES 3D (Com Borda Baixa)                         */
+        /* --------------------------------------------------- */
+        .btn-3d {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; padding: 12px 25px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 10px;
+        }
+        .btn-green {
+            background-color: #90EE90; color: #2c3e50;
+            box-shadow: 0 6px 0 #75c975;
+        }
+        .btn-green:active { transform: translateY(6px); box-shadow: 0 0 0 #75c975; }
+
+        .btn-salmon {
+            background-color: #FA8072; color: white;
+            box-shadow: 0 6px 0 #d9695d;
+        }
+        .btn-salmon:active { transform: translateY(6px); box-shadow: 0 0 0 #d9695d; }
+
+        .btn-blue {
+            background-color: #3498db; color: white;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #2980b9; }
+
+        /* ESTILOS DOS BOTÕES DO RODAPÉ DA QUESTÃO (TAMANHOS UNIFORMES) */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-quiz-action {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 0.95rem; padding: 10px 18px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 0;
+        }
+        .btn-report-quiz {
+            background-color: #3498db; color: white; box-shadow: 0 5px 0 #2980b9;
+        }
+        .btn-report-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #2980b9; }
+
+        .btn-hint-quiz {
+            background-color: #6a0dad; color: white; box-shadow: 0 5px 0 #4c0880;
+        }
+        .btn-hint-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #4c0880; }
+
+        /* BARRA DE PROGRESSO */
+        .progress-container {
+            width: 100%; background-color: #e9ecef; border-radius: 10px;
+            height: 12px; margin-bottom: 20px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background-color: #90EE90; width: 0%;
+            transition: width 0.4s ease-out; border-radius: 10px;
+        }
+
+        /* ÁREA DA QUESTÃO */
+        .question-text { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .question-counter { text-align: left; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        #hint-text {
+            margin-top: 15px; padding: 12px; background-color: #f8f9fa;
+            border-left: 5px solid #6a0dad; border-radius: 5px; font-style: italic; display: none;
+        }
+
+        /* 1. Múltipla Escolha */
+        .option-btn {
+            background-color: #f8f9fa; border: 2px solid #e0e0e0; padding: 15px;
+            margin-bottom: 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; width: 100%; text-align: left; font-size: 1.1rem;
+        }
+        .option-btn:hover { background-color: #f1f3f5; border-color: #ccc; }
+        .option-btn.selected { background-color: #e8f5e9; border-color: #90EE90; font-weight: bold; transform: scale(1.01); box-shadow: 0 4px 10px rgba(144, 238, 144, 0.2);}
+
+        /* 2. Verdadeiro ou Falso */
+        .tf-container { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .tf-btn { padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background-color: #f8f9fa; transition: all 0.2s; width: 45%; }
+        .tf-btn.selected-true { background-color: #e8f5e9; border-color: #90EE90; color: #2c3e50; }
+        .tf-btn.selected-false { background-color: #ffeeee; border-color: #FA8072; color: #c0392b; }
+
+        /* 3. Digitação */
+        .typing-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
+        .typing-input {
+            padding: 15px; font-size: 1.3rem; border: 2px solid #ccc; border-radius: 8px;
+            width: 80%; text-align: center; text-transform: lowercase;
+        }
+        .typing-input:focus { border-color: #90EE90; outline: none; }
+
+        /* 4. Arrastar e Soltar */
+        .drag-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0;}
+        .sentence-display { font-size: 1.3rem; margin-bottom: 25px; line-height: 2; }
+        .drop-zone { display: inline-block; min-width: 80px; min-height: 30px; border-bottom: 3px dashed #7f8c8d; margin: 0 10px; padding: 0 10px; color: #3498db; font-weight: bold; cursor: pointer; transition: all 0.3s;}
+        .drop-zone:hover { border-bottom-color: #3498db; }
+        .words-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-word { background-color: #3498db; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;}
+        .drag-word:active { transform: translateY(4px); box-shadow: 0 0 0 #2980b9;}
+        .drag-word.used { background-color: #bdc3c7; box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* DASHBOARD E TABELA */
+        .styled-table { border-collapse: collapse; margin: 20px 0; font-size: 0.95em; width: 100%; box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 8px; overflow: hidden; }
+        .styled-table thead tr { background-color: #90EE90; color: #2c3e50; text-align: left; cursor: pointer; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .styled-table tbody tr:hover { background-color: #f9f9f9; }
+
+        /* RELATÓRIO FINAL */
+        .results-details { background-color: #fdfbfb; padding: 20px; border-left: 5px solid #90EE90; border-radius: 8px; margin-top: 20px; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        .report-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #eee; background: #fff;}
+        .report-item.correct { border-left: 5px solid #90EE90; }
+        .report-item.incorrect { border-left: 5px solid #FA8072; }
+        .report-rationale { font-size: 0.95rem; color: #7f8c8d; margin-top: 8px; font-style: italic; }
+
+        /* IMPRESSÃO (PDF) */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            .btn-3d, #intro-card, #quiz-card, #dashboard-card, .progress-container, .no-print { display: none !important; }
+            #results-card { display: block !important; }
+            .report-item { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="intro-card" class="card active-card intro-card">
+            <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
+            <h2>5º ANO A (3º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
+            <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
+            <input type="text" id="student-code" placeholder="Código de Acesso">
+            <button class="btn-3d btn-green" id="start-btn" onclick="app.startQuiz()">Iniciar Avaliação</button>
+        </div>
+
+        <!-- DASHBOARD MASTER (JR1971) -->
+        <div id="dashboard-card" class="card">
+            <h1 style="color: #FA8072; margin-bottom: 0;">Painel do Professor</h1>
+            <p style="text-align: center; margin-top: 5px;">Acompanhamento em tempo real (Tentativas em linhas separadas).</p>
+            
+            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;" class="no-print">
+                <input type="text" id="filter-input" placeholder="🔍 Filtrar por nome do aluno..." onkeyup="app.filterTable()" style="flex: 1; min-width: 200px; margin-top: 0;">
+                <button class="btn-3d btn-green" onclick="app.exportToCSV()">Salvar Excel</button>
+                <button class="btn-3d btn-salmon" onclick="app.exitMaster()">Sair</button>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="styled-table" id="dashboard-table">
+<thead>
+                        <tr>
+                            <th onclick="app.sortTable(0)">Aluno ↕</th>
+                            <th onclick="app.sortTable(1)">Código ↕</th>
+                            <th onclick="app.sortTable(2)">Série ↕</th> <!-- NOVA COLUNA AQUI -->
+                            <th onclick="app.sortTable(3)">Nota Final ↕</th>
+                            <th onclick="app.sortTable(4)">Data/Hora Tentativa ↕</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA DA AVALIAÇÃO -->
+        <div id="quiz-card" class="card">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="question-counter">Questão <span id="current-q-num">1</span> de <span id="total-q-num">50</span></div>
+            </div>
+            
+            <div id="question-text" class="question-text"></div>
+            <div id="answer-area"></div>
+
+            <div id="hint-container">
+                <div id="hint-text"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <div class="left-actions">
+                    <button class="btn-quiz-action btn-report-quiz" onclick="app.openReportsModal()">📋 Relatório</button>
+                    <button class="btn-quiz-action btn-hint-quiz" onclick="app.showHint()">💡 Dica</button>
+                </div>
+                <div>
+                    <button class="btn-3d btn-green" id="confirm-btn" onclick="app.confirmAnswer()">✔️ Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS / RELATÓRIO INDIVIDUAL -->
+        <div id="results-card" class="card">
+            <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Relatório de Desempenho</h1>
+            <div class="results-details">
+                <p><strong>Aluno(a):</strong> <span id="res-name"></span></p>
+                <p><strong>Acertos:</strong> <span id="res-score"></span> de <span id="res-total">50</span></p>
+                <p><strong>Aproveitamento:</strong> <span id="res-perc"></span>%</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;" class="no-print">
+                <button class="btn-3d btn-green" onclick="window.print()">Salvar PDF (Relatório)</button>
+                <button class="btn-3d btn-blue" onclick="app.backToQuizOrIntro()">Voltar</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #7f8c8d;">Revisão das Questões desta Rodada:</h3>
+            <div id="detailed-report"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO FIREBASE E DADOS
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt9b_YXS9koqsQhyyduaVizPUtDc22KCs",
+            authDomain: "quizzes-dos-colegios.firebaseapp.com",
+            projectId: "quizzes-dos-colegios",
+            storageBucket: "quizzes-dos-colegios.firebasestorage.app",
+            messagingSenderId: "143672230264",
+            appId: "1:143672230264:web:b40c17e2a39e574057888d"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
+        const db = firebase.firestore();
+
+// ==========================================
+        // 1. BLOCO DE ALUNOS - 5º ANO
+        // ==========================================
+        const studentData = {
+                "472AM": "GIOVANNA", 
+                "819AS": "IGOR",
+                "365AS": "JOÃO LUCAS", 
+                "294BS": "JOÃO LUCCA",
+                "581BS": "LAURA", 
+                "736DF": "LEONARDO",
+                "301ES": "LORENA",
+                "158DG": "LUIS ANTONIO", 
+                "627ES": "MIRELLA", 
+                "JR123": "JUNIOR"
+        };
+
+        // ==========================================
+        // 2. BANCO DE QUESTÕES COMPLETO (44 QUESTÕES) - 5º ANO
+        // ==========================================
+        const questionsDb = [
+            // --- TÓPICO 1: ORGANIZAÇÃO E ROTINA DE ESTUDOS ---
+            { 
+                type: "multiple_choice", 
+                q: "Como dizemos 'Planeje com antecedência' em inglês?", 
+                hint: "Relacionado a organizar o tempo.", 
+                opts: ["Buy a pencil case", "Type up your notes", "Plan ahead", "Use sticky notes"], 
+                ans: 2, 
+                rat: "'Plan ahead' significa planejar com antecedência." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza o objeto escolar da regra: 'Buy a PENCIL CASE'.", 
+                hint: "Onde guardamos lápis e canetas.", 
+                ans: "estojo", 
+                rat: "'Pencil case' é o estojo escolar." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a dica sobre bons hábitos de estudo:", 
+                txtPre: "Don't leave things until the last", 
+                txtPost: ".", 
+                opts: ["minute", "hour", "day", "week"], 
+                ans: "minute", 
+                rat: "A expressão é 'Don't leave things until the last minute' (Não deixe as coisas para a última hora)." 
+            },
+            { 
+                type: "true_false", 
+                q: "A instrução 'Type up your notes' significa 'Apague suas anotações'.", 
+                hint: "Type = Digitar.", 
+                ans: false, 
+                rat: "Falso. 'Type up your notes' significa 'Digite suas anotações'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que significa 'Know the deadlines'?", 
+                hint: "Relativo a prazos.", 
+                opts: ["Esqueça o material", "Conheça os prazos/datas de entrega", "Durma tarde", "Faça anotações coloridas"], 
+                ans: 1, 
+                rat: "'Deadlines' são prazos. A frase incentiva a saber as datas de entrega." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a regra: 'Don't leave cell _______ in your schoolbag.'", 
+                hint: "Aparelhos celulares.", 
+                ans: "phones", 
+                rat: "A frase alerta para não esquecer os 'cell phones' na mochila." 
+            },
+            { 
+                type: "drag", 
+                q: "Uma boa atitude de organização escolar é:", 
+                txtPre: "Give yourself a quiet", 
+                txtPost: "to study.", 
+                opts: ["place", "music", "game", "TV"], 
+                ans: "place", 
+                rat: "'Give yourself a quiet place to study' (Dê a si mesmo um lugar tranquilo para estudar)." 
+            },
+            { 
+                type: "true_false", 
+                q: "Fazer a lição de casa deitado na cama ('do your homework in bed') é recomendado pelo texto '4 Steps to Get Organized'.", 
+                hint: "Don't do it.", 
+                ans: false, 
+                rat: "Falso. O texto diz na seção 'Don't': 'Don't do your homework late at night or in bed'." 
+            },
+
+            // --- TÓPICO 2: QUESTION TAGS ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a question tag correta para: 'My party is beautiful, _______?'", 
+                hint: "A frase é afirmativa e usa o verbo 'is'.", 
+                opts: ["aren't it", "is it", "isn't it", "doesn't it"], 
+                ans: 2, 
+                rat: "Se a frase é afirmativa ('is'), a tag deve ser negativa ('isn't it?')." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a tag: 'Tina is eight, isn't _______?'", 
+                hint: "Pronome feminino para Tina.", 
+                ans: "she", 
+                rat: "Usamos 'she' porque Tina é uma menina." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase negativa:", 
+                txtPre: "You aren't having fun,", 
+                txtPost: "you?", 
+                opts: ["are", "aren't", "is", "do"], 
+                ans: "are", 
+                rat: "Se a frase inicia negativa ('You aren't'), a tag deve ser afirmativa ('are you?')." 
+            },
+            { 
+                type: "true_false", 
+                q: "A question tag para 'He is happy' é 'is he?'.", 
+                hint: "Afirmativo para negativo.", 
+                ans: false, 
+                rat: "Falso. Sendo a frase afirmativa, a tag deve ser negativa: 'isn't he?'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual a tag correta para: 'Joseph isn't sad, _______?'", 
+                hint: "Joseph é 'he' e a frase está na negativa.", 
+                opts: ["isn't he", "is he", "does he", "aren't he"], 
+                ans: 1, 
+                rat: "Frase negativa ('isn't') = Tag afirmativa ('is he?')." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete: 'My mother isn't reading a book, _______ she?'", 
+                hint: "Afirmativo de isn't.", 
+                ans: "is", 
+                rat: "Como a frase tem 'isn't', a tag leva 'is'." 
+            },
+            { 
+                type: "drag", 
+                q: "Escolha a tag correta para o plural:", 
+                txtPre: "They are our guests,", 
+                txtPost: "they?", 
+                opts: ["aren't", "isn't", "are", "do"], 
+                ans: "aren't", 
+                rat: "'They are' (afirmativo) pede a tag 'aren't they?' (negativo)." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'We are eating vegetables, aren't we?' está com a question tag aplicada de forma correta.", 
+                hint: "We are -> aren't we.", 
+                ans: true, 
+                rat: "Verdadeiro. A regra foi seguida corretamente." 
+            },
+
+            // --- TÓPICO 3: VOCABULÁRIO DE FESTAS (PARTY VOCABULARY) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual dessas opções é o termo para 'convidados' em uma festa?", 
+                hint: "G _ _ _ _ S", 
+                opts: ["Gifts", "Snacks", "Guests", "Banners"], 
+                ans: 2, 
+                rat: "'Guests' são os convidados de uma festa." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza: O que acendemos em cima do 'birthday cake'? (Escreva em inglês).", 
+                hint: "Vela (começa com C).", 
+                ans: "candle", 
+                rat: "A vela de aniversário é chamada de 'candle'." 
+            },
+            { 
+                type: "drag", 
+                q: "O que preparamos para enviar aos amigos antes da festa?", 
+                txtPre: "Send an", 
+                txtPost: ".", 
+                opts: ["invitation", "cake", "candle", "guest"], 
+                ans: "invitation", 
+                rat: "Enviamos um convite ('invitation') antes da festa." 
+            },
+            { 
+                type: "true_false", 
+                q: "A palavra 'snacks' se refere aos lanches e salgadinhos servidos na festa.", 
+                hint: "Finger food.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Snacks' são os petiscos e lanches da festa." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Se o tema da festa é super-heróis, o que as crianças devem usar?", 
+                hint: "Roupas especiais.", 
+                opts: ["Pencil cases", "Sticky notes", "Costumes", "Snacks"], 
+                ans: 2, 
+                rat: "'Costumes' significa fantasias." 
+            },
+            { 
+                type: "typing", 
+                q: "Para desejar feliz aniversário aos amigos, cantamos a música 'Happy __________'.", 
+                hint: "Aniversário em inglês.", 
+                ans: "birthday", 
+                rat: "Cantamos 'Happy Birthday'." 
+            },
+
+            // --- TÓPICO 4: IMPERATIVO E DAILY ROUTINE (INDOOR/OUTDOOR) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual frase de comando significa 'Ande de bicicleta'?", 
+                hint: "Tem a palavra 'bike'.", 
+                opts: ["Climb a tree", "Take a hike", "Jump rope", "Ride a bike"], 
+                ans: 3, 
+                rat: "'Ride a bike' é andar de bicicleta." 
+            },
+            { 
+                type: "typing", 
+                q: "Para dizer 'Fique na cama', usamos o comando '_______ in bed'.", 
+                hint: "Começa com S.", 
+                ans: "stay", 
+                rat: "'Stay in bed' significa ficar na cama." 
+            },
+            { 
+                type: "drag", 
+                q: "Qual das opções abaixo é considerada uma 'Outdoor Activity' (atividade ao ar livre)?", 
+                txtPre: "Let's", 
+                txtPost: "!", 
+                opts: ["jump rope", "watch TV", "cook", "take a bath"], 
+                ans: "jump rope", 
+                rat: "'Jump rope' (pular corda) é uma atividade ao ar livre (outdoor)." 
+            },
+            { 
+                type: "true_false", 
+                q: "A expressão 'Take a hike' significa fazer uma caminhada ou trilha.", 
+                hint: "É uma outdoor activity.", 
+                ans: true, 
+                rat: "Verdadeiro. É uma atividade ao ar livre (Outdoor activity)." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual atividade NÃO é considerada 'Indoor' (local fechado)?", 
+                hint: "Você faz na rua.", 
+                opts: ["Sleep", "Have a race", "Play games", "Cook"], 
+                ans: 1, 
+                rat: "'Have a race' (apostar corrida) é uma atividade 'outdoor'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a atividade: '_______ a tree' (Subir na árvore).", 
+                hint: "Começa com C.", 
+                ans: "climb", 
+                rat: "O verbo para subir/escalar é 'climb'." 
+            },
+
+            // --- TÓPICO 5: WH-QUESTIONS (INFORMATION QUESTIONS) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual palavra interrogativa usamos para perguntar 'Onde'?", 
+                hint: "Lugar.", 
+                opts: ["Who", "When", "What", "Where"], 
+                ans: 3, 
+                rat: "'Where' é usado para perguntar sobre lugares (Onde)." 
+            },
+            { 
+                type: "typing", 
+                q: "Qual palavra usamos para perguntar 'Quem'? '_______ is your best friend?'.", 
+                hint: "Começa com W H O.", 
+                ans: "who", 
+                rat: "'Who' significa 'Quem'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a pergunta sobre tempo/data:", 
+                txtPre: "", 
+                txtPost: "do you go to school?", 
+                opts: ["When", "Who", "What", "Where"], 
+                ans: "When", 
+                rat: "'When' significa 'Quando'." 
+            },
+            { 
+                type: "true_false", 
+                q: "Usamos 'Why' quando queremos descobrir a razão ou o porquê de algo acontecer.", 
+                hint: "Why = Por quê.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Why' significa por que/por qual razão." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual pergunta usamos para saber a idade de alguém?", 
+                hint: "Quantos anos.", 
+                opts: ["How old are you?", "Who are you?", "Where are you?", "Why are you?"], 
+                ans: 0, 
+                rat: "'How old are you?' significa 'Qual é a sua idade?'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a pergunta: '_______ is your favorite color?'", 
+                hint: "Qual / O que.", 
+                ans: "what", 
+                rat: "'What' significa O que/Qual." 
+            },
+            { 
+                type: "drag", 
+                q: "Se a resposta é 'At the store' (na loja), a pergunta deve começar com:", 
+                txtPre: "", 
+                txtPost: "is Susan?", 
+                opts: ["Where", "When", "How", "Why"], 
+                ans: "Where", 
+                rat: "'Where' pergunta sobre local." 
+            },
+            { 
+                type: "true_false", 
+                q: "Se a resposta é 'Because he isn't fine', a pergunta deve começar com 'Who'.", 
+                hint: "Because = Por que (resposta).", 
+                ans: false, 
+                rat: "Falso. Se a resposta começa com 'Because', a pergunta tem que começar com 'Why'." 
+            },
+
+            // --- TÓPICO 6: SIMPLE PRESENT (ROTINA E AUXILIARES) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual a forma afirmativa correta para o pronome 'I' (Eu)?", 
+                hint: "Trabalhar.", 
+                opts: ["I works", "I work", "I working", "I to work"], 
+                ans: 1, 
+                rat: "No Simple Present afirmativo para 'I', o verbo fica na sua forma base: 'I work'." 
+            },
+            { 
+                type: "typing", 
+                q: "Qual o auxiliar interrogativo para 'you'? '_______ you work?'", 
+                hint: "D O", 
+                ans: "do", 
+                rat: "Usamos o auxiliar 'Do' nas perguntas para I, You, We e They." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase negativa:", 
+                txtPre: "I", 
+                txtPost: "work.", 
+                opts: ["do", "don't", "am not", "doesn't"], 
+                ans: "don't", 
+                rat: "Para fazer a negativa no Simple Present com I/You/We/They, usamos 'don't'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A resposta curta afirmativa para 'Do you play games?' é 'Yes, I do'.", 
+                hint: "Short Answer.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Yes, I do' é a Short Answer correta." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual frase está na negativa do Simple Present de forma correta?", 
+                hint: "Preste atenção no auxiliar.", 
+                opts: ["We doesn't work.", "They aren't play.", "You don't work.", "I don't working."], 
+                ans: 2, 
+                rat: "A forma correta é sujeito + don't + verbo ('You don't work')." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a resposta curta negativa: 'Do they have breakfast together? No, they _________.'", 
+                hint: "Negativa de Do.", 
+                ans: "don't", 
+                rat: "A resposta correta é 'don't'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a pergunta sobre a rotina da família da Lina:", 
+                txtPre: "", 
+                txtPost: "they live near the school?", 
+                opts: ["Do", "Are", "Is", "When"], 
+                ans: "Do", 
+                rat: "Para iniciar uma Yes/No question no Presente Simples com 'they', usamos 'Do'." 
+            },
+            { 
+                type: "true_false", 
+                q: "O verbo 'go' na frase 'My sister goes to bed at ten o'clock' sofre alteração porque estamos falando de 'She' (minha irmã).", 
+                hint: "Terceira pessoa do singular.", 
+                ans: true, 
+                rat: "Verdadeiro. Na 3ª pessoa do singular (He, She, It) afirmativa, os verbos recebem 's', 'es' ou 'ies'." 
+            }
+        ];
+
+
+        // ==========================================
+        // 3. LÓGICA PRINCIPAL DO APLICATIVO
+        // ==========================================
+const app = {
+            serieAtual: "5º ANO A", // ADICIONE ESTA LINHA
+            currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
+            questions: [], history: [], sortDirection: false,
+        
+
+            init() {
+                this.questions = this.shuffle([...questionsDb]);
+                document.getElementById('total-q-num').innerText = this.questions.length;
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            startQuiz() {
+                const code = document.getElementById('student-code').value.trim().toUpperCase();
+                
+                if (code === "JR1971") {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('dashboard-card').classList.add('active-card');
+                    this.loadDashboard();
+                    return;
+                }
+
+                if (!studentData[code]) {
+                    alert("Código inválido! Tente novamente.");
+                    return;
+                }
+
+                this.studentCode = code;
+                this.studentName = studentData[code];
+                
+                try {
+                    const savedState = localStorage.getItem('quiz_progress_' + this.studentCode);
+                    if (savedState) {
+                        if (confirm(`Olá, ${this.studentName}! Encontramos uma avaliação em andamento. Deseja continuar de onde parou?`)) {
+                            const data = JSON.parse(savedState);
+                            this.currentQ = data.currentQ;
+                            this.score = data.score;
+                            this.history = data.history;
+                            this.questions = data.questions;
+                        } else {
+                            localStorage.removeItem('quiz_progress_' + this.studentCode);
+                            this.init(); 
+                        }
+                    } else {
+                        this.init();
+                    }
+                } catch (e) {
+                    this.init();
+                }
+
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('student-code').style.display = 'none';
+                document.getElementById('quiz-description').style.display = 'none';
+                
+                const welcomeMsg = document.getElementById('personalized-welcome');
+                if(this.studentName === "JÚNIOR") {
+                    welcomeMsg.innerText = "Oi, JÚNIOR - grato por sua visita!!!";
+                } else {
+                    welcomeMsg.innerText = `Bem-vindo(a), ${this.studentName}! Boa Prova!`;
+                }
+                welcomeMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.add('active-card');
+                    this.renderQuestion();
+                }, 2000);
+            },
+
+            renderQuestion() {
+                this.selectedAnswer = null;
+                document.getElementById('hint-text').style.display = 'none';
+                document.getElementById('current-q-num').innerText = this.currentQ + 1;
+                
+                const progress = (this.currentQ / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+
+                const q = this.questions[this.currentQ];
+                document.getElementById('question-text').innerText = `${this.currentQ + 1}. ${q.q}`;
+                document.getElementById('hint-text').innerText = q.hint || "Pense com cuidado e analise o contexto da frase!";
+                
+                const area = document.getElementById('answer-area');
+                area.innerHTML = ''; 
+
+                if (q.type === "multiple_choice") {
+                    q.opts.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn';
+                        btn.innerText = opt;
+                        btn.onclick = () => this.selectMC(btn, idx, opt);
+                        area.appendChild(btn);
+                    });
+                } 
+                else if (q.type === "true_false") {
+                    const cont = document.createElement('div');
+                    cont.className = 'tf-container';
+                    
+                    const bTrue = document.createElement('button');
+                    bTrue.className = 'tf-btn'; bTrue.innerText = 'Verdadeiro';
+                    bTrue.onclick = () => this.selectTF(bTrue, true, cont);
+                    
+                    const bFalse = document.createElement('button');
+                    bFalse.className = 'tf-btn'; bFalse.innerText = 'Falso';
+                    bFalse.onclick = () => this.selectTF(bFalse, false, cont);
+                    
+                    cont.appendChild(bTrue); cont.appendChild(bFalse);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "typing") {
+                    const cont = document.createElement('div');
+                    cont.className = 'typing-container';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.className = 'typing-input';
+                    inp.placeholder = 'Digite aqui...';
+                    inp.oninput = (e) => this.selectedAnswer = e.target.value.trim().toLowerCase();
+                    cont.appendChild(inp);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "drag") {
+                    const cont = document.createElement('div');
+                    cont.className = 'drag-container';
+                    
+                    const sent = document.createElement('div');
+                    sent.className = 'sentence-display';
+                    sent.innerHTML = `${q.txtPre} <span class="drop-zone" id="drop-target" onclick="app.clearDrop()">...</span> ${q.txtPost}`;
+                    
+                    const bank = document.createElement('div');
+                    bank.className = 'words-bank';
+                    
+                    let words = this.shuffle([...q.opts]);
+                    words.forEach(w => {
+                        const wBtn = document.createElement('button');
+                        wBtn.className = 'drag-word';
+                        wBtn.innerText = w;
+                        wBtn.onclick = () => this.fillDrop(w, wBtn);
+                        bank.appendChild(wBtn);
+                    });
+
+                    cont.appendChild(sent);
+                    cont.appendChild(bank);
+                    area.appendChild(cont);
+                }
+            },
+
+            selectMC(btn, index, textVal) {
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedAnswer = { index: index, text: textVal }; 
+            },
+
+            selectTF(btn, val, container) {
+                container.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected-true', 'selected-false'));
+                btn.classList.add(val ? 'selected-true' : 'selected-false');
+                this.selectedAnswer = val;
+            },
+
+            fillDrop(word, btnElement) {
+                if(btnElement.classList.contains('used')) return;
+                if(this.selectedAnswer) {
+                    document.querySelectorAll('.drag-word').forEach(b => {
+                        if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                    });
+                }
+                document.getElementById('drop-target').innerText = word;
+                document.getElementById('drop-target').style.color = '#2c3e50';
+                btnElement.classList.add('used');
+                this.selectedAnswer = word;
+            },
+
+            clearDrop() {
+                if(!this.selectedAnswer) return;
+                document.querySelectorAll('.drag-word').forEach(b => {
+                    if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                });
+                document.getElementById('drop-target').innerText = '...';
+                document.getElementById('drop-target').style.color = '#3498db';
+                this.selectedAnswer = null;
+            },
+
+            showHint() {
+                document.getElementById('hint-text').style.display = 'block';
+            },
+
+            confirmAnswer() {
+                if (this.selectedAnswer === null || this.selectedAnswer === "") {
+                    alert("Responda a questão antes de avançar.");
+                    return;
+                }
+
+                const currentAnswer = this.selectedAnswer;
+                this.selectedAnswer = null; 
+
+                const q = this.questions[this.currentQ];
+                let isCorrect = false;
+                let userAnswerText = currentAnswer;
+                let correctAnswerText = q.ans;
+
+                if (q.type === "typing" || q.type === "drag") {
+                    isCorrect = (currentAnswer.toLowerCase() === q.ans.toLowerCase());
+                } else if (q.type === "multiple_choice") {
+                    isCorrect = (currentAnswer.index === q.ans);
+                    userAnswerText = currentAnswer.text;
+                    correctAnswerText = q.opts[q.ans];
+                } else if (q.type === "true_false") {
+                    isCorrect = (currentAnswer === q.ans);
+                    userAnswerText = currentAnswer ? "Verdadeiro" : "Falso";
+                    correctAnswerText = q.ans ? "Verdadeiro" : "Falso";
+                }
+
+                if (isCorrect) this.score++;
+
+                this.history.push({
+                    question: q.q,
+                    userAns: userAnswerText,
+                    correctAns: correctAnswerText,
+                    isRight: isCorrect,
+                    rationale: q.rat || "Estude este tópico no Roteiro para aprofundar."
+                });
+
+                this.currentQ++;
+
+                try {
+                    if (this.currentQ < this.questions.length) {
+                        const currentState = {
+                            currentQ: this.currentQ,
+                            score: this.score,
+                            history: this.history,
+                            questions: this.questions
+                        };
+                        localStorage.setItem('quiz_progress_' + this.studentCode, JSON.stringify(currentState));
+                    }
+                } catch (e) {
+                    console.warn("Erro ao salvar progresso:", e);
+                }
+
+                if (this.currentQ < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    setTimeout(() => this.finishQuiz(), 500);
+                }
+            },
+
+            finishQuiz() {
+                document.getElementById('quiz-card').classList.remove('active-card');
+                document.getElementById('results-card').classList.add('active-card');
+                
+                localStorage.removeItem('quiz_progress_' + this.studentCode);
+
+                const total = this.questions.length;
+                const perc = Math.round((this.score / total) * 100);
+                document.getElementById('res-name').innerText = this.studentName;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-total').innerText = total;
+                document.getElementById('res-perc').innerText = perc;
+
+                if (perc >= 60) confetti({ particleCount: 400, spread: 90, origin: { y: 0.6 } });
+
+                const reportData = {
+                    date: new Date().toLocaleString('pt-BR'),
+                    score: this.score,
+                    total: total,
+                    perc: perc,
+                    history: [...this.history]
+                };
+
+                try {
+                    let existingReports = JSON.parse(localStorage.getItem('student_reports_' + this.studentCode) || '[]');
+                    existingReports.push(reportData);
+                    localStorage.setItem('student_reports_' + this.studentCode, JSON.stringify(existingReports));
+                } catch(e) {}
+
+                this.generateReportHtml(reportData.history);
+                this.logAttemptToFirebase(perc, total, reportData);
+            },
+
+            generateReportHtml(historyArray) {
+                const repDiv = document.getElementById('detailed-report');
+                repDiv.innerHTML = '';
+                historyArray.forEach((h, i) => {
+                    const statusClass = h.isRight ? 'correct' : 'incorrect';
+                    const icon = h.isRight ? '✔️ Acertou' : '❌ Errou';
+                    repDiv.innerHTML += `
+                        <div class="report-item ${statusClass}">
+                            <p><strong>${i+1}.</strong> ${h.question}</p>
+                            <p>Sua resposta: <strong>${h.userAns}</strong> (${icon})</p>
+                            ${!h.isRight ? `<p>Resposta Correta: <strong>${h.correctAns}</strong></p>` : ''}
+                            <p class="report-rationale">📖 Explicação: ${h.rationale}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            openReportsModal() {
+                const savedReports = localStorage.getItem('student_reports_' + this.studentCode);
+                if (!savedReports) {
+                    alert("Você ainda não concluiu nenhuma rodada desta avaliação!");
+                    return;
+                }
+                const reports = JSON.parse(savedReports);
+                let choice = prompt(`Você possui ${reports.length} rodada(s) concluída(s). Digite o número da rodada que deseja visualizar (1 a ${reports.length}):`);
+                let index = parseInt(choice) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < reports.length) {
+                    const selected = reports[index];
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.remove('active-card');
+                    document.getElementById('results-card').classList.add('active-card');
+                    
+                    document.getElementById('res-name').innerText = this.studentName;
+                    document.getElementById('res-score').innerText = selected.score;
+                    document.getElementById('res-total').innerText = selected.total;
+                    document.getElementById('res-perc').innerText = selected.perc;
+                    this.generateReportHtml(selected.history);
+                } else if (choice !== null) {
+                    alert("Rodada inválida.");
+                }
+            },
+
+            backToQuizOrIntro() {
+                document.getElementById('results-card').classList.remove('active-card');
+                if (this.currentQ > 0 && this.currentQ < this.questions.length) {
+                    document.getElementById('quiz-card').classList.add('active-card');
+                } else {
+                    document.getElementById('intro-card').classList.add('active-card');
+                }
+            },
+
+            // ---------------- FIREBASE FUNCTIONS ----------------
+logAttemptToFirebase(perc, total, reportData) {
+                db.collection("avaliacao_ingles").add({
+                    nome: this.studentName,
+                    codigo: this.studentCode,
+                    serie: this.serieAtual, // ADICIONE ESTA LINHA
+                    notaFinal: `${this.score}/${total} (${perc}%)`,
+                    dataTentativa: reportData.date,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    detalhesRodada: reportData
+                }).catch(e => console.error("Erro ao registrar tentativa no Firebase:", e));
+            },
+
+            // ---------------- DASHBOARD MASTER ----------------
+            loadDashboard() {
+                const tbody = document.getElementById('dashboard-tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+                
+                db.collection("avaliacao_ingles").orderBy("timestamp", "desc").get().then(snap => {
+                    tbody.innerHTML = '';
+                    if(snap.empty) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma tentativa encontrada.</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const d = doc.data();
+tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${d.nome}</strong></td>
+                                <td>${d.codigo}</td>
+                                <td>${d.serie || 'Antigo'}</td> <!-- ADICIONE ESTA LINHA -->
+                                <td>${d.notaFinal}</td>
+                                <td>${d.dataTentativa || 'N/A'}</td>
+                                <td>
+                                    <button class="btn-3d btn-blue" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0;" onclick="app.teacherViewReport('${doc.id}')" title="Ver Relatório desta tentativa">👁️</button>
+                                    <button class="btn-3d btn-salmon" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0; margin-left: 5px;" onclick="app.deleteAttempt('${doc.id}', '${d.nome}')" title="Excluir tentativa">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }).catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Erro de permissão! Verifique as Rules no Firebase.</td></tr>';
+                });
+            },
+
+            teacherViewReport(docId) {
+                db.collection("avaliacao_ingles").doc(docId).get().then(doc => {
+                    if (doc.exists) {
+                        const d = doc.data();
+                        if (d.detalhesRodada) {
+                            document.getElementById('dashboard-card').classList.remove('active-card');
+                            document.getElementById('results-card').classList.add('active-card');
+                            
+                            document.getElementById('res-name').innerText = d.nome + ` (Tentativa em: ${d.dataTentativa})`;
+                            document.getElementById('res-score').innerText = d.detalhesRodada.score;
+                            document.getElementById('res-total').innerText = d.detalhesRodada.total;
+                            document.getElementById('res-perc').innerText = d.detalhesRodada.perc;
+                            this.generateReportHtml(d.detalhesRodada.history);
+                        } else {
+                            alert("Detalhes detalhados indisponíveis para este registro antigo.");
+                        }
+                    }
+                });
+            },
+
+            deleteAttempt(docId, studentName) {
+                if (confirm(`Tem certeza que deseja apagar esta tentativa específica do aluno(a) ${studentName}?`)) {
+                    db.collection("avaliacao_ingles").doc(docId).delete().then(() => {
+                        alert("Tentativa excluída com sucesso!");
+                        this.loadDashboard(); 
+                    }).catch(error => {
+                        console.error("Erro ao deletar tentativa: ", error);
+                        alert("Erro ao tentar excluir.");
+                    });
+                }
+            },
+
+            filterTable() {
+                let input = document.getElementById("filter-input");
+                let filter = input.value.toUpperCase();
+                let table = document.getElementById("dashboard-table");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    }
+                }
+            },
+
+            sortTable(n) {
+                let table = document.getElementById("dashboard-table");
+                let rows, switching, i, x, y, shouldSwitch;
+                switching = true;
+                this.sortDirection = !this.sortDirection;
+                
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        
+                        if (!x || !y) continue;
+
+                        let valX = x.innerHTML.toLowerCase();
+                        let valY = y.innerHTML.toLowerCase();
+                        
+                        if (this.sortDirection) {
+                            if (valX > valY) { shouldSwitch = true; break; }
+                        } else {
+                            if (valX < valY) { shouldSwitch = true; break; }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            },
+
+            exportToCSV() {
+                let table = document.getElementById("dashboard-table");
+                let csv = [];
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                    for (let j = 0; j < cols.length - 1; j++) 
+                        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                    csv.push(row.join(","));
+                }
+                let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+                let downloadLink = document.createElement("a");
+                downloadLink.download = "relatorio_tentativas_ingles.csv";
+                downloadLink.href = window.URL.createObjectURL(csvFile);
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            exitMaster() {
+                document.getElementById('dashboard-card').classList.remove('active-card');
+                document.getElementById('student-code').value = '';
+                document.getElementById('intro-card').classList.add('active-card');
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
