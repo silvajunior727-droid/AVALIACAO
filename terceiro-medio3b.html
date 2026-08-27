@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO MÉDIO (3º BIMESTRE)</title> 
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* ESTILOS GERAIS E FUNDO ELEGANTE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 90%;
+            max-width: 850px;
+            min-height: 400px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        h1 { text-align: center; color: #2c3e50; font-size: 1.6rem; margin-bottom: 5px; }
+        h2 { text-align: center; color: #7f8c8d; font-size: 1.2rem; margin-top: 0; }
+
+        .card { display: none; flex-direction: column; }
+        .active-card { display: flex; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* INPUTS E FILTROS */
+        input[type="text"] {
+            padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; width: 100%; box-sizing: border-box;
+            font-size: 1.1rem; text-align: center; transition: border-color 0.3s;
+        }
+        input[type="text"]:focus { border-color: #90EE90; outline: none; }
+
+        /* --------------------------------------------------- */
+        /* BOTÕES 3D (Com Borda Baixa)                         */
+        /* --------------------------------------------------- */
+        .btn-3d {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; padding: 12px 25px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 10px;
+        }
+        .btn-green {
+            background-color: #90EE90; color: #2c3e50;
+            box-shadow: 0 6px 0 #75c975;
+        }
+        .btn-green:active { transform: translateY(6px); box-shadow: 0 0 0 #75c975; }
+
+        .btn-salmon {
+            background-color: #FA8072; color: white;
+            box-shadow: 0 6px 0 #d9695d;
+        }
+        .btn-salmon:active { transform: translateY(6px); box-shadow: 0 0 0 #d9695d; }
+
+        .btn-blue {
+            background-color: #3498db; color: white;
+            box-shadow: 0 6px 0 #2980b9;
+        }
+        .btn-blue:active { transform: translateY(6px); box-shadow: 0 0 0 #2980b9; }
+
+        /* ESTILOS DOS BOTÕES DO RODAPÉ DA QUESTÃO (TAMANHOS UNIFORMES) */
+        .quiz-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .left-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .btn-quiz-action {
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            font-size: 0.95rem; padding: 10px 18px; transition: all 0.1s ease;
+            position: relative; text-align: center; display: inline-block; margin-top: 0;
+        }
+        .btn-report-quiz {
+            background-color: #3498db; color: white; box-shadow: 0 5px 0 #2980b9;
+        }
+        .btn-report-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #2980b9; }
+
+        .btn-hint-quiz {
+            background-color: #6a0dad; color: white; box-shadow: 0 5px 0 #4c0880;
+        }
+        .btn-hint-quiz:active { transform: translateY(5px); box-shadow: 0 0 0 #4c0880; }
+
+        /* BARRA DE PROGRESSO */
+        .progress-container {
+            width: 100%; background-color: #e9ecef; border-radius: 10px;
+            height: 12px; margin-bottom: 20px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 100%; background-color: #90EE90; width: 0%;
+            transition: width 0.4s ease-out; border-radius: 10px;
+        }
+
+        /* ÁREA DA QUESTÃO */
+        .question-text { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; line-height: 1.5; }
+        .question-counter { text-align: left; font-weight: bold; margin-bottom: 5px; color: #7f8c8d; }
+        
+        #hint-text {
+            margin-top: 15px; padding: 12px; background-color: #f8f9fa;
+            border-left: 5px solid #6a0dad; border-radius: 5px; font-style: italic; display: none;
+        }
+
+        /* 1. Múltipla Escolha */
+        .option-btn {
+            background-color: #f8f9fa; border: 2px solid #e0e0e0; padding: 15px;
+            margin-bottom: 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; width: 100%; text-align: left; font-size: 1.1rem;
+        }
+        .option-btn:hover { background-color: #f1f3f5; border-color: #ccc; }
+        .option-btn.selected { background-color: #e8f5e9; border-color: #90EE90; font-weight: bold; transform: scale(1.01); box-shadow: 0 4px 10px rgba(144, 238, 144, 0.2);}
+
+        /* 2. Verdadeiro ou Falso */
+        .tf-container { display: flex; justify-content: center; gap: 20px; margin-top: 15px; }
+        .tf-btn { padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; background-color: #f8f9fa; transition: all 0.2s; width: 45%; }
+        .tf-btn.selected-true { background-color: #e8f5e9; border-color: #90EE90; color: #2c3e50; }
+        .tf-btn.selected-false { background-color: #ffeeee; border-color: #FA8072; color: #c0392b; }
+
+        /* 3. Digitação */
+        .typing-container { display: flex; flex-direction: column; align-items: center; margin-top: 15px; }
+        .typing-input {
+            padding: 15px; font-size: 1.3rem; border: 2px solid #ccc; border-radius: 8px;
+            width: 80%; text-align: center; text-transform: lowercase;
+        }
+        .typing-input:focus { border-color: #90EE90; outline: none; }
+
+        /* 4. Arrastar e Soltar */
+        .drag-container { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0;}
+        .sentence-display { font-size: 1.3rem; margin-bottom: 25px; line-height: 2; }
+        .drop-zone { display: inline-block; min-width: 80px; min-height: 30px; border-bottom: 3px dashed #7f8c8d; margin: 0 10px; padding: 0 10px; color: #3498db; font-weight: bold; cursor: pointer; transition: all 0.3s;}
+        .drop-zone:hover { border-bottom-color: #3498db; }
+        .words-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .drag-word { background-color: #3498db; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;}
+        .drag-word:active { transform: translateY(4px); box-shadow: 0 0 0 #2980b9;}
+        .drag-word.used { background-color: #bdc3c7; box-shadow: 0 4px 0 #95a5a6; cursor: not-allowed; }
+
+        /* DASHBOARD E TABELA */
+        .styled-table { border-collapse: collapse; margin: 20px 0; font-size: 0.95em; width: 100%; box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); border-radius: 8px; overflow: hidden; }
+        .styled-table thead tr { background-color: #90EE90; color: #2c3e50; text-align: left; cursor: pointer; }
+        .styled-table th, .styled-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        .styled-table tbody tr:hover { background-color: #f9f9f9; }
+
+        /* RELATÓRIO FINAL */
+        .results-details { background-color: #fdfbfb; padding: 20px; border-left: 5px solid #90EE90; border-radius: 8px; margin-top: 20px; font-size: 1.2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        .report-item { margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #eee; background: #fff;}
+        .report-item.correct { border-left: 5px solid #90EE90; }
+        .report-item.incorrect { border-left: 5px solid #FA8072; }
+        .report-rationale { font-size: 0.95rem; color: #7f8c8d; margin-top: 8px; font-style: italic; }
+
+        /* IMPRESSÃO (PDF) */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; }
+            .btn-3d, #intro-card, #quiz-card, #dashboard-card, .progress-container, .no-print { display: none !important; }
+            #results-card { display: block !important; }
+            .report-item { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- TELA DE LOGIN -->
+        <div id="intro-card" class="card active-card intro-card">
+            <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
+            <h2>3º ANO MÉDIO (3º BIMESTRE)</h2>
+            <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
+            <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
+            <input type="text" id="student-code" placeholder="Código de Acesso">
+            <button class="btn-3d btn-green" id="start-btn" onclick="app.startQuiz()">Iniciar Avaliação</button>
+        </div>
+
+        <!-- DASHBOARD MASTER (JR1971) -->
+        <div id="dashboard-card" class="card">
+            <h1 style="color: #FA8072; margin-bottom: 0;">Painel do Professor</h1>
+            <p style="text-align: center; margin-top: 5px;">Acompanhamento em tempo real (Tentativas em linhas separadas).</p>
+            
+            <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;" class="no-print">
+                <input type="text" id="filter-input" placeholder="🔍 Filtrar por nome do aluno..." onkeyup="app.filterTable()" style="flex: 1; min-width: 200px; margin-top: 0;">
+                <button class="btn-3d btn-green" onclick="app.exportToCSV()">Salvar Excel</button>
+                <button class="btn-3d btn-salmon" onclick="app.exitMaster()">Sair</button>
+            </div>
+            
+            <div style="overflow-x:auto;">
+                <table class="styled-table" id="dashboard-table">
+<thead>
+                        <tr>
+                            <th onclick="app.sortTable(0)">Aluno ↕</th>
+                            <th onclick="app.sortTable(1)">Código ↕</th>
+                            <th onclick="app.sortTable(2)">Série ↕</th> <!-- NOVA COLUNA AQUI -->
+                            <th onclick="app.sortTable(3)">Nota Final ↕</th>
+                            <th onclick="app.sortTable(4)">Data/Hora Tentativa ↕</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TELA DA AVALIAÇÃO -->
+        <div id="quiz-card" class="card">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="question-counter">Questão <span id="current-q-num">1</span> de <span id="total-q-num">50</span></div>
+            </div>
+            
+            <div id="question-text" class="question-text"></div>
+            <div id="answer-area"></div>
+
+            <div id="hint-container">
+                <div id="hint-text"></div>
+            </div>
+
+            <div class="quiz-footer">
+                <div class="left-actions">
+                    <button class="btn-quiz-action btn-report-quiz" onclick="app.openReportsModal()">📋 Relatório</button>
+                    <button class="btn-quiz-action btn-hint-quiz" onclick="app.showHint()">💡 Dica</button>
+                </div>
+                <div>
+                    <button class="btn-3d btn-green" id="confirm-btn" onclick="app.confirmAnswer()">✔️ Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA DE RESULTADOS / RELATÓRIO INDIVIDUAL -->
+        <div id="results-card" class="card">
+            <h1 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Relatório de Desempenho</h1>
+            <div class="results-details">
+                <p><strong>Aluno(a):</strong> <span id="res-name"></span></p>
+                <p><strong>Acertos:</strong> <span id="res-score"></span> de <span id="res-total">50</span></p>
+                <p><strong>Aproveitamento:</strong> <span id="res-perc"></span>%</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;" class="no-print">
+                <button class="btn-3d btn-green" onclick="window.print()">Salvar PDF (Relatório)</button>
+                <button class="btn-3d btn-blue" onclick="app.backToQuizOrIntro()">Voltar</button>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #7f8c8d;">Revisão das Questões desta Rodada:</h3>
+            <div id="detailed-report"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO FIREBASE E DADOS
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBt9b_YXS9koqsQhyyduaVizPUtDc22KCs",
+            authDomain: "quizzes-dos-colegios.firebaseapp.com",
+            projectId: "quizzes-dos-colegios",
+            storageBucket: "quizzes-dos-colegios.firebasestorage.app",
+            messagingSenderId: "143672230264",
+            appId: "1:143672230264:web:b40c17e2a39e574057888d"
+        };
+        
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
+        const db = firebase.firestore();
+
+// ==========================================
+        // 1. BLOCO DE ALUNOS - 3º ANO MÉDIO
+        // ==========================================
+        const studentData = {
+            "472AM": "BEATRIZ", 
+            "819AS": "BRUNO",
+            "365AS": "ENDRIL", 
+            "294BS": "GABRIELLE",
+            "581BS": "GIOVANNA", 
+            "736DF": "ISABEL",
+            "158DG": "LAURA", 
+            "258LC": "LUCAS", 
+            "942EN": "MARIA CLARA",
+            "627ES": "MARIA EDUARDA", 
+            "301ES": "MELISSA",
+            "514HB": "MILLENA LEITE",
+            "275HC": "MYLLENA FREIRE", 
+            "892HS": "NICOLLE",
+            "463HB": "PAULO", 
+            "829BS": "REBECCA",
+            "371PY": "YASMIN",
+            "JR123": "JUNIOR"
+        };
+
+        // ==========================================
+        // 2. BANCO DE QUESTÕES COMPLETO (50 QUESTÕES) - 3º ANO MÉDIO
+        // ==========================================
+        const questionsDb = [
+            // --- BLOCO 1: VOCABULARY & TEXTS (AI) (13 Questões) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a tradução correta para o verbo 'to ensure' no contexto do texto sobre Inteligência Artificial?", 
+                hint: "Sinônimo de garantir.", 
+                opts: ["Ameaçar", "Garantir", "Evitar", "Atrasar"], 
+                ans: 1, 
+                rat: "O verbo 'to ensure' significa garantir." 
+            },
+            { 
+                type: "typing", 
+                q: "Traduza o verbo destacado: 'We can gain an advantage by LEVERAGING our network'.", 
+                hint: "Aproveitar / alavancar.", 
+                ans: "alavancar", 
+                rat: "'To leverage' significa aproveitar ou alavancar algo que você já tem para alcançar um resultado melhor." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o verbo que significa 'impedir' ou 'limitar':", 
+                txtPre: "A poor diet can", 
+                txtPost: "mental and physical growth.", 
+                opts: ["thrive", "leverage", "hinder", "mitigate"], 
+                ans: "hinder", 
+                rat: "'To hinder' significa impedir ou limitar o desenvolvimento de algo." 
+            },
+            { 
+                type: "true_false", 
+                q: "O verbo 'to exacerbate' significa melhorar ou curar uma situação ruim.", 
+                hint: "Sua alergia foi 'exacerbated' pela poeira.", 
+                ans: false, 
+                rat: "Falso. 'To exacerbate' significa agravar ou piorar uma situação." 
+            },
+            { 
+                type: "typing", 
+                q: "Escreva o verbo em inglês que significa 'prosperar' (Ex: His business _______ in the years before the war).", 
+                hint: "Começa com T e termina com E.", 
+                ans: "thrived", 
+                rat: "'To thrive' significa prosperar ou crescer vigorosamente." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que a expressão 'take into account' significa?", 
+                hint: "Sinônimo de considerar.", 
+                opts: ["Esquecer completamente", "Levar em conta / considerar", "Contar dinheiro", "Demitir alguém"], 
+                ans: 1, 
+                rat: "'To take into account' significa levar em consideração." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o verbo que significa 'mitigar/abrandar':", 
+                txtPre: "It is unclear how to", 
+                txtPost: "the effects of tourism on the island.", 
+                opts: ["thrive", "ensure", "hinder", "mitigate"], 
+                ans: "mitigate", 
+                rat: "'To mitigate' significa abrandar, suavizar ou reduzir os efeitos negativos de algo." 
+            },
+            { 
+                type: "true_false", 
+                q: "A palavra 'EVERYDAY' (junto) é um adjetivo que significa comum ou rotineiro.", 
+                hint: "Death was an everyday occurrence.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Everyday' (uma palavra só) é um adjetivo usado para coisas ordinárias ou comuns." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a frase com o advérbio correto (todos os dias): 'She goes to the supermarket ______ _____'.", 
+                hint: "Duas palavras separadas.", 
+                ans: "every day", 
+                rat: "'Every day' (separado) funciona como advérbio de tempo, significando 'todos os dias'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que significa 'BIAS' no contexto de sistemas de inteligência artificial?", 
+                hint: "Opinião injusta.", 
+                opts: ["Velocidade de processamento", "Viés / preconceito / tendência", "Linguagem de programação", "Banco de dados seguro"], 
+                ans: 1, 
+                rat: "'Bias' representa um viés, preconceito ou tendência injusta em julgamentos ou dados." 
+            },
+            { 
+                type: "drag", 
+                q: "A expressão 'at large' quando usada para criminosos significa:", 
+                txtPre: "The escaped prisoners are still", 
+                txtPost: ".", 
+                opts: ["at large", "in prison", "at small", "in court"], 
+                ans: "at large", 
+                rat: "'At large', quando se refere a uma pessoa procurada, significa que ela está solta/desaparecida." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se diz 'resultado' em inglês no contexto da frase: 'It's too early to predict the _______ of the meeting.'", 
+                hint: "O_TC_M_.", 
+                ans: "outcome", 
+                rat: "'Outcome' significa resultado ou efeito de uma ação ou situação." 
+            },
+            { 
+                type: "true_false", 
+                q: "O termo 'Digital Divide' refere-se ao problema social de grupos que não têm acesso ou conhecimento para usar tecnologias e a internet.", 
+                hint: "Divisão digital.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Digital Divide' descreve o fosso ou a exclusão digital na sociedade." 
+            },
+
+            // --- BLOCO 2: PASSIVE VOICE (17 Questões) ---
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a estrutura básica para formar a Voz Passiva em inglês?", 
+                hint: "Verbo ser + Particípio.", 
+                opts: ["Verbo 'to do' + Verbo base", "Verbo 'to have' + Gerúndio", "Verbo 'to be' + Past Participle", "Verbo 'to make' + Past Participle"], 
+                ans: 2, 
+                rat: "A voz passiva é formada pela combinação do verbo 'to be' com o particípio passado do verbo principal." 
+            },
+            { 
+                type: "drag", 
+                q: "A voz passiva é recomendada em textos científicos porque:", 
+                txtPre: "The details of the process are", 
+                txtPost: "than whoever is doing the action.", 
+                opts: ["more important", "less important", "ignored", "never used"], 
+                ans: "more important", 
+                rat: "Usa-se a voz passiva quando a pessoa que realiza a ação não é tão importante quanto o próprio processo." 
+            },
+            { 
+                type: "typing", 
+                q: "Transforme para a voz passiva: 'Kevin washes the car.' -> 'The car ___ washed by Kevin.'", 
+                hint: "Presente do verbo to be.", 
+                ans: "is", 
+                rat: "Como a frase ativa está no presente simples, usa-se 'is'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual a transformação correta para a voz passiva da frase: 'Kevin washed the car'?", 
+                hint: "Passado.", 
+                opts: ["The car is washed by Kevin.", "The car was washed by Kevin.", "The car has been washed by Kevin.", "The car will be washed by Kevin."], 
+                ans: 1, 
+                rat: "O passado simples ativo 'washed' transforma-se no passado passivo 'was washed'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a transformação para a voz passiva contínua: 'Kevin is washing the car.'", 
+                txtPre: "The car is", 
+                txtPost: "washed by Kevin.", 
+                opts: ["be", "being", "been", "was"], 
+                ans: "being", 
+                rat: "No present progressive, a voz passiva exige o gerúndio do verbo to be: 'is being'." 
+            },
+            { 
+                type: "typing", 
+                q: "Transforme 'Kevin has washed the car' para a voz passiva: 'The car has ____ washed by Kevin.'", 
+                hint: "Particípio do verbo to be.", 
+                ans: "been", 
+                rat: "No present perfect, adiciona-se 'been' à estrutura: 'has been washed'." 
+            },
+            { 
+                type: "typing", 
+                q: "A frase 'Kevin SHOULD WASH the car' na voz passiva fica 'The car should ___ washed by Kevin'.", 
+                hint: "Verbo to be no infinitivo.", 
+                ans: "be", 
+                rat: "Com verbos modais (should, can, must), usamos 'be' + particípio passado." 
+            },
+            { 
+                type: "true_false", 
+                q: "A voz passiva de 'Kevin will wash the car' é 'The car would be washed by Kevin'.", 
+                hint: "Preste atenção no modal.", 
+                ans: false, 
+                rat: "Falso. O modal se mantém. O correto é 'The car will be washed by Kevin'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Eles estavam entrevistando-a para o trabalho (They were interviewing her). Como fica na voz passiva?", 
+                hint: "Past progressive.", 
+                opts: ["She was being interviewed", "She was be interviewed", "She has been interviewing", "She had interviewed"], 
+                ans: 0, 
+                rat: "A estrutura correta para o past progressive passivo é 'was being + past participle'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a transformação passiva de 'The fire had destroyed the house': 'The house ___ been destroyed by the fire.'", 
+                hint: "Passado perfeito.", 
+                ans: "had", 
+                rat: "No past perfect, usamos 'had been destroyed'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Como fica a frase 'Tom is writing the e-mail' na voz passiva?", 
+                hint: "O e-mail está sendo escrito...", 
+                opts: ["The e-mail was written", "The e-mail was being writing", "The e-mail is being written", "The e-mail is been written"], 
+                ans: 2, 
+                rat: "'Is writing' transforma-se em 'is being written'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a voz passiva da frase 'They say that women are smarter than men':", 
+                txtPre: "Women", 
+                txtPost: "to be smarter than men.", 
+                opts: ["are said", "is said", "was said", "has been said"], 
+                ans: "are said", 
+                rat: "Construção passiva com verbos de relato (say): 'Women are said to be...'." 
+            },
+            { 
+                type: "typing", 
+                q: "Na frase 'Mother bakes a cake', a voz passiva é 'The cake is ______ by my mother.'", 
+                hint: "Particípio de bake.", 
+                ans: "baked", 
+                rat: "O particípio de 'bake' é 'baked'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'We watched a movie yesterday' fica 'The movie was watched by us yesterday' na voz passiva.", 
+                hint: "Simple past.", 
+                ans: true, 
+                rat: "Verdadeiro. O passado simples usa 'was + watched'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "A frase correta na voz passiva para 'The mechanic fixed the car' é:", 
+                hint: "Present Perfect.", 
+                opts: ["The car fixed by the mechanic", "The mechanic was fixed the car", "The car has been fixed by the mechanic", "The mechanic is fixed the car"], 
+                ans: 2, 
+                rat: "Neste exercício focado na estrutura Perfect, a transformação foi 'The car has been fixed by the mechanic'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a história da Torre Eiffel: 'The Eiffel Tower ___ designed by Gustave Eiffel'.", 
+                hint: "Passado.", 
+                ans: "was", 
+                rat: "Fato no passado: 'was designed'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a história: 'Today, the Eiffel Tower", 
+                txtPre: "", 
+                txtPost: "by millions of tourists every year.'", 
+                opts: ["is visited", "was visited", "has visited", "is visiting"], 
+                ans: "is visited", 
+                rat: "Um fato que ocorre no presente de forma passiva: 'is visited'." 
+            },
+
+            // --- BLOCO 3: MONEY - BUYING, SELLING AND PAYING (20 Questões) ---
+            { 
+                type: "multiple_choice", 
+                q: "Quais são as três formas comuns de pagamento listadas no material?", 
+                hint: "Dinheiro, cheque, cartão.", 
+                opts: ["Cash, crypto, points", "Cash, by cheque, credit card", "Gold, silver, bronze", "Transfer, bank loan, mortgage"], 
+                ans: 1, 
+                rat: "As formas mencionadas são Cash, by cheque e credit card." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se chama o documento que o banco envia para mostrar quanto dinheiro há na conta? Bank _________.", 
+                hint: "Extrato.", 
+                ans: "statement", 
+                rat: "'Bank statement' é o extrato bancário." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com o tipo de conta onde você deposita dinheiro extra e só retira para algo especial:", 
+                txtPre: "You may also have a", 
+                txtPost: "where you deposit any extra money.", 
+                opts: ["savings account", "current account", "overdraft", "mortgage"], 
+                ans: "savings account", 
+                rat: "Conta poupança em inglês é 'savings account'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A expressão 'In the red' significa que a conta está positiva, com crédito (In credit).", 
+                hint: "Red = perigo/negativo.", 
+                ans: false, 
+                rat: "Falso. 'In the red' significa que a conta está no vermelho/descoberta. Conta com saldo positivo é 'in the black' ou 'in credit'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O dinheiro que o banco empresta para você comprar uma casa é chamado de:", 
+                hint: "Hipotéca.", 
+                opts: ["Refund", "Receipt", "Mortgage", "Bargain"], 
+                ans: 2, 
+                rat: "O empréstimo habitacional (hipoteca) é chamado de 'mortgage'." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se chama o desconto que se recebe por comprar grandes quantidades? Buy in ____.", 
+                hint: "Atacado.", 
+                ans: "bulk", 
+                rat: "A expressão 'buy in bulk' significa comprar em grande quantidade/no atacado." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase: Não é comum no Reino Unido discutir ou barganhar preços em lojas. O verbo para isso é:", 
+                txtPre: "It is not usual to", 
+                txtPost: "about prices in a British shop.", 
+                opts: ["haggle", "purchase", "refund", "deposit"], 
+                ans: "haggle", 
+                rat: "O verbo 'to haggle' significa barganhar ou pechinchar." 
+            },
+            { 
+                type: "true_false", 
+                q: "Para receber um reembolso ('refund') em uma loja, você geralmente precisa ter o recibo ('receipt').", 
+                hint: "Comprovante de compra.", 
+                ans: true, 
+                rat: "Verdadeiro. O reembolso é dado desde que você apresente o recibo de compra." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a diferença entre 'FEE' e 'FARE'?", 
+                hint: "Serviço vs Transporte.", 
+                opts: ["Fee é imposto, Fare é produto", "Fee é para serviços (escola/advogado), Fare é tarifa de viagem", "Fee é dinheiro trocado, Fare é banco", "Ambos significam gorjeta"], 
+                ans: 1, 
+                rat: "'Fee' é usado para serviços profissionais; 'fare' é o valor pago por uma viagem ou transporte." 
+            },
+            { 
+                type: "typing", 
+                q: "Se você acha que um produto foi um bom negócio (Good value), ele é considerado uma _________.", 
+                hint: "B_R_G_I_N.", 
+                ans: "bargain", 
+                rat: "'Bargain' significa pechincha ou bom negócio." 
+            },
+            { 
+                type: "drag", 
+                q: "Se algo definitivamente não valeu o que você pagou, você chama coloquialmente de:", 
+                txtPre: "If it's definitely not worth it, you can call it a", 
+                txtPost: ".", 
+                opts: ["rip-off", "bargain", "refund", "dole"], 
+                ans: "rip-off", 
+                rat: "'Rip-off' é uma expressão coloquial para algo extremamente caro e injusto, um 'roubo'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O imposto cobrado pelo governo sobre mercadorias importadas é conhecido como:", 
+                hint: "Alfândega.", 
+                opts: ["Income tax", "VAT", "Customs / Excise duties", "Corporation tax"], 
+                ans: 2, 
+                rat: "'Customs' ou 'Excise duties' são as taxas sobre bens importados." 
+            },
+            { 
+                type: "typing", 
+                q: "O imposto sobre bens e serviços (semelhante ao nosso ICMS) no exterior é conhecido pela sigla ___ (Value Added Tax).", 
+                hint: "Três letras.", 
+                ans: "vat", 
+                rat: "A sigla é 'VAT', que significa Value Added Tax." 
+            },
+            { 
+                type: "true_false", 
+                q: "O 'Unemployment benefit', um auxílio pago pelo governo a desempregados, também é informalmente conhecido como 'the dole'.", 
+                hint: "Dole.", 
+                ans: true, 
+                rat: "Verdadeiro. 'The dole' é um termo informal para os benefícios de desemprego." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "De acordo com o Money Quiz, qual é a moeda utilizada no Japão?", 
+                hint: "Y...", 
+                opts: ["Rouble", "Dollar", "Yen", "Rupee"], 
+                ans: 2, 
+                rat: "A moeda oficial do Japão é o Yen." 
+            },
+            { 
+                type: "drag", 
+                q: "Uma moeda confiável e estável no mercado global é descrita como:", 
+                txtPre: "It is considered a", 
+                txtPost: "currency.", 
+                opts: ["hard", "soft", "heavy", "light"], 
+                ans: "hard", 
+                rat: "O termo 'hard currency' designa uma moeda forte e estável." 
+            },
+            { 
+                type: "typing", 
+                q: "Dinheiro pago a pessoas após uma certa idade por aposentadoria em inglês é chamado de ________.", 
+                hint: "P_N_S_O_.", 
+                ans: "pension", 
+                rat: "'Pension' é a aposentadoria ou pensão recebida após certa idade." 
+            },
+            { 
+                type: "true_false", 
+                q: "De acordo com o texto, algo que é inestimável (como um vaso grego antigo) é 'valueless'.", 
+                hint: "Priceless vs Valueless.", 
+                ans: false, 
+                rat: "Falso. Algo inestimável e de grande valor é 'priceless'. 'Valueless' significa que não tem valor algum." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que é um 'Tax Rebate'?", 
+                hint: "Rebate.", 
+                opts: ["Uma multa por atraso de imposto", "Um imposto sobre grandes heranças", "A devolução (restituição) de dinheiro se você pagou muito imposto", "A taxa cobrada por bancos"], 
+                ans: 2, 
+                rat: "'Tax rebate' é a restituição de impostos caso tenha sido pago um valor a mais." 
+            },
+            { 
+                type: "drag", 
+                q: "Dinheiro pago para ajudar nos custos da criação de filhos ou necessidades, fornecido pelo governo:", 
+                txtPre: "Money given by the government for education and welfare is a", 
+                txtPost: ".", 
+                opts: ["grant", "mortgage", "fare", "overdraft"], 
+                ans: "grant", 
+                rat: "Bolsas ou auxílios do governo são chamados de 'grants'." 
+            }
+        ];
+
+
+        // ==========================================
+        // 3. LÓGICA PRINCIPAL DO APLICATIVO
+        // ==========================================
+const app = {
+            serieAtual: "3º ANO MÉDIO", // ADICIONE ESTA LINHA
+            currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
+            questions: [], history: [], sortDirection: false,
+        
+
+            init() {
+                this.questions = this.shuffle([...questionsDb]);
+                document.getElementById('total-q-num').innerText = this.questions.length;
+            },
+
+            shuffle(array) {
+                let currentIndex = array.length, randomIndex;
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+                    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                }
+                return array;
+            },
+
+            startQuiz() {
+                const code = document.getElementById('student-code').value.trim().toUpperCase();
+                
+                if (code === "JR1971") {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('dashboard-card').classList.add('active-card');
+                    this.loadDashboard();
+                    return;
+                }
+
+                if (!studentData[code]) {
+                    alert("Código inválido! Tente novamente.");
+                    return;
+                }
+
+                this.studentCode = code;
+                this.studentName = studentData[code];
+                
+                try {
+                    const savedState = localStorage.getItem('quiz_progress_' + this.studentCode);
+                    if (savedState) {
+                        if (confirm(`Olá, ${this.studentName}! Encontramos uma avaliação em andamento. Deseja continuar de onde parou?`)) {
+                            const data = JSON.parse(savedState);
+                            this.currentQ = data.currentQ;
+                            this.score = data.score;
+                            this.history = data.history;
+                            this.questions = data.questions;
+                        } else {
+                            localStorage.removeItem('quiz_progress_' + this.studentCode);
+                            this.init(); 
+                        }
+                    } else {
+                        this.init();
+                    }
+                } catch (e) {
+                    this.init();
+                }
+
+                document.getElementById('start-btn').style.display = 'none';
+                document.getElementById('student-code').style.display = 'none';
+                document.getElementById('quiz-description').style.display = 'none';
+                
+                const welcomeMsg = document.getElementById('personalized-welcome');
+                if(this.studentName === "JÚNIOR") {
+                    welcomeMsg.innerText = "Oi, JÚNIOR - grato por sua visita!!!";
+                } else {
+                    welcomeMsg.innerText = `Bem-vindo(a), ${this.studentName}! Boa Prova!`;
+                }
+                welcomeMsg.style.display = 'block';
+
+                setTimeout(() => {
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.add('active-card');
+                    this.renderQuestion();
+                }, 2000);
+            },
+
+            renderQuestion() {
+                this.selectedAnswer = null;
+                document.getElementById('hint-text').style.display = 'none';
+                document.getElementById('current-q-num').innerText = this.currentQ + 1;
+                
+                const progress = (this.currentQ / this.questions.length) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+
+                const q = this.questions[this.currentQ];
+                document.getElementById('question-text').innerText = `${this.currentQ + 1}. ${q.q}`;
+                document.getElementById('hint-text').innerText = q.hint || "Pense com cuidado e analise o contexto da frase!";
+                
+                const area = document.getElementById('answer-area');
+                area.innerHTML = ''; 
+
+                if (q.type === "multiple_choice") {
+                    q.opts.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'option-btn';
+                        btn.innerText = opt;
+                        btn.onclick = () => this.selectMC(btn, idx, opt);
+                        area.appendChild(btn);
+                    });
+                } 
+                else if (q.type === "true_false") {
+                    const cont = document.createElement('div');
+                    cont.className = 'tf-container';
+                    
+                    const bTrue = document.createElement('button');
+                    bTrue.className = 'tf-btn'; bTrue.innerText = 'Verdadeiro';
+                    bTrue.onclick = () => this.selectTF(bTrue, true, cont);
+                    
+                    const bFalse = document.createElement('button');
+                    bFalse.className = 'tf-btn'; bFalse.innerText = 'Falso';
+                    bFalse.onclick = () => this.selectTF(bFalse, false, cont);
+                    
+                    cont.appendChild(bTrue); cont.appendChild(bFalse);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "typing") {
+                    const cont = document.createElement('div');
+                    cont.className = 'typing-container';
+                    const inp = document.createElement('input');
+                    inp.type = 'text'; inp.className = 'typing-input';
+                    inp.placeholder = 'Digite aqui...';
+                    inp.oninput = (e) => this.selectedAnswer = e.target.value.trim().toLowerCase();
+                    cont.appendChild(inp);
+                    area.appendChild(cont);
+                }
+                else if (q.type === "drag") {
+                    const cont = document.createElement('div');
+                    cont.className = 'drag-container';
+                    
+                    const sent = document.createElement('div');
+                    sent.className = 'sentence-display';
+                    sent.innerHTML = `${q.txtPre} <span class="drop-zone" id="drop-target" onclick="app.clearDrop()">...</span> ${q.txtPost}`;
+                    
+                    const bank = document.createElement('div');
+                    bank.className = 'words-bank';
+                    
+                    let words = this.shuffle([...q.opts]);
+                    words.forEach(w => {
+                        const wBtn = document.createElement('button');
+                        wBtn.className = 'drag-word';
+                        wBtn.innerText = w;
+                        wBtn.onclick = () => this.fillDrop(w, wBtn);
+                        bank.appendChild(wBtn);
+                    });
+
+                    cont.appendChild(sent);
+                    cont.appendChild(bank);
+                    area.appendChild(cont);
+                }
+            },
+
+            selectMC(btn, index, textVal) {
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedAnswer = { index: index, text: textVal }; 
+            },
+
+            selectTF(btn, val, container) {
+                container.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected-true', 'selected-false'));
+                btn.classList.add(val ? 'selected-true' : 'selected-false');
+                this.selectedAnswer = val;
+            },
+
+            fillDrop(word, btnElement) {
+                if(btnElement.classList.contains('used')) return;
+                if(this.selectedAnswer) {
+                    document.querySelectorAll('.drag-word').forEach(b => {
+                        if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                    });
+                }
+                document.getElementById('drop-target').innerText = word;
+                document.getElementById('drop-target').style.color = '#2c3e50';
+                btnElement.classList.add('used');
+                this.selectedAnswer = word;
+            },
+
+            clearDrop() {
+                if(!this.selectedAnswer) return;
+                document.querySelectorAll('.drag-word').forEach(b => {
+                    if(b.innerText === this.selectedAnswer) b.classList.remove('used');
+                });
+                document.getElementById('drop-target').innerText = '...';
+                document.getElementById('drop-target').style.color = '#3498db';
+                this.selectedAnswer = null;
+            },
+
+            showHint() {
+                document.getElementById('hint-text').style.display = 'block';
+            },
+
+            confirmAnswer() {
+                if (this.selectedAnswer === null || this.selectedAnswer === "") {
+                    alert("Responda a questão antes de avançar.");
+                    return;
+                }
+
+                const currentAnswer = this.selectedAnswer;
+                this.selectedAnswer = null; 
+
+                const q = this.questions[this.currentQ];
+                let isCorrect = false;
+                let userAnswerText = currentAnswer;
+                let correctAnswerText = q.ans;
+
+                if (q.type === "typing" || q.type === "drag") {
+                    isCorrect = (currentAnswer.toLowerCase() === q.ans.toLowerCase());
+                } else if (q.type === "multiple_choice") {
+                    isCorrect = (currentAnswer.index === q.ans);
+                    userAnswerText = currentAnswer.text;
+                    correctAnswerText = q.opts[q.ans];
+                } else if (q.type === "true_false") {
+                    isCorrect = (currentAnswer === q.ans);
+                    userAnswerText = currentAnswer ? "Verdadeiro" : "Falso";
+                    correctAnswerText = q.ans ? "Verdadeiro" : "Falso";
+                }
+
+                if (isCorrect) this.score++;
+
+                this.history.push({
+                    question: q.q,
+                    userAns: userAnswerText,
+                    correctAns: correctAnswerText,
+                    isRight: isCorrect,
+                    rationale: q.rat || "Estude este tópico no Roteiro para aprofundar."
+                });
+
+                this.currentQ++;
+
+                try {
+                    if (this.currentQ < this.questions.length) {
+                        const currentState = {
+                            currentQ: this.currentQ,
+                            score: this.score,
+                            history: this.history,
+                            questions: this.questions
+                        };
+                        localStorage.setItem('quiz_progress_' + this.studentCode, JSON.stringify(currentState));
+                    }
+                } catch (e) {
+                    console.warn("Erro ao salvar progresso:", e);
+                }
+
+                if (this.currentQ < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    document.getElementById('progress-bar').style.width = `100%`;
+                    setTimeout(() => this.finishQuiz(), 500);
+                }
+            },
+
+            finishQuiz() {
+                document.getElementById('quiz-card').classList.remove('active-card');
+                document.getElementById('results-card').classList.add('active-card');
+                
+                localStorage.removeItem('quiz_progress_' + this.studentCode);
+
+                const total = this.questions.length;
+                const perc = Math.round((this.score / total) * 100);
+                document.getElementById('res-name').innerText = this.studentName;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-total').innerText = total;
+                document.getElementById('res-perc').innerText = perc;
+
+                if (perc >= 60) confetti({ particleCount: 400, spread: 90, origin: { y: 0.6 } });
+
+                const reportData = {
+                    date: new Date().toLocaleString('pt-BR'),
+                    score: this.score,
+                    total: total,
+                    perc: perc,
+                    history: [...this.history]
+                };
+
+                try {
+                    let existingReports = JSON.parse(localStorage.getItem('student_reports_' + this.studentCode) || '[]');
+                    existingReports.push(reportData);
+                    localStorage.setItem('student_reports_' + this.studentCode, JSON.stringify(existingReports));
+                } catch(e) {}
+
+                this.generateReportHtml(reportData.history);
+                this.logAttemptToFirebase(perc, total, reportData);
+            },
+
+            generateReportHtml(historyArray) {
+                const repDiv = document.getElementById('detailed-report');
+                repDiv.innerHTML = '';
+                historyArray.forEach((h, i) => {
+                    const statusClass = h.isRight ? 'correct' : 'incorrect';
+                    const icon = h.isRight ? '✔️ Acertou' : '❌ Errou';
+                    repDiv.innerHTML += `
+                        <div class="report-item ${statusClass}">
+                            <p><strong>${i+1}.</strong> ${h.question}</p>
+                            <p>Sua resposta: <strong>${h.userAns}</strong> (${icon})</p>
+                            ${!h.isRight ? `<p>Resposta Correta: <strong>${h.correctAns}</strong></p>` : ''}
+                            <p class="report-rationale">📖 Explicação: ${h.rationale}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            openReportsModal() {
+                const savedReports = localStorage.getItem('student_reports_' + this.studentCode);
+                if (!savedReports) {
+                    alert("Você ainda não concluiu nenhuma rodada desta avaliação!");
+                    return;
+                }
+                const reports = JSON.parse(savedReports);
+                let choice = prompt(`Você possui ${reports.length} rodada(s) concluída(s). Digite o número da rodada que deseja visualizar (1 a ${reports.length}):`);
+                let index = parseInt(choice) - 1;
+                
+                if (!isNaN(index) && index >= 0 && index < reports.length) {
+                    const selected = reports[index];
+                    document.getElementById('intro-card').classList.remove('active-card');
+                    document.getElementById('quiz-card').classList.remove('active-card');
+                    document.getElementById('results-card').classList.add('active-card');
+                    
+                    document.getElementById('res-name').innerText = this.studentName;
+                    document.getElementById('res-score').innerText = selected.score;
+                    document.getElementById('res-total').innerText = selected.total;
+                    document.getElementById('res-perc').innerText = selected.perc;
+                    this.generateReportHtml(selected.history);
+                } else if (choice !== null) {
+                    alert("Rodada inválida.");
+                }
+            },
+
+            backToQuizOrIntro() {
+                document.getElementById('results-card').classList.remove('active-card');
+                if (this.currentQ > 0 && this.currentQ < this.questions.length) {
+                    document.getElementById('quiz-card').classList.add('active-card');
+                } else {
+                    document.getElementById('intro-card').classList.add('active-card');
+                }
+            },
+
+            // ---------------- FIREBASE FUNCTIONS ----------------
+logAttemptToFirebase(perc, total, reportData) {
+                db.collection("avaliacao_ingles").add({
+                    nome: this.studentName,
+                    codigo: this.studentCode,
+                    serie: this.serieAtual, // ADICIONE ESTA LINHA
+                    notaFinal: `${this.score}/${total} (${perc}%)`,
+                    dataTentativa: reportData.date,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    detalhesRodada: reportData
+                }).catch(e => console.error("Erro ao registrar tentativa no Firebase:", e));
+            },
+
+            // ---------------- DASHBOARD MASTER ----------------
+            loadDashboard() {
+                const tbody = document.getElementById('dashboard-tbody');
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Carregando...</td></tr>';
+                
+                db.collection("avaliacao_ingles").orderBy("timestamp", "desc").get().then(snap => {
+                    tbody.innerHTML = '';
+                    if(snap.empty) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhuma tentativa encontrada.</td></tr>';
+                        return;
+                    }
+                    snap.forEach(doc => {
+                        const d = doc.data();
+tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${d.nome}</strong></td>
+                                <td>${d.codigo}</td>
+                                <td>${d.serie || 'Antigo'}</td> <!-- ADICIONE ESTA LINHA -->
+                                <td>${d.notaFinal}</td>
+                                <td>${d.dataTentativa || 'N/A'}</td>
+                                <td>
+                                    <button class="btn-3d btn-blue" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0;" onclick="app.teacherViewReport('${doc.id}')" title="Ver Relatório desta tentativa">👁️</button>
+                                    <button class="btn-3d btn-salmon" style="padding: 5px 10px; font-size: 0.8rem; margin-top:0; margin-left: 5px;" onclick="app.deleteAttempt('${doc.id}', '${d.nome}')" title="Excluir tentativa">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }).catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">Erro de permissão! Verifique as Rules no Firebase.</td></tr>';
+                });
+            },
+
+            teacherViewReport(docId) {
+                db.collection("avaliacao_ingles").doc(docId).get().then(doc => {
+                    if (doc.exists) {
+                        const d = doc.data();
+                        if (d.detalhesRodada) {
+                            document.getElementById('dashboard-card').classList.remove('active-card');
+                            document.getElementById('results-card').classList.add('active-card');
+                            
+                            document.getElementById('res-name').innerText = d.nome + ` (Tentativa em: ${d.dataTentativa})`;
+                            document.getElementById('res-score').innerText = d.detalhesRodada.score;
+                            document.getElementById('res-total').innerText = d.detalhesRodada.total;
+                            document.getElementById('res-perc').innerText = d.detalhesRodada.perc;
+                            this.generateReportHtml(d.detalhesRodada.history);
+                        } else {
+                            alert("Detalhes detalhados indisponíveis para este registro antigo.");
+                        }
+                    }
+                });
+            },
+
+            deleteAttempt(docId, studentName) {
+                if (confirm(`Tem certeza que deseja apagar esta tentativa específica do aluno(a) ${studentName}?`)) {
+                    db.collection("avaliacao_ingles").doc(docId).delete().then(() => {
+                        alert("Tentativa excluída com sucesso!");
+                        this.loadDashboard(); 
+                    }).catch(error => {
+                        console.error("Erro ao deletar tentativa: ", error);
+                        alert("Erro ao tentar excluir.");
+                    });
+                }
+            },
+
+            filterTable() {
+                let input = document.getElementById("filter-input");
+                let filter = input.value.toUpperCase();
+                let table = document.getElementById("dashboard-table");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+                    let td = tr[i].getElementsByTagName("td")[0];
+                    if (td) {
+                        let txtValue = td.textContent || td.innerText;
+                        tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    }
+                }
+            },
+
+            sortTable(n) {
+                let table = document.getElementById("dashboard-table");
+                let rows, switching, i, x, y, shouldSwitch;
+                switching = true;
+                this.sortDirection = !this.sortDirection;
+                
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        
+                        if (!x || !y) continue;
+
+                        let valX = x.innerHTML.toLowerCase();
+                        let valY = y.innerHTML.toLowerCase();
+                        
+                        if (this.sortDirection) {
+                            if (valX > valY) { shouldSwitch = true; break; }
+                        } else {
+                            if (valX < valY) { shouldSwitch = true; break; }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            },
+
+            exportToCSV() {
+                let table = document.getElementById("dashboard-table");
+                let csv = [];
+                for (let i = 0; i < table.rows.length; i++) {
+                    let row = [], cols = table.rows[i].querySelectorAll("td, th");
+                    for (let j = 0; j < cols.length - 1; j++) 
+                        row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                    csv.push(row.join(","));
+                }
+                let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
+                let downloadLink = document.createElement("a");
+                downloadLink.download = "relatorio_tentativas_ingles.csv";
+                downloadLink.href = window.URL.createObjectURL(csvFile);
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            },
+
+            exitMaster() {
+                document.getElementById('dashboard-card').classList.remove('active-card');
+                document.getElementById('student-code').value = '';
+                document.getElementById('intro-card').classList.add('active-card');
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+</html>
