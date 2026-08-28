@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 2º ANO MÉDIO (3º BIMESTRE)</title>
+    <title>AVALIAÇÃO DE LÍNGUA INGLESA - 3º ANO MÉDIO (3º BIMESTRE)</title> 
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -189,7 +189,7 @@
         <!-- TELA DE LOGIN -->
         <div id="intro-card" class="card active-card intro-card">
             <h1>AVALIAÇÃO DE LÍNGUA INGLESA</h1>
-            <h2>2º ANO MÉDIO (3º BIMESTRE)</h2>
+            <h2>3º ANO MÉDIO (3º BIMESTRE)</h2>
             <p id="personalized-welcome" style="font-size: 1.2rem; font-weight: bold; margin-top: 15px; color: #FA8072; text-align: center; display: none;"></p>
             <p id="quiz-description" style="text-align: center; color: #7f8c8d;">Insira seu código de acesso para iniciar a avaliação.</p>
             <input type="text" id="student-code" placeholder="Código de Acesso">
@@ -287,429 +287,435 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);     
         const db = firebase.firestore();
 
-const studentData = {
-            "472AM": "DANIEL", 
-            "819AS": "DAVI F.",
-            "365AS": "DAVI X.", 
-            "294BS": "GABRIEL",
-            "581BS": "GABRIELA", 
-            "736DF": "HENRY",
-            "158DG": "ISABELLA", 
-            "942EN": "KAUA B.",
-            "627ES": "KAUA C.", 
-            "301ES": "LAURA A.",
-            "514HB": "LAURA M.",
-            "275HC": "MANUELLA", 
-            "892HS": "MATHEUS",
-            "463HB": "SOFIA", 
+// ==========================================
+        // 1. BLOCO DE ALUNOS - 3º ANO MÉDIO
+        // ==========================================
+        const studentData = {
+            "472AM": "BEATRIZ", 
+            "819AS": "BRUNO",
+            "365AS": "ENDRIL", 
+            "294BS": "GABRIELLE",
+            "581BS": "GIOVANNA", 
+            "736DF": "ISABEL",
+            "158DG": "LAURA", 
+            "258LC": "LUCAS", 
+            "942EN": "MARIA CLARA",
+            "627ES": "MARIA EDUARDA", 
+            "301ES": "MELISSA",
+            "514HB": "MILLENA LEITE",
+            "275HC": "MYLLENA FREIRE", 
+            "892HS": "NICOLLE",
+            "463HB": "PAULO", 
+            "829BS": "REBECCA",
+            "371PY": "YASMIN",
             "JR123": "JUNIOR"
         };
 
         // ==========================================
-        // 2. BANCO DE QUESTÕES COMPLETO (50 QUESTÕES) - 2º ANO MÉDIO
+        // 2. BANCO DE QUESTÕES COMPLETO (50 QUESTÕES) - 3º ANO MÉDIO
         // ==========================================
         const questionsDb = [
-            // --- BLOCO 1: INTERROGATIVE PRONOUNS (Páginas 1 a 4) ---
+            // --- BLOCO 1: VOCABULARY & TEXTS (AI) (13 Questões) ---
             { 
                 type: "multiple_choice", 
-                q: "Qual pronome interrogativo usamos para perguntar 'com que frequência'?", 
-                hint: "Frequência.", 
-                opts: ["How long", "How far", "How often", "How much"], 
-                ans: 2, 
-                rat: "'How often' significa 'com que frequência?'." 
-            },
-            { 
-                type: "typing", 
-                q: "Complete a frase indicando a quem pertence o objeto: '_____ dictionary is this?'", 
-                hint: "De quem?", 
-                ans: "Whose", 
-                rat: "O pronome 'Whose' é usado para perguntar 'de quem' é alguma coisa." 
-            },
-            { 
-                type: "true_false", 
-                q: "O pronome interrogativo 'Which' é usado quando há uma escolha ou opção limitada.", 
-                hint: "Which shirt do you prefer: blue or red?", 
-                ans: true, 
-                rat: "Verdadeiro. 'Which' indica escolha ou opção." 
-            },
-            { 
-                type: "drag", 
-                q: "Complete a pergunta sobre características físicas/pessoais:", 
-                txtPre: "", 
-                txtPost: "is your boyfriend like?", 
-                opts: ["What", "How", "Who", "Which"], 
-                ans: "What", 
-                rat: "A expressão 'What + be + like?' significa 'como é?'." 
-            },
-            { 
-                type: "typing", 
-                q: "Complete a pergunta com o pronome objeto após a preposição: 'To _____ did you talk?'", 
-                hint: "Termina com M.", 
-                ans: "whom", 
-                rat: "'Whom' funciona como objeto da oração e é usado após preposições." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Como se traduz a expressão interrogativa 'What about...?'", 
-                hint: "What about having lunch now?", 
-                opts: ["Sobre o que?", "Onde fica?", "Que tal...?", "Para que?"], 
-                ans: 2, 
-                rat: "'What about...?' significa 'que tal...?' ou 'o que você acha de...?'." 
-            },
-            { 
-                type: "typing", 
-                q: "Se você quer saber o comprimento de algo ou quanto tempo algo dura, você pergunta: 'How ____?'", 
-                hint: "L_N_.", 
-                ans: "long", 
-                rat: "'How long' significa 'qual é o comprimento' ou 'quanto tempo'." 
-            },
-            { 
-                type: "drag", 
-                q: "Complete a frase para perguntar a distância:", 
-                txtPre: "How", 
-                txtPost: "does Henry live?", 
-                opts: ["far", "deep", "tall", "fast"], 
-                ans: "far", 
-                rat: "'How far' é usado para perguntar 'qual a distância?'." 
-            },
-            { 
-                type: "true_false", 
-                q: "A expressão 'What are you doing this for?' significa 'Por que / Para que você está fazendo isso?'.", 
-                hint: "What... for?", 
-                ans: true, 
-                rat: "Verdadeiro. 'What ... for?' traduz-se como 'por que? para que?'." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Qual pronome é usado na função de sujeito da frase '___ arrived late yesterday?'", 
-                hint: "Quem.", 
-                opts: ["Whose", "Whom", "Who", "Which"], 
-                ans: 2, 
-                rat: "Usamos 'Who' como sujeito da oração para pessoas (Quem)." 
-            },
-            { 
-                type: "typing", 
-                q: "Se queremos saber como se chama ou qual o nome de um aparelho, dizemos: 'What do you ____ this device?'", 
-                hint: "Ligar, chamar.", 
-                ans: "call", 
-                rat: "'What do you call...?' significa 'como se chama?'." 
-            },
-            { 
-                type: "drag", 
-                q: "Complete a saudação formal de apresentação:", 
-                txtPre: "How do you", 
-                txtPost: "?", 
-                opts: ["do", "are", "make", "be"], 
-                ans: "do", 
-                rat: "A expressão 'How do you do?' significa 'muito prazer'." 
-            },
-
-            // --- BLOCO 2: VOCABULARY PART A, B, C, D (Páginas 10 a 12) ---
-            { 
-                type: "multiple_choice", 
-                q: "Na expressão 'His habitual lateness drives me crazy', o que significa a frase em destaque?", 
-                hint: "Ficar louco.", 
-                opts: ["Me faz dirigir muito rápido", "Me faz perder o controle", "Me deixa louco/aborrecido", "Me assusta profundamente"], 
-                ans: 2, 
-                rat: "'To drive someone crazy' significa deixar alguém extremamente aborrecido ou louco de raiva." 
-            },
-            { 
-                type: "typing", 
-                q: "Traduza o verbo destacado: 'I can't wear wool - it makes me ITCH'.", 
-                hint: "Quando algo irrita a pele.", 
-                ans: "coçar", 
-                rat: "O verbo 'to itch' significa coçar." 
-            },
-            { 
-                type: "true_false", 
-                q: "Os ventos 'Santa Anas' são conhecidos por serem fortes, secos e quentes na região do Sul da Califórnia.", 
-                hint: "Leia a nota no texto.", 
-                ans: true, 
-                rat: "Verdadeiro. Santa Anas são ventos fortes, secos e quentes." 
-            },
-            { 
-                type: "drag", 
-                q: "Complete com o verbo que significa 'tender a':", 
-                txtPre: "The British traditionally", 
-                txtPost: "not to display much emotion in public.", 
-                opts: ["tend", "curl", "blow", "jump"], 
-                ans: "tend", 
-                rat: "O verbo 'to tend' significa tender a." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "O que o termo 'Cold Snap' descreve no vocabulário sobre clima?", 
-                hint: "Snap é algo rápido/curto.", 
-                opts: ["Um período longo de neve", "Uma onda curta de muito frio", "Um resfriado causado pela chuva", "Um congelamento rápido da água"], 
+                q: "Qual é a tradução correta para o verbo 'to ensure' no contexto do texto sobre Inteligência Artificial?", 
+                hint: "Sinônimo de garantir.", 
+                opts: ["Ameaçar", "Garantir", "Evitar", "Atrasar"], 
                 ans: 1, 
-                rat: "'Cold snap' significa um curto período de clima muito frio (onda de frio)." 
+                rat: "O verbo 'to ensure' significa garantir." 
             },
             { 
                 type: "typing", 
-                q: "No contexto de raiva induzida por nevascas excessivas, como a polícia canadense chamou esse fenômeno? '_____ rage'.", 
-                hint: "Neve.", 
-                ans: "snow", 
-                rat: "O termo é 'snow rage', referente à raiva causada pelo excesso de neve e problemas com vizinhos." 
+                q: "Traduza o verbo destacado: 'We can gain an advantage by LEVERAGING our network'.", 
+                hint: "Aproveitar / alavancar.", 
+                ans: "alavancar", 
+                rat: "'To leverage' significa aproveitar ou alavancar algo que você já tem para alcançar um resultado melhor." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase com o verbo que significa 'impedir' ou 'limitar':", 
+                txtPre: "A poor diet can", 
+                txtPost: "mental and physical growth.", 
+                opts: ["thrive", "leverage", "hinder", "mitigate"], 
+                ans: "hinder", 
+                rat: "'To hinder' significa impedir ou limitar o desenvolvimento de algo." 
             },
             { 
                 type: "true_false", 
-                q: "Alguém que é descrito como 'hot-headed' geralmente pensa cautelosamente antes de tomar decisões.", 
-                hint: "Cabeça-quente.", 
+                q: "O verbo 'to exacerbate' significa melhorar ou curar uma situação ruim.", 
+                hint: "Sua alergia foi 'exacerbated' pela poeira.", 
                 ans: false, 
-                rat: "Falso. 'Hot-headed' descreve uma pessoa impulsiva que age rapidamente e sem pensar." 
-            },
-            { 
-                type: "drag", 
-                q: "Selecione o idiom que significa 'deixar alguém muito irritado':", 
-                txtPre: "Huge queues at fast food restaurants make my tempers", 
-                txtPost: ".", 
-                opts: ["boil", "burn", "jump", "curl"], 
-                ans: "boil", 
-                rat: "'To make tempers boil' significa deixar alguém muito irritado ou enfurecido." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Na frase 'The picnic was postponed DUE TO heavy rain', o que 'due to' significa?", 
-                hint: "Causa.", 
-                opts: ["Durante a", "Apesar da", "Devido a", "Depois da"], 
-                ans: 2, 
-                rat: "'Due to' tem o mesmo significado que because of, ou seja, 'devido a'." 
+                rat: "Falso. 'To exacerbate' significa agravar ou piorar uma situação." 
             },
             { 
                 type: "typing", 
-                q: "Qual a tradução da palavra 'burglary' no contexto de crimes induzidos pelo calor?", 
-                hint: "Invasão de propriedade / roubo.", 
-                ans: "assalto", 
-                rat: "'Burglary' significa assalto ou invasão de propriedade onde o incentivo é dinheiro." 
-            },
-            { 
-                type: "true_false", 
-                q: "A expressão 'spring fever' refere-se aos dias de sol da primavera que tendem a animar (boost) o humor.", 
-                hint: "Springtime.", 
-                ans: true, 
-                rat: "Verdadeiro. O clima mais quente da primavera ajuda a melhorar o humor e abrir a mente." 
+                q: "Escreva o verbo em inglês que significa 'prosperar' (Ex: His business _______ in the years before the war).", 
+                hint: "Começa com T e termina com E.", 
+                ans: "thrived", 
+                rat: "'To thrive' significa prosperar ou crescer vigorosamente." 
             },
             { 
                 type: "multiple_choice", 
-                q: "A expressão 'to play a part' é traduzida como:", 
-                hint: "Fazer parte.", 
-                opts: ["Jogar um jogo", "Atuar em um palco", "Desempenhar um papel", "Ser uma parte menor"], 
-                ans: 2, 
-                rat: "'To play a part' significa participar ou desempenhar um papel em determinada situação." 
-            },
-            { 
-                type: "drag", 
-                q: "Complete a oração que significa prever / profetizar o clima:", 
-                txtPre: "What else can the weather do to your mood? Here's a", 
-                txtPost: ".", 
-                opts: ["forecast", "burglary", "jump", "snap"], 
-                ans: "forecast", 
-                rat: "'Forecast' significa previsão, geralmente usada para previsão do tempo." 
-            },
-
-            // --- BLOCO 3: GRAMMAR - ADVERBS (Páginas 13 a 15) ---
-            { 
-                type: "multiple_choice", 
-                q: "Qual é a posição correta de um advérbio de frequência numa frase com verbo principal comum?", 
-                hint: "They ___ watch TV.", 
-                opts: ["No início da frase", "Após o verbo principal", "Antes do verbo principal", "No final absoluto da frase"], 
-                ans: 2, 
-                rat: "Os advérbios de frequência (usually, often, never) são colocados antes do verbo principal." 
-            },
-            { 
-                type: "typing", 
-                q: "Escreva a forma em inglês que indica 'ultimamente' (deriva da palavra tarde).", 
-                hint: "Termina em LY.", 
-                ans: "lately", 
-                rat: "'Lately' é o advérbio que significa 'ultimamente'." 
-            },
-            { 
-                type: "true_false", 
-                q: "A palavra 'HARDLY' significa 'duramente' ou 'fortemente'.", 
-                hint: "I can hardly move my feet.", 
-                ans: false, 
-                rat: "Falso. 'Hardly' significa 'mal' ou 'com dificuldade'. A forma advérbio de hard (duro) é 'hard'." 
-            },
-            { 
-                type: "drag", 
-                q: "Qual a ordem correta quando usamos três advérbios (Modo, Lugar e Tempo) numa frase?", 
-                txtPre: "He did his job", 
-                txtPost: "yesterday.", 
-                opts: ["carefully at home", "at home carefully", "yesterday carefully", "at home yesterday carefully"], 
-                ans: "carefully at home", 
-                rat: "A ordem normal é Modo (carefully), Lugar (at home), Tempo (yesterday)." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Se 'good' é o adjetivo (bom), qual é o advérbio irregular de modo correspondente (bem)?", 
-                hint: "I speak English very ___.", 
-                opts: ["Goodly", "Well", "Better", "Greatly"], 
+                q: "O que a expressão 'take into account' significa?", 
+                hint: "Sinônimo de considerar.", 
+                opts: ["Esquecer completamente", "Levar em conta / considerar", "Contar dinheiro", "Demitir alguém"], 
                 ans: 1, 
-                rat: "O advérbio de 'good' é a forma irregular 'well'." 
-            },
-            { 
-                type: "typing", 
-                q: "As palavras lovely, lonely, silly e elderly terminam em -LY. Elas são advérbios ou adjetivos?", 
-                hint: "Descrevem coisas.", 
-                ans: "adjetivos", 
-                rat: "Apesar da terminação -LY, essas palavras são adjetivos (solitário, encantador, tolo, idoso)." 
-            },
-            { 
-                type: "true_false", 
-                q: "Em 'John is a fast runner' e 'John runs very fast', a palavra FAST atua como adjetivo e advérbio, respectivamente.", 
-                hint: "Fast não muda.", 
-                ans: true, 
-                rat: "Verdadeiro. 'Fast' não muda de forma; pode atuar como adjetivo e advérbio." 
+                rat: "'To take into account' significa levar em consideração." 
             },
             { 
                 type: "drag", 
-                q: "Complete a oração com o advérbio que significa 'amargamente':", 
-                txtPre: "She was", 
-                txtPost: "disappointed that she failed.", 
-                opts: ["bitterly", "incredibly", "totally", "unusually"], 
-                ans: "bitterly", 
-                rat: "A expressão é 'bitterly disappointed' (amargamente decepcionada)." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Qual é a ordem com verbos de movimento (travel, go) em relação aos advérbios?", 
-                hint: "Destino primeiro.", 
-                opts: ["Modo + Tempo + Lugar", "Tempo + Modo + Lugar", "Lugar + Modo + Tempo", "Modo + Lugar + Tempo"], 
-                ans: 2, 
-                rat: "Com verbos de movimento, a ordem é Lugar, Modo, Tempo (Ex: to London by plane last week)." 
-            },
-            { 
-                type: "typing", 
-                q: "Se a prova estava 'razoavelmente fácil', dizemos que ela estava '____ easy'.", 
-                hint: "Começa com R e termina com Y.", 
-                ans: "reasonably", 
-                rat: "'Reasonably easy' significa razoavelmente fácil." 
+                q: "Complete a frase com o verbo que significa 'mitigar/abrandar':", 
+                txtPre: "It is unclear how to", 
+                txtPost: "the effects of tourism on the island.", 
+                opts: ["thrive", "ensure", "hinder", "mitigate"], 
+                ans: "mitigate", 
+                rat: "'To mitigate' significa abrandar, suavizar ou reduzir os efeitos negativos de algo." 
             },
             { 
                 type: "true_false", 
-                q: "Advérbios de probabilidade (possibly, probably) são colocados após o verbo auxiliar, mas antes do verbo principal.", 
-                hint: "He has probably been stolen.", 
+                q: "A palavra 'EVERYDAY' (junto) é um adjetivo que significa comum ou rotineiro.", 
+                hint: "Death was an everyday occurrence.", 
                 ans: true, 
-                rat: "Verdadeiro. Eles vão entre o verbo auxiliar e o principal." 
+                rat: "Verdadeiro. 'Everyday' (uma palavra só) é um adjetivo usado para coisas ordinárias ou comuns." 
             },
             { 
-                type: "drag", 
-                q: "Escolha o advérbio que significa de modo rápido ou ágil (derivado de quick):", 
-                txtPre: "The police responded", 
-                txtPost: "to the emergency.", 
-                opts: ["quickly", "quick", "quietly", "heavily"], 
-                ans: "quickly", 
-                rat: "'Quickly' é o advérbio de modo derivado de quick." 
+                type: "typing", 
+                q: "Complete a frase com o advérbio correto (todos os dias): 'She goes to the supermarket ______ _____'.", 
+                hint: "Duas palavras separadas.", 
+                ans: "every day", 
+                rat: "'Every day' (separado) funciona como advérbio de tempo, significando 'todos os dias'." 
             },
             { 
                 type: "multiple_choice", 
-                q: "Qual é a tradução de 'Heavily' no contexto 'It snowed heavily'?", 
-                hint: "Pesado.", 
-                opts: ["Maldosamente", "Silenciosamente", "Fortemente/Pesadamente", "Lentamente"], 
-                ans: 2, 
-                rat: "'Heavily' neste contexto significa que nevou intensamente, pesadamente." 
+                q: "O que significa 'BIAS' no contexto de sistemas de inteligência artificial?", 
+                hint: "Opinião injusta.", 
+                opts: ["Velocidade de processamento", "Viés / preconceito / tendência", "Linguagem de programação", "Banco de dados seguro"], 
+                ans: 1, 
+                rat: "'Bias' representa um viés, preconceito ou tendência injusta em julgamentos ou dados." 
+            },
+            { 
+                type: "drag", 
+                q: "A expressão 'at large' quando usada para criminosos significa:", 
+                txtPre: "The escaped prisoners are still", 
+                txtPost: ".", 
+                opts: ["at large", "in prison", "at small", "in court"], 
+                ans: "at large", 
+                rat: "'At large', quando se refere a uma pessoa procurada, significa que ela está solta/desaparecida." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se diz 'resultado' em inglês no contexto da frase: 'It's too early to predict the _______ of the meeting.'", 
+                hint: "O_TC_M_.", 
+                ans: "outcome", 
+                rat: "'Outcome' significa resultado ou efeito de uma ação ou situação." 
+            },
+            { 
+                type: "true_false", 
+                q: "O termo 'Digital Divide' refere-se ao problema social de grupos que não têm acesso ou conhecimento para usar tecnologias e a internet.", 
+                hint: "Divisão digital.", 
+                ans: true, 
+                rat: "Verdadeiro. 'Digital Divide' descreve o fosso ou a exclusão digital na sociedade." 
             },
 
-            // --- BLOCO 4: PHRASAL VERBS - GET e COME (Páginas 19 e 20) ---
+            // --- BLOCO 2: PASSIVE VOICE (17 Questões) ---
             { 
                 type: "multiple_choice", 
-                q: "O que o phrasal verb 'GET ALONG' significa?", 
-                hint: "Você e seus vizinhos.", 
-                opts: ["Fugir", "Se recuperar", "Ter um bom relacionamento (dar-se bem)", "Sugerir uma ideia"], 
+                q: "Qual é a estrutura básica para formar a Voz Passiva em inglês?", 
+                hint: "Verbo ser + Particípio.", 
+                opts: ["Verbo 'to do' + Verbo base", "Verbo 'to have' + Gerúndio", "Verbo 'to be' + Past Participle", "Verbo 'to make' + Past Participle"], 
                 ans: 2, 
-                rat: "'Get along' significa ter um relacionamento amigável ou dar-se bem com alguém." 
-            },
-            { 
-                type: "typing", 
-                q: "Complete o phrasal verb que significa 'recuperar-se' de uma doença ou problema: 'get ____'.", 
-                hint: "Acima.", 
-                ans: "over", 
-                rat: "'Get over' significa se recuperar (recover from something)." 
-            },
-            { 
-                type: "true_false", 
-                q: "O phrasal verb 'get away with' significa escapar impune após fazer algo de errado.", 
-                hint: "Avoid getting caught.", 
-                ans: true, 
-                rat: "Verdadeiro. Significa cometer uma infração e escapar da punição." 
+                rat: "A voz passiva é formada pela combinação do verbo 'to be' com o particípio passado do verbo principal." 
             },
             { 
                 type: "drag", 
-                q: "Complete a frase que instrui alguém a descer de um transporte:", 
-                txtPre: "Get", 
-                txtPost: "the bus at the Town Hall.", 
-                opts: ["off", "out", "up", "away"], 
-                ans: "off", 
-                rat: "'Get off' significa descer fisicamente de um meio de transporte." 
-            },
-            { 
-                type: "multiple_choice", 
-                q: "Qual phrasal verb com COME usamos para dizer 'encontrar algo ou alguém por acaso'?", 
-                hint: "I ___ my uncle Thomas today.", 
-                opts: ["Come over", "Come to", "Come across", "Come back"], 
-                ans: 2, 
-                rat: "'Come across' significa deparar-se com, ou encontrar por acaso." 
+                q: "A voz passiva é recomendada em textos científicos porque:", 
+                txtPre: "The details of the process are", 
+                txtPost: "than whoever is doing the action.", 
+                opts: ["more important", "less important", "ignored", "never used"], 
+                ans: "more important", 
+                rat: "Usa-se a voz passiva quando a pessoa que realiza a ação não é tão importante quanto o próprio processo." 
             },
             { 
                 type: "typing", 
-                q: "Qual preposição falta no phrasal verb que significa 'visitar alguém na casa dela'? Come ____.", 
-                hint: "Acima.", 
-                ans: "over", 
-                rat: "'Come over' significa visitar a casa de alguém." 
+                q: "Transforme para a voz passiva: 'Kevin washes the car.' -> 'The car ___ washed by Kevin.'", 
+                hint: "Presente do verbo to be.", 
+                ans: "is", 
+                rat: "Como a frase ativa está no presente simples, usa-se 'is'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual a transformação correta para a voz passiva da frase: 'Kevin washed the car'?", 
+                hint: "Passado.", 
+                opts: ["The car is washed by Kevin.", "The car was washed by Kevin.", "The car has been washed by Kevin.", "The car will be washed by Kevin."], 
+                ans: 1, 
+                rat: "O passado simples ativo 'washed' transforma-se no passado passivo 'was washed'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a transformação para a voz passiva contínua: 'Kevin is washing the car.'", 
+                txtPre: "The car is", 
+                txtPost: "washed by Kevin.", 
+                opts: ["be", "being", "been", "was"], 
+                ans: "being", 
+                rat: "No present progressive, a voz passiva exige o gerúndio do verbo to be: 'is being'." 
+            },
+            { 
+                type: "typing", 
+                q: "Transforme 'Kevin has washed the car' para a voz passiva: 'The car has ____ washed by Kevin.'", 
+                hint: "Particípio do verbo to be.", 
+                ans: "been", 
+                rat: "No present perfect, adiciona-se 'been' à estrutura: 'has been washed'." 
+            },
+            { 
+                type: "typing", 
+                q: "A frase 'Kevin SHOULD WASH the car' na voz passiva fica 'The car should ___ washed by Kevin'.", 
+                hint: "Verbo to be no infinitivo.", 
+                ans: "be", 
+                rat: "Com verbos modais (should, can, must), usamos 'be' + particípio passado." 
             },
             { 
                 type: "true_false", 
-                q: "O phrasal verb 'Come to' significa retornar (to return) para o lugar de onde saiu.", 
-                hint: "Faint.", 
+                q: "A voz passiva de 'Kevin will wash the car' é 'The car would be washed by Kevin'.", 
+                hint: "Preste atenção no modal.", 
                 ans: false, 
-                rat: "Falso. 'Come to' significa recuperar a consciência. 'Come back' é que significa retornar." 
-            },
-            { 
-                type: "drag", 
-                q: "Se você quiser pedir para alguém sugerir ou propor uma ideia melhor, você diz:", 
-                txtPre: "You have to come", 
-                txtPost: "a better excuse.", 
-                opts: ["up with", "along with", "back to", "over to"], 
-                ans: "up with", 
-                rat: "'Come up with' significa sugerir, propor ou inventar algo." 
+                rat: "Falso. O modal se mantém. O correto é 'The car will be washed by Kevin'." 
             },
             { 
                 type: "multiple_choice", 
-                q: "Em 'I'm going for a jog. Would you like to COME ALONG?', qual é o sentido?", 
-                hint: "Ir junto.", 
-                opts: ["Acompanhar/Ir junto", "Ficar para trás", "Recuperar-se", "Sair de casa"], 
+                q: "Eles estavam entrevistando-a para o trabalho (They were interviewing her). Como fica na voz passiva?", 
+                hint: "Past progressive.", 
+                opts: ["She was being interviewed", "She was be interviewed", "She has been interviewing", "She had interviewed"], 
                 ans: 0, 
-                rat: "'Come along' significa acompanhar alguém (ir com a pessoa)." 
+                rat: "A estrutura correta para o past progressive passivo é 'was being + past participle'." 
             },
             { 
                 type: "typing", 
-                q: "Complete o phrasal verb para levantar-se da cama: 'He got ___ at 10'.", 
-                hint: "Para cima.", 
-                ans: "up", 
-                rat: "'Get up' significa levantar-se ou ficar de pé." 
+                q: "Complete a transformação passiva de 'The fire had destroyed the house': 'The house ___ been destroyed by the fire.'", 
+                hint: "Passado perfeito.", 
+                ans: "had", 
+                rat: "No past perfect, usamos 'had been destroyed'." 
             },
             { 
-                type: "true_false", 
-                q: "O phrasal verb 'get out' significa deixar um local, sair ou escapar.", 
-                hint: "The cat got out.", 
-                ans: true, 
-                rat: "Verdadeiro. 'Get out' refere-se a sair de um espaço." 
+                type: "multiple_choice", 
+                q: "Como fica a frase 'Tom is writing the e-mail' na voz passiva?", 
+                hint: "O e-mail está sendo escrito...", 
+                opts: ["The e-mail was written", "The e-mail was being writing", "The e-mail is being written", "The e-mail is been written"], 
+                ans: 2, 
+                rat: "'Is writing' transforma-se em 'is being written'." 
             },
             { 
                 type: "drag", 
-                q: "Complete a frase usando o passado de 'come back':", 
-                txtPre: "His parents", 
-                txtPost: "from France yesterday.", 
-                opts: ["came back", "came to", "got back", "came across"], 
-                ans: "came back", 
-                rat: "'Came back' é o passado simples indicando que eles retornaram." 
+                q: "Complete a voz passiva da frase 'They say that women are smarter than men':", 
+                txtPre: "Women", 
+                txtPost: "to be smarter than men.", 
+                opts: ["are said", "is said", "was said", "has been said"], 
+                ans: "are said", 
+                rat: "Construção passiva com verbos de relato (say): 'Women are said to be...'." 
+            },
+            { 
+                type: "typing", 
+                q: "Na frase 'Mother bakes a cake', a voz passiva é 'The cake is ______ by my mother.'", 
+                hint: "Particípio de bake.", 
+                ans: "baked", 
+                rat: "O particípio de 'bake' é 'baked'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A frase 'We watched a movie yesterday' fica 'The movie was watched by us yesterday' na voz passiva.", 
+                hint: "Simple past.", 
+                ans: true, 
+                rat: "Verdadeiro. O passado simples usa 'was + watched'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "A frase correta na voz passiva para 'The mechanic fixed the car' é:", 
+                hint: "Present Perfect.", 
+                opts: ["The car fixed by the mechanic", "The mechanic was fixed the car", "The car has been fixed by the mechanic", "The mechanic is fixed the car"], 
+                ans: 2, 
+                rat: "Neste exercício focado na estrutura Perfect, a transformação foi 'The car has been fixed by the mechanic'." 
+            },
+            { 
+                type: "typing", 
+                q: "Complete a história da Torre Eiffel: 'The Eiffel Tower ___ designed by Gustave Eiffel'.", 
+                hint: "Passado.", 
+                ans: "was", 
+                rat: "Fato no passado: 'was designed'." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a história: 'Today, the Eiffel Tower", 
+                txtPre: "", 
+                txtPost: "by millions of tourists every year.'", 
+                opts: ["is visited", "was visited", "has visited", "is visiting"], 
+                ans: "is visited", 
+                rat: "Um fato que ocorre no presente de forma passiva: 'is visited'." 
+            },
+
+            // --- BLOCO 3: MONEY - BUYING, SELLING AND PAYING (20 Questões) ---
+            { 
+                type: "multiple_choice", 
+                q: "Quais são as três formas comuns de pagamento listadas no material?", 
+                hint: "Dinheiro, cheque, cartão.", 
+                opts: ["Cash, crypto, points", "Cash, by cheque, credit card", "Gold, silver, bronze", "Transfer, bank loan, mortgage"], 
+                ans: 1, 
+                rat: "As formas mencionadas são Cash, by cheque e credit card." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se chama o documento que o banco envia para mostrar quanto dinheiro há na conta? Bank _________.", 
+                hint: "Extrato.", 
+                ans: "statement", 
+                rat: "'Bank statement' é o extrato bancário." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete com o tipo de conta onde você deposita dinheiro extra e só retira para algo especial:", 
+                txtPre: "You may also have a", 
+                txtPost: "where you deposit any extra money.", 
+                opts: ["savings account", "current account", "overdraft", "mortgage"], 
+                ans: "savings account", 
+                rat: "Conta poupança em inglês é 'savings account'." 
+            },
+            { 
+                type: "true_false", 
+                q: "A expressão 'In the red' significa que a conta está positiva, com crédito (In credit).", 
+                hint: "Red = perigo/negativo.", 
+                ans: false, 
+                rat: "Falso. 'In the red' significa que a conta está no vermelho/descoberta. Conta com saldo positivo é 'in the black' ou 'in credit'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O dinheiro que o banco empresta para você comprar uma casa é chamado de:", 
+                hint: "Hipotéca.", 
+                opts: ["Refund", "Receipt", "Mortgage", "Bargain"], 
+                ans: 2, 
+                rat: "O empréstimo habitacional (hipoteca) é chamado de 'mortgage'." 
+            },
+            { 
+                type: "typing", 
+                q: "Como se chama o desconto que se recebe por comprar grandes quantidades? Buy in ____.", 
+                hint: "Atacado.", 
+                ans: "bulk", 
+                rat: "A expressão 'buy in bulk' significa comprar em grande quantidade/no atacado." 
+            },
+            { 
+                type: "drag", 
+                q: "Complete a frase: Não é comum no Reino Unido discutir ou barganhar preços em lojas. O verbo para isso é:", 
+                txtPre: "It is not usual to", 
+                txtPost: "about prices in a British shop.", 
+                opts: ["haggle", "purchase", "refund", "deposit"], 
+                ans: "haggle", 
+                rat: "O verbo 'to haggle' significa barganhar ou pechinchar." 
+            },
+            { 
+                type: "true_false", 
+                q: "Para receber um reembolso ('refund') em uma loja, você geralmente precisa ter o recibo ('receipt').", 
+                hint: "Comprovante de compra.", 
+                ans: true, 
+                rat: "Verdadeiro. O reembolso é dado desde que você apresente o recibo de compra." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "Qual é a diferença entre 'FEE' e 'FARE'?", 
+                hint: "Serviço vs Transporte.", 
+                opts: ["Fee é imposto, Fare é produto", "Fee é para serviços (escola/advogado), Fare é tarifa de viagem", "Fee é dinheiro trocado, Fare é banco", "Ambos significam gorjeta"], 
+                ans: 1, 
+                rat: "'Fee' é usado para serviços profissionais; 'fare' é o valor pago por uma viagem ou transporte." 
+            },
+            { 
+                type: "typing", 
+                q: "Se você acha que um produto foi um bom negócio (Good value), ele é considerado uma _________.", 
+                hint: "B_R_G_I_N.", 
+                ans: "bargain", 
+                rat: "'Bargain' significa pechincha ou bom negócio." 
+            },
+            { 
+                type: "drag", 
+                q: "Se algo definitivamente não valeu o que você pagou, você chama coloquialmente de:", 
+                txtPre: "If it's definitely not worth it, you can call it a", 
+                txtPost: ".", 
+                opts: ["rip-off", "bargain", "refund", "dole"], 
+                ans: "rip-off", 
+                rat: "'Rip-off' é uma expressão coloquial para algo extremamente caro e injusto, um 'roubo'." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O imposto cobrado pelo governo sobre mercadorias importadas é conhecido como:", 
+                hint: "Alfândega.", 
+                opts: ["Income tax", "VAT", "Customs / Excise duties", "Corporation tax"], 
+                ans: 2, 
+                rat: "'Customs' ou 'Excise duties' são as taxas sobre bens importados." 
+            },
+            { 
+                type: "typing", 
+                q: "O imposto sobre bens e serviços (semelhante ao nosso ICMS) no exterior é conhecido pela sigla ___ (Value Added Tax).", 
+                hint: "Três letras.", 
+                ans: "vat", 
+                rat: "A sigla é 'VAT', que significa Value Added Tax." 
+            },
+            { 
+                type: "true_false", 
+                q: "O 'Unemployment benefit', um auxílio pago pelo governo a desempregados, também é informalmente conhecido como 'the dole'.", 
+                hint: "Dole.", 
+                ans: true, 
+                rat: "Verdadeiro. 'The dole' é um termo informal para os benefícios de desemprego." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "De acordo com o Money Quiz, qual é a moeda utilizada no Japão?", 
+                hint: "Y...", 
+                opts: ["Rouble", "Dollar", "Yen", "Rupee"], 
+                ans: 2, 
+                rat: "A moeda oficial do Japão é o Yen." 
+            },
+            { 
+                type: "drag", 
+                q: "Uma moeda confiável e estável no mercado global é descrita como:", 
+                txtPre: "It is considered a", 
+                txtPost: "currency.", 
+                opts: ["hard", "soft", "heavy", "light"], 
+                ans: "hard", 
+                rat: "O termo 'hard currency' designa uma moeda forte e estável." 
+            },
+            { 
+                type: "typing", 
+                q: "Dinheiro pago a pessoas após uma certa idade por aposentadoria em inglês é chamado de ________.", 
+                hint: "P_N_S_O_.", 
+                ans: "pension", 
+                rat: "'Pension' é a aposentadoria ou pensão recebida após certa idade." 
+            },
+            { 
+                type: "true_false", 
+                q: "De acordo com o texto, algo que é inestimável (como um vaso grego antigo) é 'valueless'.", 
+                hint: "Priceless vs Valueless.", 
+                ans: false, 
+                rat: "Falso. Algo inestimável e de grande valor é 'priceless'. 'Valueless' significa que não tem valor algum." 
+            },
+            { 
+                type: "multiple_choice", 
+                q: "O que é um 'Tax Rebate'?", 
+                hint: "Rebate.", 
+                opts: ["Uma multa por atraso de imposto", "Um imposto sobre grandes heranças", "A devolução (restituição) de dinheiro se você pagou muito imposto", "A taxa cobrada por bancos"], 
+                ans: 2, 
+                rat: "'Tax rebate' é a restituição de impostos caso tenha sido pago um valor a mais." 
+            },
+            { 
+                type: "drag", 
+                q: "Dinheiro pago para ajudar nos custos da criação de filhos ou necessidades, fornecido pelo governo:", 
+                txtPre: "Money given by the government for education and welfare is a", 
+                txtPost: ".", 
+                opts: ["grant", "mortgage", "fare", "overdraft"], 
+                ans: "grant", 
+                rat: "Bolsas ou auxílios do governo são chamados de 'grants'." 
             }
         ];
+
+
         // ==========================================
         // 3. LÓGICA PRINCIPAL DO APLICATIVO
         // ==========================================
 const app = {
-            serieAtual: "2º ANO MÉDIO", // ADICIONE ESTA LINHA
+            serieAtual: "3º ANO MÉDIO", // ADICIONE ESTA LINHA
             currentQ: 0, score: 0, selectedAnswer: null, studentCode: "", studentName: "",
             questions: [], history: [], sortDirection: false,
         
